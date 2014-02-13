@@ -41,6 +41,10 @@ public:
         qmlRegisterType<QInAppStoreQmlType>(uri,
                                             1, 0,
                                             "Store");
+        qmlRegisterUncreatableType<QInAppProductQmlType>(uri,
+                                                         1, 0,
+                                                         "Product",
+                                                         trUtf8("Products are created using types ConsumableProduct or UnlockableProduct"));
         qmlRegisterType<QInAppProductConsumable>(uri,
                                           1, 0,
                                           "ConsumableProduct");
