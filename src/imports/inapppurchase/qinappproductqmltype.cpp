@@ -79,12 +79,10 @@ void QInAppProductQmlType::setIdentifier(const QString &identifier)
 
 void QInAppProductQmlType::updateProduct()
 {
-    qDebug("store == %p", m_store);
     if (m_store == 0)
         return;
 
     QInAppProduct *product = m_store->registeredProduct(m_identifier);
-    qDebug("product == %p vs. %p", product, m_product);
     if (product != 0 && product == m_product)
         return;
 
