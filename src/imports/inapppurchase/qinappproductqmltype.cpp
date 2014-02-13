@@ -69,32 +69,38 @@ void QInAppProductQmlType::componentComplete()
 
 void QInAppProductQmlType::setIdentifier(const QString &identifier)
 {
-    if (m_identifier == identifier || !m_componentComplete)
+    if (m_identifier == identifier)
         return;
 
     m_identifier = identifier;
-    updateProduct();
+    if (m_componentComplete)
+        updateProduct();
     emit identifierChanged();
 }
 
 void QInAppProductQmlType::updateProduct()
 {
-    if (m_store == 0)
-        return;
-
-    QInAppProduct *product = m_store->registeredProduct(m_identifier);
-    if (product != 0 && product == m_product)
+    if (m_store == 0 )
         return;
 
     Status oldStatus = m_status;
-    if (product == 0) {
-        m_status = PendingRegistration;
-        m_store->registerProduct(m_requiredType, m_identifier);
-    } else if (product->productType() != m_requiredType) {
-        product = 0;
+    QInAppProduct *product = 0;
+    if (m_identifier.isEmpty()) {
         m_status = Unknown;
     } else {
-        m_status = Registered;
+        product = m_store->registeredProduct(m_identifier);
+        if (product != 0 && product == m_product)
+            return;
+
+        if (product == 0) {
+            m_status = PendingRegistration;
+            m_store->registerProduct(m_requiredType, m_identifier);
+        } else if (product->productType() != m_requiredType) {
+            product = 0;
+            m_status = Unknown;
+        } else {
+            m_status = Registered;
+        }
     }
 
     setProduct(product);
