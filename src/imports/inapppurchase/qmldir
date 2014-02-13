@@ -1,0 +1,4 @@
+module QtMobileExtras
+plugin declarative_mobileextras
+typeinfo plugins.qmltypes
+classname QInAppPurchaseModule
