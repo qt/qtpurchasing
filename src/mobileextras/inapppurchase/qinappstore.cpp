@@ -23,6 +23,18 @@
 #include "qinapppurchasebackend_p.h"
 #include "qinapppurchasebackendfactory_p.h"
 
+namespace
+{
+class IAPRegisterMetaTypes
+{
+public:
+    IAPRegisterMetaTypes()
+    {
+        qRegisterMetaType<QInAppProduct::ProductType>("QInAppProduct::ProductType");
+    }
+} _registerIAPMetaTypes;
+}
+
 QT_BEGIN_NAMESPACE
 
 /*!
