@@ -27,28 +27,30 @@ static void addProduct(QQmlListProperty<QInAppProductQmlType> *property, QInAppP
     Q_ASSERT(store != 0);
     product->setStore(store->store());
 
-    QList<QInAppProductQmlType *> *m_products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
-    Q_ASSERT(m_products != 0);
+    QList<QInAppProductQmlType *> *products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
+    Q_ASSERT(products != 0);
 
-    m_products->append(product);
+    products->append(product);
 }
 
 static int productCount(QQmlListProperty<QInAppProductQmlType> *property)
 {
-    QList<QInAppProductQmlType *> *m_products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
-    Q_ASSERT(m_products != 0);
+    QList<QInAppProductQmlType *> *products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
+    Q_ASSERT(products != 0);
 
-    return m_products->size();
+    return products->size();
 }
 
 static void clearProducts(QQmlListProperty<QInAppProductQmlType> *property)
 {
-    QList<QInAppProductQmlType *> *m_products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
-    Q_ASSERT(m_products != 0);
+    QList<QInAppProductQmlType *> *products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
+    Q_ASSERT(products != 0);
 
-    foreach (QInAppProductQmlType *product, m_products)
+    for (int i=0; i<products->size(); ++i) {
+        QInAppProductQmlType *product = products->at(i);
         product->setStore(0);
-    m_products->clear();
+    }
+    products->clear();
 }
 
 static QInAppProductQmlType *productAt(QQmlListProperty<QInAppProductQmlType> *property, int index)

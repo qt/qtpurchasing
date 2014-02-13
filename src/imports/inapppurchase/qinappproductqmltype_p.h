@@ -23,7 +23,7 @@
 
 #include <QtMobileExtras/qinappproduct.h>
 #include <QtQml/qqmlparserstatus.h>
-#include <QtQuick/qquickitem.h>
+#include <QtCore/qobject.h>
 
 QT_BEGIN_NAMESPACE
 

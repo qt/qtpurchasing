@@ -22,7 +22,10 @@
 #define QINAPPSTOREQMLTYPE_P_H
 
 #include "qinappproductqmltype_p.h"
-#include <QtQuick/qquickitem.h>
+#include <QtQml/qqmllist.h>
+
+#include <QtCore/qlist.h>
+#include <QtCore/qobject.h>
 
 QT_BEGIN_NAMESPACE
 
