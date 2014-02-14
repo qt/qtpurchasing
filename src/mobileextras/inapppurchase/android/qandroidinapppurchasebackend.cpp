@@ -139,7 +139,7 @@ void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, con
     QHash<QString, QInAppProduct::ProductType>::iterator it = m_productTypeForPendingId.find(productId);
     Q_ASSERT(it != m_productTypeForPendingId.end());
 
-    QAndroidInAppProduct *product = new QAndroidInAppProduct(price, it.value(), it.key(), this);
+    QAndroidInAppProduct *product = new QAndroidInAppProduct(this, price, it.value(), it.key(), this);
     checkFinalizationStatus(product);
 
     emit productQueryDone(product);
@@ -158,6 +158,51 @@ void QAndroidInAppPurchaseBackend::registerReady()
     QMutexLocker locker(&m_mutex);
     m_isReady = true;
     emit ready();
+}
+
+void QAndroidInAppPurchaseBackend::handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data)
+{
+    qDebug("Hello: %d %d %p", requestCode, resultCode, data.object<jobject>());
+
+    m_javaObject.callMethod<void>("printInfo", "(Landroid/content/Intent;)V", data.object<jobject>());
+}
+
+void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product)
+{
+    if (m_pendingPurchaseForIdentifier.contains(product->identifier())) {
+        qWarning("Product %s is already being purchased. Finalize transaction and try again.",
+                 qPrintable(product->identifier()));
+        return;
+    }
+
+    m_pendingPurchaseForIdentifier[product->identifier()] = product;
+    if (!m_javaObject.isValid()) {
+        qWarning("Cannot request purchase, because Java backend is not initialized.");
+        purchaseFailed(product->identifier());
+        return;
+    }
+
+    QAndroidJniObject intentSender = m_javaObject.callObjectMethod("createBuyIntentSender",
+                                                                   "(Ljava/lang/String;)Landroid/content/IntentSender;",
+                                                                   QAndroidJniObject::fromString(product->identifier()).object<jstring>());
+    if (!intentSender.isValid()) {
+        qWarning("Unable to get intent sender from service");
+        purchaseFailed(product->identifier());
+        return;
+    }
+
+    qDebug("startingIntent");
+    QtAndroid::startIntentSender(intentSender, 123, this);
+}
+
+void QAndroidInAppPurchaseBackend::purchaseFailed(const QString &identifier)
+{
+    qDebug("purchasFailed: %s", qPrintable(identifier));
+}
+
+void QAndroidInAppPurchaseBackend::purchaseSucceeded(const QString &identifier)
+{
+    qDebug("purchasSuccess: %s", qPrintable(identifier));
 }
 
 QT_END_NAMESPACE

@@ -40,10 +40,12 @@
 #include <QtCore/qmutex.h>
 #include <QtCore/qset.h>
 #include <QtAndroidExtras/qandroidjniobject.h>
+#include <QtAndroidExtras/qandroidactivityresultreceiver.h>
 
 QT_BEGIN_NAMESPACE
 
-class QAndroidInAppPurchaseBackend : public QInAppPurchaseBackend
+class QAndroidInAppProduct;
+class QAndroidInAppPurchaseBackend : public QInAppPurchaseBackend, public QAndroidActivityResultReceiver
 {
     Q_OBJECT
 public:
@@ -57,11 +59,15 @@ public:
 
     void setPlatformProperty(const QString &propertyName, const QString &value);
 
+    void purchaseProduct(QAndroidInAppProduct *product);
+
     // Callbacks from Java
     void registerQueryFailure(const QString &productId);
     void registerProduct(const QString &productId, const QString &price);
     void registerPurchased(const QString &productId, const QString &signature, const QString &data);
     void registerReady();
+
+    void handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data);
 
 private:
     void checkFinalizationStatus(QInAppProduct *product);
@@ -70,12 +76,16 @@ private:
                                      const QPair<QString, QString> &signature);
     bool transactionFinalizedForProduct(QInAppProduct *product);
 
+    void purchaseFailed(const QString &identifier);
+    void purchaseSucceeded(const QString &identifier);
+
     mutable QMutex m_mutex;
     bool m_isReady;
     QAndroidJniObject m_javaObject;
     QHash<QString, QInAppProduct::ProductType> m_productTypeForPendingId;
     QHash<QString, QPair<QString, QString> > m_signatureAndDataForPurchase;
     QSet<QString> m_finalizedUnlockableProducts;
+    QHash<QString, QInAppProduct *> m_pendingPurchaseForIdentifier;
 };
 
 QT_END_NAMESPACE

@@ -40,8 +40,8 @@ JAVASOURCES += \
     $$PATHPREFIX/QtInAppPurchase.java \
     $$PATHPREFIX/Security.java \
     $$PATHPREFIX/Base64.java \
-    $$PATHPREFIX/Base64DecoderException.java
-    $$PWD/src/android/vending/billing/.java
+    $$PATHPREFIX/Base64DecoderException.java \
+    $$PWD/src/com/android/vending/billing/IInAppBillingService.java
 
 
 
@@ -49,4 +49,5 @@ JAVASOURCES += \
 target.path = $$[QT_INSTALL_PREFIX]/jar
 INSTALLS += target
 
-OTHER_FILES += $$JAVASOURCES
+OTHER_FILES += $$JAVASOURCES \
+    src/com/digia/qt5/android/mobileextras/TemporaryAction.java

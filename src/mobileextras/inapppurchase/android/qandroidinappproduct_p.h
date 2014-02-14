@@ -36,17 +36,22 @@
 
 QT_BEGIN_NAMESPACE
 
+class QAndroidInAppPurchaseBackend;
 class QAndroidInAppProduct : public QInAppProduct
 {
     Q_OBJECT
 public:
-    explicit QAndroidInAppProduct(const QString &price,
+    explicit QAndroidInAppProduct(QAndroidInAppPurchaseBackend *backend,
+                                  const QString &price,
                                   ProductType productType,
                                   const QString &identifier,
                                   QObject *parent = 0);
 
 
     void purchase();
+
+private:
+    QAndroidInAppPurchaseBackend *m_backend;
 };
 
 QT_END_NAMESPACE

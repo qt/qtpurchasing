@@ -19,21 +19,24 @@
 ****************************************************************************/
 
 #include "qandroidinappproduct_p.h"
+#include "qandroidinapppurchasebackend_p.h"
 
 QT_BEGIN_NAMESPACE
 
-QAndroidInAppProduct::QAndroidInAppProduct(const QString &price,
+QAndroidInAppProduct::QAndroidInAppProduct(QAndroidInAppPurchaseBackend *backend,
+                                           const QString &price,
                                            ProductType productType,
                                            const QString &identifier,
                                            QObject *parent)
     : QInAppProduct(price, productType, identifier, parent)
+    , m_backend(backend)
 {
 }
 
 
 void QAndroidInAppProduct::purchase()
 {
-#warning Unimplemented
+    m_backend->purchaseProduct(this);
 }
 
 QT_END_NAMESPACE

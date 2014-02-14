@@ -172,7 +172,7 @@ void QInAppProductQmlType::handleTransaction(QInAppTransaction *transaction)
 
 void QInAppProductQmlType::purchase()
 {
-    if (m_product != 0)
+    if (m_product != 0 && m_status == Registered)
         m_product->purchase();
     else
         qWarning("Attempted to purchase unregistered product");

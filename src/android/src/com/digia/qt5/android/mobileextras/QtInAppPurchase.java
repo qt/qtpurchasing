@@ -22,9 +22,11 @@ package com.digia.qt5.android.mobileextras;
 
 import java.util.ArrayList;
 import android.app.PendingIntent;
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.RemoteException;
@@ -255,10 +257,56 @@ public class QtInAppPurchase
         thread.start();
     }
 
+    public void printInfo(Intent intent)
+    {
+        int responseCode = intent.getIntExtra("RESPONSE_CODE", -1);
+        String purchaseData = intent.getStringExtra("INAPP_PURCHASE_DATA");
+
+        Log.i(TAG, "p: " + purchaseData + " r: " + responseCode);
+
+        try {
+            JSONObject jo = new JSONObject(purchaseData);
+            String sku = jo.getString("productId");
+            Log.i(TAG, "Purchase " + responseCode + " - " + sku);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
     public void setPublicKey(String publicKey)
     {
         m_publicKey = publicKey;
     }
+
+    public IntentSender createBuyIntentSender(String identifier)
+    {
+        if (m_service == null) {
+            Log.e(TAG, "Unable to create buy intent. No IAP service connection.");
+            return null;
+        }
+
+        try {
+             Bundle purchaseBundle = m_service.getBuyIntent(3,
+                                                           m_context.getPackageName(),
+                                                           identifier,
+                                                           TYPE_INAPP,
+                                                           identifier);
+             int response = bundleResponseCode(purchaseBundle);
+             if (response != RESULT_OK) {
+                 Log.e(TAG, "Unable to create buy intent. Response code: " + response);
+                 return null;
+             }
+
+             PendingIntent pendingIntent = purchaseBundle.getParcelable("BUY_INTENT");
+             return pendingIntent.getIntentSender();
+       } catch (Exception e) {
+           e.printStackTrace();
+           return null;
+       }
+    }
+
 
     private native static void queryFailed(long nativePointer, String productId);
     private native static void purchasedProductsQueried(long nativePointer);
