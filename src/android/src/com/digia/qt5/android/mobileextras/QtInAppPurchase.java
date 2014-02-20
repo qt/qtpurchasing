@@ -175,9 +175,11 @@ public class QtInAppPurchase
                             JSONObject jo = new JSONObject(data);
                             String productId = jo.getString("productId");
                             int purchaseState = jo.getInt("purchaseState");
+                            String purchaseToken = jo.getString("purchaseToken");
+                            String orderId = jo.getString("orderId");
 
                             if (purchaseState == 0)
-                                registerPurchased(m_nativePointer, productId, signature, data);
+                                registerPurchased(m_nativePointer, productId, signature, data, purchaseToken, orderId);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -257,23 +259,63 @@ public class QtInAppPurchase
         thread.start();
     }
 
-    public void printInfo(Intent intent)
+    public void handleActivityResult(int requestCode, int resultCode, Intent data, String expectedIdentifier)
     {
-        int responseCode = intent.getIntExtra("RESPONSE_CODE", -1);
-        String purchaseData = intent.getStringExtra("INAPP_PURCHASE_DATA");
-
-        Log.i(TAG, "p: " + purchaseData + " r: " + responseCode);
-
-        try {
-            JSONObject jo = new JSONObject(purchaseData);
-            String sku = jo.getString("productId");
-            Log.i(TAG, "Purchase " + responseCode + " - " + sku);
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (data == null) {
+            Log.e(TAG, "handleActivityResult: No data returned from in-app purchase");
+            purchaseFailed(requestCode);
+            return;
         }
 
-    }
+        int responseCode = data.getIntExtra("RESPONSE_CODE", -1);
+        String purchaseData = data.getStringExtra("INAPP_PURCHASE_DATA");
+        String dataSignature = data.getStringExtra("INAPP_DATA_SIGNATURE");
+        String purchaseToken = "";
+        String orderId = "";
 
+        if (resultCode == Activity.RESULT_CANCELED) {
+            purchaseFailed(requestCode);
+            return;
+        }
+
+        if (responseCode != RESULT_OK) {
+            Log.e(TAG, "handleActivityResult: Purchase failed due to billing error: " + responseCode);
+            purchaseFailed(requestCode);
+            return;
+        }
+
+        try {
+            if (m_publicKey != null && !Security.verifyPurchase(m_publicKey, purchaseData, dataSignature)) {
+                Log.e(TAG, "handleActivityResult: Cannot verify signature of purchase");
+                purchaseFailed(requestCode);
+                return;
+            }
+
+            JSONObject jo = new JSONObject(purchaseData);
+            String sku = jo.getString("productId");
+            if (!sku.equals(expectedIdentifier)) {
+                Log.e(TAG, "handleActivityResult: Unexpected identifier in result");
+                purchaseFailed(requestCode);
+                return;
+            }
+
+            int purchaseState = jo.getInt("purchaseState");
+            if (purchaseState != 0) {
+                Log.e(TAG, "handleActivityResult: Unexpected purchase state");
+                purchaseFailed(requestCode);
+                return;
+            }
+
+            purchaseToken = jo.getString("purchaseToken");
+            orderId = jo.getString("orderId");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            purchaseFailed(requestCode);
+        }
+
+        purchaseSucceeded(requestCode, dataSignature, purchaseData, purchaseToken, orderId);
+    }
 
     public void setPublicKey(String publicKey)
     {
@@ -307,9 +349,30 @@ public class QtInAppPurchase
        }
     }
 
+    private void purchaseFailed(int requestCode) { purchaseFailed(m_nativePointer, requestCode); }
+    private void purchaseSucceeded(int requestCode,
+                                   String signature,
+                                   String purchaseData,
+                                   String purchaseToken,
+                                   String orderId)
+    {
+        purchaseSucceeded(m_nativePointer, requestCode, signature, purchaseData, purchaseToken, orderId);
+    }
 
     private native static void queryFailed(long nativePointer, String productId);
     private native static void purchasedProductsQueried(long nativePointer);
     private native static void registerProduct(long nativePointer, String productId, String price);
-    private native static void registerPurchased(long nativePointer, String productId, String signature, String data);
+    private native static void purchaseFailed(long nativePointer, int requestCode);
+    private native static void purchaseSucceeded(long nativePointer,
+                                                 int requestCode,
+                                                 String signature,
+                                                 String data,
+                                                 String purchaseToken,
+                                                 String orderId);
+    private native static void registerPurchased(long nativePointer,
+                                                 String identifier,
+                                                 String signature,
+                                                 String data,
+                                                 String purchaseToken,
+                                                 String orderId);
 }

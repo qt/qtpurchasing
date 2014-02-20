@@ -19,18 +19,25 @@
 ****************************************************************************/
 
 #include "qandroidinapptransaction_p.h"
+#include "qandroidinapppurchasebackend_p.h"
+#include "qinappproduct.h"
 
 QT_BEGIN_NAMESPACE
 
 QAndroidInAppTransaction::QAndroidInAppTransaction(const QString &signature,
                                                    const QString &data,
+                                                   const QString &purchaseToken,
+                                                   const QString &orderId,
                                                    TransactionStatus status,
                                                    QInAppProduct *product,
                                                    QObject *parent)
     : QInAppTransaction(status, product, parent)
     , m_signature(signature)
     , m_data(data)
+    , m_purchaseToken(purchaseToken)
+    , m_orderId(orderId)
 {
+    Q_ASSERT(qobject_cast<QAndroidInAppPurchaseBackend *>(parent) != 0);
 }
 
 QString QAndroidInAppTransaction::platformProperty(const QString &propertyName) const
@@ -39,14 +46,23 @@ QString QAndroidInAppTransaction::platformProperty(const QString &propertyName) 
         return m_signature;
     else if (propertyName.compare(QStringLiteral("AndroidPurchaseData"), Qt::CaseInsensitive) == 0)
         return m_data;
+    else if (propertyName.compare(QStringLiteral("AndroidOrderId"), Qt::CaseInsensitive) == 0)
+        return m_orderId;
     else
         return QInAppTransaction::platformProperty(propertyName);
 }
 
 void QAndroidInAppTransaction::finalize()
 {
-    // ### consume consumable or store finalized data for unlockable
-#warning Unimplemented
+    if (status() == PurchaseApproved) {
+        QAndroidInAppPurchaseBackend *backend = qobject_cast<QAndroidInAppPurchaseBackend *>(parent());
+        if (product()->productType() == QInAppProduct::Consumable)
+            backend->consumeTransaction(m_purchaseToken);
+        else
+            backend->registerFinalizedUnlockable(product()->identifier());
+    }
+
+    deleteLater();
 }
 
 QT_END_NAMESPACE

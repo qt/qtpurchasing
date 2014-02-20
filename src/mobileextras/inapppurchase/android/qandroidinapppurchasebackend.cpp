@@ -23,6 +23,11 @@
 #include "qandroidinapptransaction_p.h"
 
 #include <QtAndroidExtras/qandroidfunctions.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qdatastream.h>
+#include <QtCore/qstandardpaths.h>
 
 QT_BEGIN_NAMESPACE
 
@@ -41,10 +46,28 @@ QAndroidInAppPurchaseBackend::QAndroidInAppPurchaseBackend(QObject *parent)
     }
 }
 
+QString QAndroidInAppPurchaseBackend::finalizedUnlockableFileName() const
+{
+    QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    return path + QStringLiteral("/.qt-mobile-extras-data/iap_finalization.data");
+}
+
 void QAndroidInAppPurchaseBackend::initialize()
 {
     m_javaObject.callMethod<void>("initializeConnection");
-#warning Read tokens here
+
+    QFile file(finalizedUnlockableFileName());
+    if (file.open(QIODevice::ReadOnly)) {
+        QDataStream stream(&file);
+        while (!stream.atEnd()) {
+            QString identifier;
+            stream >> identifier;
+            m_finalizedUnlockableProducts.insert(identifier);
+        }
+
+    } else if (file.exists()) {
+        qWarning("Failed to read from finalization data.");
+    }
 }
 
 bool QAndroidInAppPurchaseBackend::isReady() const
@@ -76,10 +99,11 @@ void QAndroidInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType produ
 
 void QAndroidInAppPurchaseBackend::setPlatformProperty(const QString &propertyName, const QString &value)
 {
+    QMutexLocker locker(&m_mutex);
     if (propertyName.compare(QStringLiteral("AndroidPublicKey"), Qt::CaseInsensitive) == 0) {
         m_javaObject.callMethod<void>("setPublicKey",
-                                        "(Ljava/lang/String;)",
-                                        QAndroidJniObject::fromString(value).object<jstring>());
+                                      "(Ljava/lang/String;)",
+                                      QAndroidJniObject::fromString(value).object<jstring>());
     }
 }
 
@@ -93,23 +117,37 @@ void QAndroidInAppPurchaseBackend::registerQueryFailure(const QString &productId
     m_productTypeForPendingId.erase(it);
 }
 
-bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
+void QAndroidInAppPurchaseBackend::consumeTransaction(const QString &purchaseToken)
 {
-    Q_ASSERT(m_signatureAndDataForPurchase.contains(product->identifier()));
-    return product->productType() == QInAppProduct::Consumable
-            || m_finalizedUnlockableProducts.contains(product->identifier());
+    QMutexLocker locker(&m_mutex);
+    m_javaObject.callMethod<void>("consumePurchase",
+                                  "(Ljava/lang/String;)V",
+                                  QAndroidJniObject::fromString(purchaseToken).object<jstring>());
 }
 
-void QAndroidInAppPurchaseBackend::createTransactionForProduct(QInAppTransaction::TransactionStatus status,
-                                                               QInAppProduct *product,
-                                                               const QPair<QString, QString> &signatureAndData)
+void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &identifier)
 {
-    QAndroidInAppTransaction *transaction = new QAndroidInAppTransaction(signatureAndData.first,
-                                                                         signatureAndData.second,
-                                                                         status,
-                                                                         product,
-                                                                         this);
-    emit transactionReady(transaction);
+    QMutexLocker locker(&m_mutex);
+    m_finalizedUnlockableProducts.insert(identifier);
+
+    QString fileName = finalizedUnlockableFileName();
+    QDir().mkpath(QFileInfo(fileName).absolutePath());
+
+    QFile file(fileName);
+    if (!file.open(QIODevice::Append)) {
+        qWarning("Failed to open file to store finalization info.");
+        return;
+    }
+
+    QDataStream stream(&file);
+    stream << identifier;
+}
+
+bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
+{
+    Q_ASSERT(m_infoForPurchase.contains(product->identifier()));
+    return product->productType() == QInAppProduct::Consumable
+            || m_finalizedUnlockableProducts.contains(product->identifier());
 }
 
 void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *product)
@@ -123,14 +161,23 @@ void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *produc
     //    unlockable purchases. If it's not there, then the transaction is unfinalized. This means
     //    that if the cache gets deleted or corrupted, the worst-case scenario is that the transactions
     //    are republished.
-    QHash<QString, QPair<QString, QString> >::iterator it = m_signatureAndDataForPurchase.find(product->identifier());
-    if (it == m_signatureAndDataForPurchase.end())
+    QHash<QString, PurchaseInfo>::iterator it = m_infoForPurchase.find(product->identifier());
+    if (it == m_infoForPurchase.end())
         return;
 
-    if (!transactionFinalizedForProduct(product))
-        createTransactionForProduct(QInAppTransaction::PurchaseApproved, product, it.value());
+    const PurchaseInfo &info = it.value();
+    if (!transactionFinalizedForProduct(product)) {
+        QAndroidInAppTransaction *transaction = new QAndroidInAppTransaction(info.signature,
+                                                                             info.data,
+                                                                             info.purchaseToken,
+                                                                             info.orderId,
+                                                                             QInAppTransaction::PurchaseApproved,
+                                                                             product,
+                                                                             this);
+        emit transactionReady(transaction);
+    }
 
-    m_signatureAndDataForPurchase.erase(it);
+    m_infoForPurchase.erase(it);
 }
 
 void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, const QString &price)
@@ -146,12 +193,13 @@ void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, con
     m_productTypeForPendingId.erase(it);
 }
 
-void QAndroidInAppPurchaseBackend::registerPurchased(const QString &productId, const QString &signature, const QString &data)
+void QAndroidInAppPurchaseBackend::registerPurchased(const QString &identifier,
+                                                     const QString &signature, const QString &data,
+                                                     const QString &purchaseToken, const QString &orderId)
 {
     QMutexLocker locker(&m_mutex);
-    m_signatureAndDataForPurchase.insert(productId, qMakePair(signature, data));
+    m_infoForPurchase.insert(identifier, PurchaseInfo(signature, data, purchaseToken, orderId));
 }
-
 
 void QAndroidInAppPurchaseBackend::registerReady()
 {
@@ -162,13 +210,22 @@ void QAndroidInAppPurchaseBackend::registerReady()
 
 void QAndroidInAppPurchaseBackend::handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data)
 {
-    qDebug("Hello: %d %d %p", requestCode, resultCode, data.object<jobject>());
+    QInAppProduct *product = m_activePurchaseRequests.value(requestCode);
+    if (product == 0) {
+        qWarning("No product registered for requestCode %d", requestCode);
+        return;
+    }
 
-    m_javaObject.callMethod<void>("printInfo", "(Landroid/content/Intent;)V", data.object<jobject>());
+    m_javaObject.callMethod<void>("handleActivityResult", "(IILandroid/content/Intent;Ljava/lang/String;)V",
+                                  requestCode,
+                                  resultCode,
+                                  data.object<jobject>(),
+                                  QAndroidJniObject::fromString(product->identifier()).object<jstring>());
 }
 
 void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product)
 {
+    QMutexLocker locker(&m_mutex);
     if (m_pendingPurchaseForIdentifier.contains(product->identifier())) {
         qWarning("Product %s is already being purchased. Finalize transaction and try again.",
                  qPrintable(product->identifier()));
@@ -178,7 +235,7 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
     m_pendingPurchaseForIdentifier[product->identifier()] = product;
     if (!m_javaObject.isValid()) {
         qWarning("Cannot request purchase, because Java backend is not initialized.");
-        purchaseFailed(product->identifier());
+        purchaseFailed(product);
         return;
     }
 
@@ -187,22 +244,69 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
                                                                    QAndroidJniObject::fromString(product->identifier()).object<jstring>());
     if (!intentSender.isValid()) {
         qWarning("Unable to get intent sender from service");
-        purchaseFailed(product->identifier());
+        purchaseFailed(product);
         return;
     }
 
-    qDebug("startingIntent");
-    QtAndroid::startIntentSender(intentSender, 123, this);
+    int requestCode = 0;
+    while (m_activePurchaseRequests.contains(requestCode)) {
+        requestCode++;
+        if (requestCode == 0) {
+            qWarning("No available request code for purchase request.");
+            return;
+        }
+    }
+
+    m_activePurchaseRequests[requestCode] = product;
+    QtAndroid::startIntentSender(intentSender, requestCode, this);
 }
 
-void QAndroidInAppPurchaseBackend::purchaseFailed(const QString &identifier)
+void QAndroidInAppPurchaseBackend::purchaseFailed(int requestCode)
 {
-    qDebug("purchasFailed: %s", qPrintable(identifier));
+    QMutexLocker locker(&m_mutex);
+    QInAppProduct *product = m_activePurchaseRequests.take(requestCode);
+    if (product == 0) {
+        qWarning("No product registered for requestCode %d", requestCode);
+        return;
+    }
+
+    purchaseFailed(product);
 }
 
-void QAndroidInAppPurchaseBackend::purchaseSucceeded(const QString &identifier)
+void QAndroidInAppPurchaseBackend::purchaseFailed(QInAppProduct *product)
 {
-    qDebug("purchasSuccess: %s", qPrintable(identifier));
+    QInAppTransaction *transaction = new QAndroidInAppTransaction(QString(),
+                                                                  QString(),
+                                                                  QString(),
+                                                                  QString(),
+                                                                  QInAppTransaction::PurchaseFailed,
+                                                                  product,
+                                                                  this);
+    emit transactionReady(transaction);
+}
+
+void QAndroidInAppPurchaseBackend::purchaseSucceeded(int requestCode,
+                                                     const QString &signature,
+                                                     const QString &data,
+                                                     const QString &purchaseToken,
+                                                     const QString &orderId)
+
+{
+    QMutexLocker locker(&m_mutex);
+    QInAppProduct *product = m_activePurchaseRequests.take(requestCode);
+    if (product == 0) {
+        qWarning("No product registered for requestCode %d", requestCode);
+        return;
+    }
+
+    QInAppTransaction *transaction = new QAndroidInAppTransaction(signature,
+                                                                  data,
+                                                                  purchaseToken,
+                                                                  orderId,
+                                                                  QInAppTransaction::PurchaseApproved,
+                                                                  product,
+                                                                  this);
+    emit transactionReady(transaction);
 }
 
 QT_END_NAMESPACE

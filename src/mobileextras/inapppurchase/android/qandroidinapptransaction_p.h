@@ -44,6 +44,8 @@ class QAndroidInAppTransaction : public QInAppTransaction
 public:
     explicit QAndroidInAppTransaction(const QString &signature,
                                       const QString &data,
+                                      const QString &purchaseToken,
+                                      const QString &orderId,
                                       TransactionStatus status,
                                       QInAppProduct *product,
                                       QObject *parent = 0);
@@ -54,7 +56,8 @@ public:
 private:
     QString m_signature;
     QString m_data;
-
+    QString m_purchaseToken;
+    QString m_orderId;
 };
 
 QT_END_NAMESPACE

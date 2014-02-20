@@ -44,20 +44,42 @@ static void registerProduct(jclass, jlong nativePointer, jstring productId, jstr
                              QAndroidJniObject(price).toString());
 }
 
-static void registerPurchased(jclass, jlong nativePointer, jstring productId, jstring signature, jstring data)
+static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
+                              jstring signature, jstring data, jstring purchaseToken, jstring orderId)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->registerPurchased(QAndroidJniObject(productId).toString(),
+    backend->registerPurchased(QAndroidJniObject(identifier).toString(),
                                QAndroidJniObject(signature).toString(),
-                               QAndroidJniObject(data).toString());
+                               QAndroidJniObject(data).toString(),
+                               QAndroidJniObject(purchaseToken).toString(),
+                               QAndroidJniObject(orderId).toString());
+}
 
+static void purchaseSucceeded(jclass, jlong nativePointer, jint requestCode,
+                              jstring signature, jstring data, jstring purchaseToken, jstring orderId)
+{
+    QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
+    backend->purchaseSucceeded(requestCode,
+                               QAndroidJniObject(signature).toString(),
+                               QAndroidJniObject(data).toString(),
+                               QAndroidJniObject(purchaseToken).toString(),
+                               QAndroidJniObject(orderId).toString());
+}
+
+
+static void purchaseFailed(jclass, jlong nativePointer, jint requestCode)
+{
+    QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
+    backend->purchaseFailed(requestCode);
 }
 
 static JNINativeMethod methods[] = {
     {"queryFailed", "(JLjava/lang/String;)V", (void *)queryFailed},
     {"purchasedProductsQueried", "(J)V", (void *)purchasedProductsQueried},
     {"registerProduct", "(JLjava/lang/String;Ljava/lang/String;)V", (void *)registerProduct},
-    {"registerPurchased", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *)registerPurchased}
+    {"registerPurchased", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *)registerPurchased},
+    {"purchaseSucceeded", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *)purchaseSucceeded},
+    {"purchaseFailed", "(JI)V", (void *)purchaseFailed}
 };
 
 jint JNICALL JNI_OnLoad(JavaVM *vm, void *)

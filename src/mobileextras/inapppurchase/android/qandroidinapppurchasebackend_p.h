@@ -61,31 +61,50 @@ public:
 
     void purchaseProduct(QAndroidInAppProduct *product);
 
+    void consumeTransaction(const QString &purchaseToken);
+    void registerFinalizedUnlockable(const QString &identifier);
+
     // Callbacks from Java
     void registerQueryFailure(const QString &productId);
     void registerProduct(const QString &productId, const QString &price);
-    void registerPurchased(const QString &productId, const QString &signature, const QString &data);
+    void registerPurchased(const QString &identifier, const QString &signature, const QString &data, const QString &purchaseToken, const QString &orderId);
+    void purchaseSucceeded(int requestCode, const QString &signature, const QString &data, const QString &purchaseToken, const QString &orderId);
+    void purchaseFailed(int requestCode);
     void registerReady();
 
     void handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data);
 
+    QString finalizedUnlockableFileName() const;
+
 private:
     void checkFinalizationStatus(QInAppProduct *product);
-    void createTransactionForProduct(QInAppTransaction::TransactionStatus status,
-                                     QInAppProduct *product,
-                                     const QPair<QString, QString> &signature);
     bool transactionFinalizedForProduct(QInAppProduct *product);
+    void purchaseFailed(QInAppProduct *product);
 
-    void purchaseFailed(const QString &identifier);
-    void purchaseSucceeded(const QString &identifier);
+    struct PurchaseInfo
+    {
+        PurchaseInfo(const QString &signature_, const QString &data_, const QString &purchaseToken_, const QString &orderId_)
+            : signature(signature_)
+            , data(data_)
+            , purchaseToken(purchaseToken_)
+            , orderId(orderId_)
+        {
+        }
+
+        QString signature;
+        QString data;
+        QString purchaseToken;
+        QString orderId;
+    };
 
     mutable QMutex m_mutex;
     bool m_isReady;
     QAndroidJniObject m_javaObject;
     QHash<QString, QInAppProduct::ProductType> m_productTypeForPendingId;
-    QHash<QString, QPair<QString, QString> > m_signatureAndDataForPurchase;
+    QHash<QString, PurchaseInfo> m_infoForPurchase;
     QSet<QString> m_finalizedUnlockableProducts;
     QHash<QString, QInAppProduct *> m_pendingPurchaseForIdentifier;
+    QHash<int, QInAppProduct *> m_activePurchaseRequests;
 };
 
 QT_END_NAMESPACE

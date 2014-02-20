@@ -49,5 +49,4 @@ JAVASOURCES += \
 target.path = $$[QT_INSTALL_PREFIX]/jar
 INSTALLS += target
 
-OTHER_FILES += $$JAVASOURCES \
-    src/com/digia/qt5/android/mobileextras/TemporaryAction.java
+OTHER_FILES += $$JAVASOURCES
