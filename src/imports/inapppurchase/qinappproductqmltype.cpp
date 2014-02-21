@@ -20,7 +20,6 @@
 
 #include "qinappproductqmltype_p.h"
 #include "qinappstoreqmltype_p.h"
-#include <QtMobileExtras/private/qinapptransaction_p.h>
 #include <QtMobileExtras/qinapptransaction.h>
 #include <QtMobileExtras/qinappstore.h>
 #include <QtCore/qcoreevent.h>
@@ -169,12 +168,6 @@ void QInAppProductQmlType::handleTransaction(QInAppTransaction *transaction)
         emit purchaseSucceeded(transaction);
     else
         emit purchaseFailed(transaction);
-
-#if !defined(QT_NO_DEBUG)
-    QInAppTransactionPrivate *d = QInAppTransactionPrivate::get(transaction);
-    if (d->finalized)
-        qWarning("Transaction for %s not finalized!", qPrintable(transaction->product()->identifier()));
-#endif
 }
 
 void QInAppProductQmlType::purchase()

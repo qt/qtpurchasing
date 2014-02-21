@@ -9,7 +9,6 @@ ANDROID_JAR_DEPENDENCIES = \
     jar/QtMobileExtras.jar
 
 HEADERS += \
-    $$PWD/qmobileextrasglobal.h \
-    $$PWD/qinapptransaction_p.h
+    $$PWD/qmobileextrasglobal.h
 
 include(inapppurchase/inapppurchase.pri)
