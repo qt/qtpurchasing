@@ -65,12 +65,12 @@ public:
     void registerFinalizedUnlockable(const QString &identifier);
 
     // Callbacks from Java
-    void registerQueryFailure(const QString &productId);
-    void registerProduct(const QString &productId, const QString &price);
-    void registerPurchased(const QString &identifier, const QString &signature, const QString &data, const QString &purchaseToken, const QString &orderId);
-    void purchaseSucceeded(int requestCode, const QString &signature, const QString &data, const QString &purchaseToken, const QString &orderId);
-    void purchaseFailed(int requestCode);
-    void registerReady();
+    Q_INVOKABLE void registerQueryFailure(const QString &productId);
+    Q_INVOKABLE void registerProduct(const QString &productId, const QString &price);
+    Q_INVOKABLE void registerPurchased(const QString &identifier, const QString &signature, const QString &data, const QString &purchaseToken, const QString &orderId);
+    Q_INVOKABLE void purchaseSucceeded(int requestCode, const QString &signature, const QString &data, const QString &purchaseToken, const QString &orderId);
+    Q_INVOKABLE void purchaseFailed(int requestCode);
+    Q_INVOKABLE void registerReady();
 
     void handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data);
 

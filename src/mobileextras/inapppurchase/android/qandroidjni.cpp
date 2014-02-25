@@ -28,49 +28,65 @@ QT_USE_NAMESPACE
 static void queryFailed(jclass, jlong nativePointer, jstring productId)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->registerQueryFailure(QAndroidJniObject(productId).toString());
+    QMetaObject::invokeMethod(backend,
+                              "registerQueryFailure",
+                              Qt::AutoConnection,
+                              Q_ARG(QString, QAndroidJniObject(productId).toString()));
 }
 
 static void purchasedProductsQueried(jclass, jlong nativePointer)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->registerReady();
+    QMetaObject::invokeMethod(backend,
+                              "registerReady",
+                              Qt::AutoConnection);
 }
 
 static void registerProduct(jclass, jlong nativePointer, jstring productId, jstring price)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->registerProduct(QAndroidJniObject(productId).toString(),
-                             QAndroidJniObject(price).toString());
+    QMetaObject::invokeMethod(backend,
+                              "registerProduct",
+                              Qt::AutoConnection,
+                              Q_ARG(QString, QAndroidJniObject(productId).toString()),
+                              Q_ARG(QString, QAndroidJniObject(price).toString()));
 }
 
 static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
                               jstring signature, jstring data, jstring purchaseToken, jstring orderId)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->registerPurchased(QAndroidJniObject(identifier).toString(),
-                               QAndroidJniObject(signature).toString(),
-                               QAndroidJniObject(data).toString(),
-                               QAndroidJniObject(purchaseToken).toString(),
-                               QAndroidJniObject(orderId).toString());
+    QMetaObject::invokeMethod(backend,
+                              "registerPurchased",
+                              Qt::AutoConnection,
+                              Q_ARG(QString, QAndroidJniObject(identifier).toString()),
+                              Q_ARG(QString, QAndroidJniObject(signature).toString()),
+                              Q_ARG(QString, QAndroidJniObject(data).toString()),
+                              Q_ARG(QString, QAndroidJniObject(purchaseToken).toString()),
+                              Q_ARG(QString, QAndroidJniObject(orderId).toString()));
 }
 
 static void purchaseSucceeded(jclass, jlong nativePointer, jint requestCode,
                               jstring signature, jstring data, jstring purchaseToken, jstring orderId)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->purchaseSucceeded(requestCode,
-                               QAndroidJniObject(signature).toString(),
-                               QAndroidJniObject(data).toString(),
-                               QAndroidJniObject(purchaseToken).toString(),
-                               QAndroidJniObject(orderId).toString());
+    QMetaObject::invokeMethod(backend,
+                              "purchaseSucceeded",
+                              Qt::AutoConnection,
+                              Q_ARG(int, int(requestCode)),
+                              Q_ARG(QString, QAndroidJniObject(signature).toString()),
+                              Q_ARG(QString, QAndroidJniObject(data).toString()),
+                              Q_ARG(QString, QAndroidJniObject(purchaseToken).toString()),
+                              Q_ARG(QString, QAndroidJniObject(orderId).toString()));
 }
-
 
 static void purchaseFailed(jclass, jlong nativePointer, jint requestCode)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
-    backend->purchaseFailed(requestCode);
+    QMetaObject::invokeMethod(backend,
+                              "purchaseFailed",
+                              Qt::AutoConnection,
+                              Q_ARG(int, int(requestCode)));
 }
 
 static JNINativeMethod methods[] = {
