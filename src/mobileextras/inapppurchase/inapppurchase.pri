@@ -22,3 +22,7 @@ android {
     QT += androidextras
     include ($$PWD/android/android.pri)
 }
+
+ios {
+    include ($$PWD/ios/ios.pri)
+}

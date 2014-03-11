@@ -1,2 +1,6 @@
 TEMPLATE = subdirs
-SUBDIRS = mobileextras android imports
+SUBDIRS = mobileextras imports
+
+android {
+    SUBDIRS += android
+}
