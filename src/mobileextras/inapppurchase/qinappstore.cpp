@@ -232,11 +232,11 @@ void QInAppStore::setPlatformProperty(const QString &propertyName, const QString
 void QInAppStore::registerProduct(QInAppProduct::ProductType productType, const QString &identifier)
 {
     if (!d->backend->isReady()) {
+        d->pendingProducts[identifier] = productType;
         if (!d->hasCalledInitialize) {
             d->hasCalledInitialize = true;
             d->backend->initialize();
         }
-        d->pendingProducts[identifier] = productType;
     } else {
         d->backend->queryProduct(productType, identifier);
     }
