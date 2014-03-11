@@ -39,7 +39,8 @@ public:
     enum TransactionStatus {
         Unknown,
         PurchaseApproved,
-        PurchaseFailed
+        PurchaseFailed,
+        PurchaseRestored
     };
 
     ~QInAppTransaction();

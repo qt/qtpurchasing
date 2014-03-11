@@ -56,7 +56,8 @@ struct QInAppTransactionPrivate
  * time the product is registered by QInAppStore::registerProduct().
  *
  * Transactions can also be emitted after calling QInAppStore::restorePurchases(), at which point
- * a new transaction will be emitted for each previously purchased unlockable product.
+ * a new transaction will be emitted for each previously purchased unlockable product with the
+ * status of PurchaseRestored.
  *
  * \note Since transactions may under certain circumstances be emitted for the same transaction
  * several times, the application should always check if the transaction has been registered
@@ -89,8 +90,10 @@ QInAppProduct *QInAppTransaction::product() const
 
 /*!
  * Returns the status of the transaction. If the purchase was successfully
- * completed, the status will be PurchaseApproved. Otherwise, the purchase
- * was unsuccessful.
+ * completed, the status will be PurchaseApproved. If the purchase failed
+ * or was unsuccessful then the status will be PurchaseFailed.  If the
+ * transaction was restored as a result of calling QInAppStore::restorePurchases()
+ * then the status will be PurchaseRestored.
  */
 
 QInAppTransaction::TransactionStatus QInAppTransaction::status() const
