@@ -54,14 +54,15 @@ QString QAndroidInAppTransaction::platformProperty(const QString &propertyName) 
 
 void QAndroidInAppTransaction::finalize()
 {
+    QAndroidInAppPurchaseBackend *backend = qobject_cast<QAndroidInAppPurchaseBackend *>(parent());
     if (status() == PurchaseApproved) {
-        QAndroidInAppPurchaseBackend *backend = qobject_cast<QAndroidInAppPurchaseBackend *>(parent());
         if (product()->productType() == QInAppProduct::Consumable)
             backend->consumeTransaction(m_purchaseToken);
         else
             backend->registerFinalizedUnlockable(product()->identifier());
     }
 
+    backend->finalizeTransaction(product()->identifier());
     deleteLater();
 }
 

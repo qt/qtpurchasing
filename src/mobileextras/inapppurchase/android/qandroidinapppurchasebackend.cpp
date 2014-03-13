@@ -174,6 +174,12 @@ void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &id
     stream << identifier;
 }
 
+void QAndroidInAppPurchaseBackend::finalizeTransaction(const QString &identifier)
+{
+    Q_ASSERT(m_pendingPurchaseForIdentifier.contains(identifier));
+    m_pendingPurchaseForIdentifier.remove(identifier);
+}
+
 bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
 {
     Q_ASSERT(m_infoForPurchase.contains(product->identifier()));

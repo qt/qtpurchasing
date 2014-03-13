@@ -61,6 +61,8 @@ public:
 
     void purchaseProduct(QAndroidInAppProduct *product);
 
+    void finalizeTransaction(const QString &identifier);
+
     void consumeTransaction(const QString &purchaseToken);
     void registerFinalizedUnlockable(const QString &identifier);
 
