@@ -149,6 +149,7 @@ QInAppStore::~QInAppStore()
 void QInAppStore::setupBackend()
 {
     d->backend = QInAppPurchaseBackendFactory::create();
+    d->backend->setStore(this);
 
     connect(d->backend, SIGNAL(ready()),
             this, SLOT(registerPendingProducts()));

@@ -39,6 +39,7 @@ QT_BEGIN_NAMESPACE
 
 class QInAppProduct;
 class QInAppTransaction;
+class QInAppStore;
 class QInAppPurchaseBackend : public QObject
 {
     Q_OBJECT
@@ -53,11 +54,17 @@ public:
 
     virtual void setPlatformProperty(const QString &propertyName, const QString &value);
 
+    void setStore(QInAppStore *store) { m_store = store; }
+    QInAppStore *store() const { return m_store; }
+
 Q_SIGNALS:
     void ready();
     void transactionReady(QInAppTransaction *transaction);
     void productQueryFailed(QInAppProduct::ProductType productType, const QString &identifier);
     void productQueryDone(QInAppProduct *product);
+
+private:
+    QInAppStore *m_store;
 };
 
 QT_END_NAMESPACE
