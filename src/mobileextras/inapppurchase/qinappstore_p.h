@@ -33,6 +33,7 @@
 //
 
 #include "qinappproduct.h"
+#include "qinapppurchasebackend_p.h"
 #include <QtCore/qmutex.h>
 
 QT_BEGIN_NAMESPACE
@@ -48,6 +49,11 @@ public:
         , hasCalledInitialize(false)
         , pendingRestorePurchases(false)
     {
+    }
+
+    ~QInAppStorePrivate()
+    {
+        delete backend;
     }
 
     QHash<QString, QInAppProduct::ProductType> pendingProducts;
