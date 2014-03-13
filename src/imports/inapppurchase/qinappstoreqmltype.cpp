@@ -76,3 +76,8 @@ QQmlListProperty<QInAppProductQmlType> QInAppStoreQmlType::products()
 {
     return QQmlListProperty<QInAppProductQmlType>(this, &m_products, &addProduct, &productCount, &productAt, &clearProducts);
 }
+
+void QInAppStoreQmlType::restorePurchases()
+{
+    m_store->restorePurchases();
+}

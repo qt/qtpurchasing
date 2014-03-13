@@ -41,6 +41,8 @@ public:
     QInAppStore *store() const;
     QQmlListProperty<QInAppProductQmlType> products();
 
+    Q_INVOKABLE void restorePurchases();
+
 private:
     QInAppStore *m_store;
     QList<QInAppProductQmlType *> m_products;
