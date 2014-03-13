@@ -184,6 +184,9 @@ void QInAppStore::registerPendingProducts()
         d->backend->queryProduct(productType, identifier);
     }
     d->pendingProducts.clear();
+
+    if (d->pendingRestorePurchases)
+        restorePurchases();
 }
 
 /*!
@@ -198,7 +201,12 @@ void QInAppStore::registerPendingProducts()
  */
 void QInAppStore::restorePurchases()
 {
-    d->backend->restorePurchases();
+    if (d->backend->isReady()) {
+        d->pendingRestorePurchases = false;
+        d->backend->restorePurchases();
+    } else {
+        d->pendingRestorePurchases = true;
+    }
 }
 
 /*!

@@ -46,6 +46,7 @@ public:
     QInAppStorePrivate()
         : backend(0)
         , hasCalledInitialize(false)
+        , pendingRestorePurchases(false)
     {
     }
 
@@ -53,6 +54,7 @@ public:
     QHash<QString, QInAppProduct *> registeredProducts;
     QInAppPurchaseBackend *backend;
     bool hasCalledInitialize;
+    bool pendingRestorePurchases;
 };
 
 QT_END_NAMESPACE
