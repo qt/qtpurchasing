@@ -79,7 +79,8 @@ public:
     QString finalizedUnlockableFileName() const;
 
 private:
-    void checkFinalizationStatus(QInAppProduct *product);
+    void checkFinalizationStatus(QInAppProduct *product,
+                                 QInAppTransaction::TransactionStatus status = QInAppTransaction::PurchaseApproved);
     bool transactionFinalizedForProduct(QInAppProduct *product);
     void purchaseFailed(QInAppProduct *product);
 

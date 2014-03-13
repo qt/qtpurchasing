@@ -21,6 +21,7 @@
 #include "qandroidinapppurchasebackend_p.h"
 #include "qandroidinappproduct_p.h"
 #include "qandroidinapptransaction_p.h"
+#include "qinappstore.h"
 
 #include <QtAndroidExtras/qandroidfunctions.h>
 #include <QtCore/qfile.h>
@@ -93,8 +94,14 @@ bool QAndroidInAppPurchaseBackend::isReady() const
 
 void QAndroidInAppPurchaseBackend::restorePurchases()
 {
-    // ### Go through existing purchases, remove finalization token and emit transactions
-#warning Unimplemented
+    QSet<QString> previouslyFinalizedUnlockables = m_finalizedUnlockableProducts;
+    m_finalizedUnlockableProducts.clear();
+    foreach (QString previouslyFinalizedUnlockable, previouslyFinalizedUnlockables) {
+        QInAppProduct *product = store()->registeredProduct(previouslyFinalizedUnlockable);
+        Q_ASSERT(product != 0);
+
+        checkFinalizationStatus(product, QInAppTransaction::PurchaseRestored);
+    }
 }
 
 void QAndroidInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productType,
@@ -187,7 +194,8 @@ bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct 
             || m_finalizedUnlockableProducts.contains(product->identifier());
 }
 
-void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *product)
+void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *product,
+                                                           QInAppTransaction::TransactionStatus status)
 {
     // Verifies the finalization status of an item based on the following logic:
     // 1. If the item is not purchased yet, do nothing (it's either never been purchased, or it's a
@@ -216,7 +224,7 @@ void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *produc
                                                                              info.data,
                                                                              info.purchaseToken,
                                                                              info.orderId,
-                                                                             QInAppTransaction::PurchaseApproved,
+                                                                             status,
                                                                              product,
                                                                              this);
         emit transactionReady(transaction);
