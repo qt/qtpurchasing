@@ -61,8 +61,6 @@ public:
 
     void purchaseProduct(QAndroidInAppProduct *product);
 
-    void finalizeTransaction(const QString &identifier);
-
     void consumeTransaction(const QString &purchaseToken);
     void registerFinalizedUnlockable(const QString &identifier);
 
@@ -106,7 +104,6 @@ private:
     QHash<QString, QInAppProduct::ProductType> m_productTypeForPendingId;
     QHash<QString, PurchaseInfo> m_infoForPurchase;
     QSet<QString> m_finalizedUnlockableProducts;
-    QHash<QString, QInAppProduct *> m_pendingPurchaseForIdentifier;
     QHash<int, QInAppProduct *> m_activePurchaseRequests;
 };
 

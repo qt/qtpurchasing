@@ -62,7 +62,6 @@ void QAndroidInAppTransaction::finalize()
             backend->registerFinalizedUnlockable(product()->identifier());
     }
 
-    backend->finalizeTransaction(product()->identifier());
     deleteLater();
 }
 

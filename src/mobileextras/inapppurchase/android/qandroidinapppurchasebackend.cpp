@@ -181,12 +181,6 @@ void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &id
     stream << identifier;
 }
 
-void QAndroidInAppPurchaseBackend::finalizeTransaction(const QString &identifier)
-{
-    Q_ASSERT(m_pendingPurchaseForIdentifier.contains(identifier));
-    m_pendingPurchaseForIdentifier.remove(identifier);
-}
-
 bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
 {
     Q_ASSERT(m_infoForPurchase.contains(product->identifier()));
@@ -291,13 +285,6 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
 #endif
 
     QMutexLocker locker(&m_mutex);
-    if (m_pendingPurchaseForIdentifier.contains(product->identifier())) {
-        qWarning("Product %s is already being purchased. Finalize transaction and try again.",
-                 qPrintable(product->identifier()));
-        return;
-    }
-
-    m_pendingPurchaseForIdentifier[product->identifier()] = product;
     if (!m_javaObject.isValid()) {
         qWarning("Cannot request purchase, because Java backend is not initialized.");
         purchaseFailed(product);
