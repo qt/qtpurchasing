@@ -164,6 +164,9 @@ void QInAppProductQmlType::handleProductUnknown(QInAppProduct::ProductType, cons
 
 void QInAppProductQmlType::handleTransaction(QInAppTransaction *transaction)
 {
+    if (transaction->product() != m_product)
+        return;
+
     if (transaction->status() == QInAppTransaction::PurchaseApproved)
         emit purchaseSucceeded(transaction);
     else
