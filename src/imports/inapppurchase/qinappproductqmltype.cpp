@@ -80,7 +80,7 @@ void QInAppProductQmlType::setIdentifier(const QString &identifier)
 
 void QInAppProductQmlType::updateProduct()
 {
-    if (m_store == 0 )
+    if (m_store == 0)
         return;
 
     Status oldStatus = m_status;
@@ -164,7 +164,7 @@ void QInAppProductQmlType::handleProductUnknown(QInAppProduct::ProductType, cons
 
 void QInAppProductQmlType::handleTransaction(QInAppTransaction *transaction)
 {
-    if (transaction->product() != m_product)
+    if (transaction->product()->identifier() != m_identifier)
         return;
 
     if (transaction->status() == QInAppTransaction::PurchaseApproved)
