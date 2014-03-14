@@ -349,6 +349,26 @@ public class QtInAppPurchase
        }
     }
 
+    public void consumePurchase(String purchaseToken)
+    {
+        if (m_service == null) {
+            Log.e(TAG, "consumePurchase: Unable to consume purchase. No IAP service connection.");
+            return;
+        }
+
+        try {
+            int response = m_service.consumePurchase(3, m_context.getPackageName(), purchaseToken);
+            if (response != RESULT_OK) {
+                Log.e(TAG, "consumePurchase: Unable to consume purchase. Response code: " + response);
+                return;
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     private void purchaseFailed(int requestCode) { purchaseFailed(m_nativePointer, requestCode); }
     private void purchaseSucceeded(int requestCode,
                                    String signature,
