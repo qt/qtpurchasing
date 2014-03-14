@@ -172,13 +172,14 @@ void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &id
     QDir().mkpath(QFileInfo(fileName).absolutePath());
 
     QFile file(fileName);
-    if (!file.open(QIODevice::Append)) {
+    if (!file.open(QIODevice::WriteOnly)) {
         qWarning("Failed to open file to store finalization info.");
         return;
     }
 
     QDataStream stream(&file);
-    stream << identifier;
+    foreach (QString finalizedUnlockableProduct, m_finalizedUnlockableProducts)
+        stream << finalizedUnlockableProduct;
 }
 
 bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
@@ -211,7 +212,7 @@ void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *produc
     const PurchaseInfo &info = it.value();
     if (!transactionFinalizedForProduct(product)) {
 #if defined(QANDROIDINAPPPURCHASEBACKEND_DEBUG)
-        qDebug("Product unfinalized: %s. Emitting transaction.", qPrintable(product->identifier()));
+        qDebug("Product unfinalized: %s. Emitting transaction with status %d.", qPrintable(product->identifier()), status);
 #endif
 
         QAndroidInAppTransaction *transaction = new QAndroidInAppTransaction(info.signature,
@@ -223,8 +224,6 @@ void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *produc
                                                                              this);
         emit transactionReady(transaction);
     }
-
-    m_infoForPurchase.erase(it);
 }
 
 void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, const QString &price)
@@ -359,6 +358,8 @@ void QAndroidInAppPurchaseBackend::purchaseSucceeded(int requestCode,
     qDebug("Purchase succeeded for %s", qPrintable(product->identifier()));
 #endif
 
+
+    m_infoForPurchase.insert(product->identifier(), PurchaseInfo(signature, data, purchaseToken, orderId));
     QInAppTransaction *transaction = new QAndroidInAppTransaction(signature,
                                                                   data,
                                                                   purchaseToken,

@@ -55,7 +55,7 @@ QString QAndroidInAppTransaction::platformProperty(const QString &propertyName) 
 void QAndroidInAppTransaction::finalize()
 {
     QAndroidInAppPurchaseBackend *backend = qobject_cast<QAndroidInAppPurchaseBackend *>(parent());
-    if (status() == PurchaseApproved) {
+    if (status() == PurchaseApproved || status() == PurchaseRestored) {
         if (product()->productType() == QInAppProduct::Consumable)
             backend->consumeTransaction(m_purchaseToken);
         else
