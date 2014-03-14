@@ -19,6 +19,7 @@
 ****************************************************************************/
 
 #include "qinappproductconsumable_p.h"
+#include "qinappproductunlockable_p.h"
 #include "qinappstoreqmltype_p.h"
 
 #include <QtQml/qqmlextensionplugin.h>
@@ -48,7 +49,7 @@ public:
         qmlRegisterType<QInAppProductConsumable>(uri,
                                           1, 0,
                                           "ConsumableProduct");
-        qmlRegisterType<QInAppProductConsumable>(uri,
+        qmlRegisterType<QInAppProductUnlockable>(uri,
                                                  1, 0,
                                                  "UnlockableProduct");
         qmlRegisterUncreatableType<QInAppTransaction>(uri,
