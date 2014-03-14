@@ -152,7 +152,7 @@ public class QtInAppPurchase
                     return;
                 }
 
-                ArrayList<String> signatureList = ownedItems.getStringArrayList("INAPP_PURCHASE_SIGNATURE_LIST");
+                ArrayList<String> signatureList = ownedItems.getStringArrayList("INAPP_DATA_SIGNATURE_LIST");
                 if (signatureList == null) {
                     Log.e(TAG, "queryPurchasedProducts: No signature list in bundle");
                     return;
