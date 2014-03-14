@@ -169,6 +169,8 @@ void QInAppProductQmlType::handleTransaction(QInAppTransaction *transaction)
 
     if (transaction->status() == QInAppTransaction::PurchaseApproved)
         emit purchaseSucceeded(transaction);
+    else if (transaction->status() == QInAppTransaction::PurchaseRestored)
+        emit purchaseRestored(transaction);
     else
         emit purchaseFailed(transaction);
 }

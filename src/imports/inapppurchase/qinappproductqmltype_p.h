@@ -60,6 +60,7 @@ public:
 Q_SIGNALS:
     void purchaseSucceeded(QInAppTransaction *transaction);
     void purchaseFailed(QInAppTransaction *transaction);
+    void purchaseRestored(QInAppTransaction *transaction);
     void identifierChanged();
     void statusChanged();
     void priceChanged();
