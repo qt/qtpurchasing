@@ -21,6 +21,47 @@
 #include "qinappstoreqmltype_p.h"
 #include <QtMobileExtras/qinappstore.h>
 
+QT_BEGIN_NAMESPACE
+
+/*!
+  \qmltype Store
+  \inqmlmodule QtPurchasing
+  \since QtPurchasing 1.0
+  \ingroup qtpurchasing
+  \brief Access point to the external market place for in-app purchases.
+
+  When using the Qt Purchasing API in QML, the application should instantiate
+  one Store and then instantiate products as children of this store. The products
+  created as children of the Store object will automatically be queried from the
+  external market place if one is available on the current platform.
+
+  The following example registers a store with three products, two consumable
+  products and one unlockable.
+  \qml
+  Store {
+      ConsumableProduct {
+          identifier: "myConsumableProduct1"
+
+          // ...
+      }
+
+      ConsumableProduct {
+          identifier: "myConsumableProduct2"
+
+          // ...
+      }
+
+      UnlockableProduct {
+          identifier: "myUnlockableProduct"
+
+          // ...
+      }
+
+      // ...
+  }
+  \endqml
+ */
+
 static void addProduct(QQmlListProperty<QInAppProductQmlType> *property, QInAppProductQmlType *product)
 {
     QInAppStoreQmlType *store = qobject_cast<QInAppStoreQmlType *>(property->object);
@@ -77,7 +118,25 @@ QQmlListProperty<QInAppProductQmlType> QInAppStoreQmlType::products()
     return QQmlListProperty<QInAppProductQmlType>(this, &m_products, &addProduct, &productCount, &productAt, &clearProducts);
 }
 
+/*!
+  \qmlmethod QtPurchasing::Store::restorePurchases()
+
+  Calling this method will cause onPurchaseRestored handlers to be called
+  asynchronously on previously purchased unlockable products. This can be
+  used to restore purchases for unlockable products when the application is
+  run by the same user on multiple devices, or for example if the application
+  has been uninstalled and reinstalled on the device so that the purchase data
+  has been lost.
+
+  \note On some platforms, such as iOS, this will require the user to input their
+  password to launch the restore process. On other platforms, such as Android,
+  it is not typically needed, as the onPurchaseSucceeded handler will be called
+  on any previously purchased unlockable product if the application data is
+  removed.
+ */
 void QInAppStoreQmlType::restorePurchases()
 {
     m_store->restorePurchases();
 }
+
+QT_END_NAMESPACE
