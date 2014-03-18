@@ -41,16 +41,17 @@ struct QInAppProductPrivate
 };
 
 /*!
- *  \class QInAppProduct
- *  \brief A product registered in the store
- *
- *  QInAppProduct encapsulates a product in the external store after it has been registered in \c QInAppStore
- *  and confirmed to exist. It has an identifier which matches the identifier of the product in the external
- *  store, it has a price which is retrieved from the external store, and it has a product type.
- *
- *  The product type can be either \c Consumable or \c Unlockable. The former type of products can be purchased
- *  any number of times as long as each transaction is finalized explicitly by the application. The latter type
- *  can only be purchased once.
+   \class QInAppProduct
+   \inmodule QtPurchasing
+   \brief A product registered in the store
+
+   QInAppProduct encapsulates a product in the external store after it has been registered in \c QInAppStore
+   and confirmed to exist. It has an identifier which matches the identifier of the product in the external
+   store, it has a price which is retrieved from the external store, and it has a product type.
+
+   The product type can be either \c Consumable or \c Unlockable. The former type of products can be purchased
+   any number of times as long as each transaction is finalized explicitly by the application. The latter type
+   can only be purchased once.
  */
 
 /*!
@@ -70,16 +71,20 @@ QInAppProduct::~QInAppProduct()
 }
 
 /*!
- * Returns the price of the product as reported by the external store. This is usually the price in the
- * locale of the current user.
- */
+  \property QInAppProduct::price
+
+  This property holds the price of the product as reported by the external store. This is the full
+  price including currency, usually in the locale of the current user.
+*/
 QString QInAppProduct::price() const
 {
     return d->localPrice;
 }
 
 /*!
- * Returns the title of the product as reported by the external store.  This title is returned from the
+ * \property QInAppProduct::title
+ *
+ * This property holds the title of the product as reported by the external store.  This title is returned from the
  * store in the locale language if available.
  */
 QString QInAppProduct::title() const
@@ -88,7 +93,9 @@ QString QInAppProduct::title() const
 }
 
 /*!
- * Returns the description of the product as reported by the external store.  This description is returned
+ * \property QInAppProduct::description
+ *
+ * This property holds the description of the product as reported by the external store.  This description is returned
  * from the store in the locale language if available.
  */
 QString QInAppProduct::description() const
@@ -97,18 +104,34 @@ QString QInAppProduct::description() const
 }
 
 /*!
- * Returns the identifier of the product. This matches the identifier of the product which is registered
- * in the external store.
- */
+  \property QInAppProduct::identifier
+
+  This property holds the identifier of the product. It matches the identifier which is registered in
+  the external store.
+*/
 QString QInAppProduct::identifier() const
 {
     return d->identifier;
 }
 
 /*!
- * Returns the type of the product. This can either be \c Consumable or \c Unlockable. The former are products
- * which can be purchased any number of times (granted that each transaction is explicitly finalized by the
- * application first) and the latter are products which can only be purchased once per user.
+  \enum QInAppProduct::ProductType
+
+  This enum type is used to specify the product type when registering the product.
+
+  \value Consumable The product is consumable, meaning that once the transaction for a purchase of
+  the product has been finalized, it can be purchased again.
+  \value Unlockable The product is unlockable, meaning that it can only be purchased once per
+  user. Purchases of unlockable products can be restored using the \l{QInAppStore::restorePurchases()}.
+*/
+
+/*!
+ \property QInAppProduct::productType
+
+ This property holds the type of the product. This can either be \c Consumable or \c Unlockable. The
+ former are products which can be purchased any number of times (granted that each transaction is
+ explicitly finalized by the application first) and the latter are products which can only be purchased
+ once per user.
  */
 QInAppProduct::ProductType QInAppProduct::productType() const
 {

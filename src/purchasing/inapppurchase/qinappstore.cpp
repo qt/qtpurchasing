@@ -39,6 +39,7 @@ QT_BEGIN_NAMESPACE
 
 /*!
     \class QInAppStore
+    \inmodule QtPurchasing
     \brief The main entry point for managing in-app purchases
 
     QInAppStore is used for managing in-app purchases in your application in a
@@ -132,6 +133,9 @@ QT_BEGIN_NAMESPACE
 
 */
 
+/*!
+ * Constructs a QInAppStore with the given \a parent.
+ */
 QInAppStore::QInAppStore(QObject *parent)
     : QObject(parent)
 {
@@ -139,6 +143,9 @@ QInAppStore::QInAppStore(QObject *parent)
     setupBackend();
 }
 
+/*!
+ * Destroys the QInAppStore.
+ */
 QInAppStore::~QInAppStore()
 {
 }
@@ -269,10 +276,11 @@ QInAppProduct *QInAppStore::registeredProduct(const QString &identifier) const
  * \sa productUnknown()
  */
 
-/*! /fn QInAppStore::productUnknown(QInAppProduct::ProductType productType, const QString &identifier)
+/*! \fn QInAppStore::productUnknown(QInAppProduct::ProductType productType, const QString &identifier)
  *
- * This signal is emitted when a product was registered using registerProduct() and matching
- * information could not be provided by the remote store.
+ * This signal is emitted when the product named \a identifier was registered using registerProduct()
+ * and matching information could not be provided by the remote store. The \a productType matches
+ * the product type which was originally passed to registerProduct().
  *
  * \sa productRegistered()
  */

@@ -1,0 +1,128 @@
+/****************************************************************************
+**
+** Copyright (C) 2014 Digia Plc
+** All rights reserved.
+** For any questions to Digia, please use contact form at http://qt.digia.com
+**
+** This file is part of the Qt Purchasing Add-on.
+**
+** $QT_BEGIN_LICENSE$
+** Licensees holding valid Qt Commercial licenses may use this file in
+** accordance with the Qt Commercial License Agreement provided with the
+** Software or, alternatively, in accordance with the terms contained in
+** a written agreement between you and Digia.
+**
+** If you have questions regarding the use of this file, please use
+** contact form at http://qt.digia.com
+** $QT_END_LICENSE$
+**
+****************************************************************************/
+
+/*!
+
+  \page qtpurchasing-googleplay.html
+  \title Registering products in Google Play on Android
+  \brief A short guide to registering in-app products in Google Play.
+
+  The Google Play market place allows you to register your application, as well
+  as the in-app products you want to make available to it, without publishing
+  it. The following guide gives a brief introduction on uploading your application
+  to Google Play and registering products.
+
+  For more information, please refer to the
+  \l{http://developer.android.com/google/play/billing/billing_testing.html}{official documentation}.
+
+  \section1 Preparing your application for submission
+
+  Before you can upload your application to Google Play, you need to prepare it for submission.
+
+  \section2 Adding a proper manifest
+
+  The default \c AndroidManifest.xml generated for applications by Qt is suitable for development testing,
+  but cannot be used when submitting the application to Google Play.
+
+  Create your own manifest by clicking on the \uicontrol{Create AndroidManifest.xml} button in Qt Creator.
+  This is located under \uicontrol{Projects}, in the \uicontrol{Run} tab. Expand
+  \uicontrol{Deployment configurations} to see it.
+
+  Once the manifest has been added to your project, you can modify it. Most importantly, set the application
+  name and package name. The package name should be a unique identifier for your application. A convention
+  is to use the syntax com.mycompany.myappname where the "com.mycompany" namespace is based on Internet
+  domain ownership to avoid naming collisions with other applications.
+
+  Other important parts of the manifest include the \c versionCode, which must be incremented every time
+  you upload a new version of the application. Other properties will decide how your application package
+  is presented in the store listing, such as the application name and version name.
+
+  For more information on the \c AndroidManifest.xml, see
+  \l{http://developer.android.com/guide/topics/manifest/manifest-element.html}{the official documentation}.
+
+  \section2 Signing the application
+
+  When building and running your application directly on a device connected to your development machine
+  by USB, it is signed with a special debug key which allows the application package to be run on the
+  device, but not be distributed via Google Play.
+
+  Therefore, before uploading your application package, sign it with your own private key. Open the
+  aforementioned \uicontrol{Deployment configurations} and set up the signing information there.
+  When you are done, select \uicontrol{Release} as the build configuration and deploy your project.
+  You will now have an \c APK file which can be published to Google Play in the build directory of
+  your project.
+
+  \note Take good care of the key used to sign your application. Once the application has signed
+  with a key and uploaded to Google Play, every subsequent version of the application must
+  be signed with the same key.
+
+  \section1 Registering your application
+
+  Once the application is prepared for publishing, you can create a listing for it in Google Play.
+
+  The first step for registering your application is to get a publisher account
+  if you do not already have one. Go to
+  \l{https://play.google.com/apps/publish/}{the Google Play developer console}, log in with the Google
+  account of your choice, and follow the steps as directed.
+
+  When you have set up your account, you can click on \uicontrol{Add new application} in Google Play's
+  developer console.
+
+  Fill out as much information as you want in the store listing, but make sure you fill out the
+  \uicontrol{Pricing and distribution} page.
+
+  \section2 Alpha, beta or unpublished?
+
+  It's possible to test your in-app purchases with both an unpublished application, as well as an
+  application published to alpha or beta testers. When using in-app purchases in an unpublished
+  application, make sure you register the e-mail addresses that should have testing access under
+  \uicontrol{Settings} in the developer console. The users with these e-mail addresses will be able
+  to purchase your in-app products as "test purchases", meaning that they will not be charged for
+  the transaction, and the transaction will be automatically cancelled at a later stage.
+
+  It's also possible to publish the application as an alpha or beta version in Google Play. It will
+  then become available only to selected users, who will be able to make actual purchases in the
+  application. In order to make an alpha or beta application, you must fill out all required
+  information about the application, upload an \c APK file to either the \uicontrol{Beta testing}
+  or \uicontrol{Alpha testing} tab, and mark the application as \uicontrol{published}.
+
+  \section2 Adding in-app products
+
+  In order to access in-app products from your application, you must first register them in Google Play.
+  Go to the \uicontrol{In-app products} page and click on \uicontrol{Add new product}.
+
+  Fill out the information about your product. The \uicontrol{Product ID} is the identifier you
+  will use to access the product from your code. It's also important that you pick
+  \uicontrol{Managed product} for type, as this is the only product type supported by the
+  Qt Purchasing API.
+
+  Fill out information about the product, including the price it should have in all the distribution
+  areas, and then \uicontrol{Activate} it. If you have no published your application, the product
+  will be marked as \uicontrol{To be activated}. If the application has been published, it will be
+  active. Either way, it can now be queried and purchased using the Qt Purchasing API.
+
+  \note Only application packages signed with the same key used for the one in Google Play can make
+  purchases in the application. So if you want to test purchasing, make sure the application package
+  is signed before you deploy and run it. It's also required that the \c versionCode of the the application
+  is the same as one of the packages stored in Google Play, so if you update the \c versionCode, you must
+  upload a new package to Google Play.
+
+*/
+

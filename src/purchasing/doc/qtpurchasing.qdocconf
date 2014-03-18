@@ -1,3 +1,5 @@
+include($QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf)
+include($QT_INSTALL_DOCS/global/fileextensions.qdocconf)
 include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
 
 project                                            = QtPurchasing
@@ -8,7 +10,7 @@ version                                            = 1.0
 qhp.projects                                       = QtPurchasing
 
 qhp.QtPurchasing.file                              = qtpurchasing.qhp
-qhp.QtPurchasing.namespace                         = org.qt-project.qtpurchasing.1.0
+qhp.QtPurchasing.namespace                         = com.digia.qtpurchasing.1.0
 qhp.QtPurchasing.virtualFolder                     = qtpurchasing
 qhp.QtPurchasing.indexTitle                        = Qt Purchasing
 qhp.QtPurchasing.indexRoot                         =
@@ -16,15 +18,29 @@ qhp.QtPurchasing.filterAttributes                  = qtpurchasing 1.0 qtrefdoc
 qhp.QtPurchasing.customFilters.Qt.name             = QtPurchasing 1.0
 qhp.QtPurchasing.customFilters.Qt.filterAttributes = qtpurchasing 1.0
 
+qhp.QtPurchasing.subprojects                       = qmltypes classes examples
+qhp.QtPurchasing.subprojects.qmltypes.title        = QML Types
+qhp.QtPurchasing.subprojects.qmltypes.indexTitle   = Qt Purchasing QML Types
+qhp.QtPurchasing.subprojects.qmltypes.selectors    = fake:qmlclass
+qhp.QtPurchasing.subprojects.qmltypes.sortPages    = true
+qhp.QtPurchasing.subprojects.classes.title         = C++ Classes
+qhp.QtPurchasing.subprojects.classes.indexTitle    = Qt Purchasing C++ Classes
+qhp.QtPurchasing.subprojects.classes.selectors     = class fake:headerfile
+qhp.QtPurchasing.subprojects.classes.sortPages     = true
+qhp.QtPurchasing.subprojects.examples.title        = Examples
+qhp.QtPurchasing.subprojects.examples.indexTitle   = Qt Purchasing Examples and Tutorials
+qhp.QtPurchasing.subprojects.examples.selectors    = fake:example
+
 indexes +=  $QT_INSTALL_DOCS/qtqml/qtqml.index \
             $QT_INSTALL_DOCS/qtquick/qtquick.index \
             $QT_INSTALL_DOCS/qtdoc/qtdoc.index \
             $QT_INSTALL_DOCS/qtquickcontrols/qtquickcontrols.index
 
-headerdirs += ../
-sourcedirs += ../
-imagedirs += images
+headerdirs += ../ ../../imports/purchasing
+sourcedirs += ../ ../../imports/purchasing
+imagedirs  += images
 
-navigation.landingpage = "Qt Purchasing"
-navigation.qmltypespage = "Qt Purchasing QML Types"
-buildversion = "Qt Purchasing 1.0"
+navigation.landingpage    = "Qt Purchasing"
+navigation.qmltypespage   = "Qt Purchasing QML Types"
+navigation.cppclassespage = "Qt Purchasing C++ Classes"
+buildversion              = "Qt Purchasing 1.0"

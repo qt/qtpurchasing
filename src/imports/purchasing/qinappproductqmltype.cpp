@@ -162,6 +162,7 @@ void QInAppProductQmlType::componentComplete()
         // ...
       }
   }
+  \endqml
 */
 void QInAppProductQmlType::setIdentifier(const QString &identifier)
 {
@@ -311,7 +312,7 @@ QInAppProductQmlType::Status QInAppProductQmlType::status() const
 
   For example, the following example displays the price of the unlockable product named
   "myUnlockableProduct":
-  \qml
+  \code
   Store {
       Product {
           id: myUnlockableProduct
@@ -327,7 +328,7 @@ QInAppProductQmlType::Status QInAppProductQmlType::status() const
             ? "Price is " + myUnlockableProduct.price
             : "Price unknown at the moment"
   }
-  \endqml
+  \endcode
 
   When run in a Norwegian locale, this code could for instance display "Price is kr 6,00" for a one-dollar product.
 */
@@ -515,13 +516,16 @@ void QInAppProductQmlType::purchase()
   \qmlsignal QtPurchasing::Product::onPurchaseRestored(object transaction)
 
   This handler is called when a previously purchased unlockable product is restored. This
-  can happen when the \l restorePurchases() function in the current \l Store is called.
+  can happen when the \l{QtPurchasing::Store::restorePurchases()}{restorePurchases()} function
+  in the current \l Store is called.
   The \c onPurchaseRestored handler will then be called for each unlockable product which
   has previously been purchased by the user.
 
-  Applications which uses the \l restorePurchases() function should include this handler
+  Applications which uses the \l{QtPurchasing::Store::restorePurchases()}{restorePurchases()}
+  function should include this handler
   in all unlockable products. In the handler, the application should make sure information
-  about the purchase is stored and call \l finalize() on the \a transaction object if
+  about the purchase is stored and call \l{QtPurchasing::Transaction::finalize()}{finalize()}
+  on the \a transaction object if
   the information has been successfully stored (or has been verified to already be stored).
 
   The following example calls a custom function which either saves the information about
