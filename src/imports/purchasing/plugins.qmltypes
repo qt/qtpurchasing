@@ -1,0 +1,81 @@
+import QtQuick.tooling 1.1
+
+Module {
+    Component {
+        name: "QInAppProductConsumable"
+        prototype: "QInAppProductQmlType"
+        exports: ["ConsumableProduct 1.0"]
+        exportMetaObjectRevisions: [0]
+    }
+    Component {
+        name: "QInAppProductQmlType"
+        prototype: "QObject"
+        exports: ["Product 1.0"]
+        isCreatable: false
+        exportMetaObjectRevisions: [0]
+        Enum {
+            name: "Status"
+            values: {
+                "Uninitialized": 0,
+                "PendingRegistration": 1,
+                "Registered": 2,
+                "Unknown": 3
+            }
+        }
+        Property { name: "identifier"; type: "string" }
+        Property { name: "price"; type: "string"; isReadonly: true }
+        Property { name: "status"; type: "Status"; isReadonly: true }
+        Signal {
+            name: "purchaseSucceeded"
+            Parameter { name: "transaction"; type: "QInAppTransaction"; isPointer: true }
+        }
+        Signal {
+            name: "purchaseFailed"
+            Parameter { name: "transaction"; type: "QInAppTransaction"; isPointer: true }
+        }
+        Signal {
+            name: "purchaseRestored"
+            Parameter { name: "transaction"; type: "QInAppTransaction"; isPointer: true }
+        }
+        Method { name: "purchase" }
+    }
+    Component {
+        name: "QInAppProductUnlockable"
+        prototype: "QInAppProductQmlType"
+        exports: ["UnlockableProduct 1.0"]
+        exportMetaObjectRevisions: [0]
+    }
+    Component {
+        name: "QInAppStoreQmlType"
+        defaultProperty: "products"
+        prototype: "QObject"
+        exports: ["Store 1.0"]
+        exportMetaObjectRevisions: [0]
+        Property { name: "products"; type: "QInAppProductQmlType"; isList: true; isReadonly: true }
+        Method { name: "restorePurchases" }
+    }
+    Component {
+        name: "QInAppTransaction"
+        prototype: "QObject"
+        exports: ["Transaction 1.0"]
+        isCreatable: false
+        exportMetaObjectRevisions: [0]
+        Enum {
+            name: "TransactionStatus"
+            values: {
+                "Unknown": 0,
+                "PurchaseApproved": 1,
+                "PurchaseFailed": 2,
+                "PurchaseRestored": 3
+            }
+        }
+        Property { name: "status"; type: "TransactionStatus"; isReadonly: true }
+        Property { name: "product"; type: "QInAppProduct"; isReadonly: true; isPointer: true }
+        Method { name: "finalize" }
+        Method {
+            name: "platformProperty"
+            type: "string"
+            Parameter { name: "propertyName"; type: "string" }
+        }
+    }
+}
