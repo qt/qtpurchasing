@@ -1,0 +1,30 @@
+include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
+
+project                                            = QtPurchasing
+description                                        = Qt Purchasing Reference Documentation
+url                                                = http://doc.qt.digia.com/QtPurchasing/
+version                                            = 1.0
+
+qhp.projects                                       = QtPurchasing
+
+qhp.QtPurchasing.file                              = qtpurchasing.qhp
+qhp.QtPurchasing.namespace                         = org.qt-project.qtpurchasing.1.0
+qhp.QtPurchasing.virtualFolder                     = qtpurchasing
+qhp.QtPurchasing.indexTitle                        = Qt Purchasing
+qhp.QtPurchasing.indexRoot                         =
+qhp.QtPurchasing.filterAttributes                  = qtpurchasing 1.0 qtrefdoc
+qhp.QtPurchasing.customFilters.Qt.name             = QtPurchasing 1.0
+qhp.QtPurchasing.customFilters.Qt.filterAttributes = qtpurchasing 1.0
+
+indexes +=  $QT_INSTALL_DOCS/qtqml/qtqml.index \
+            $QT_INSTALL_DOCS/qtquick/qtquick.index \
+            $QT_INSTALL_DOCS/qtdoc/qtdoc.index \
+            $QT_INSTALL_DOCS/qtquickcontrols/qtquickcontrols.index
+
+headerdirs += ../
+sourcedirs += ../
+imagedirs += images
+
+navigation.landingpage = "Qt Purchasing"
+navigation.qmltypespage = "Qt Purchasing QML Types"
+buildversion = "Qt Purchasing 1.0"
