@@ -21,10 +21,9 @@
 #ifndef QINAPPSTORE_H
 #define QINAPPSTORE_H
 
-#include "qinappproduct.h"
-
 #include <QtCore/qobject.h>
 #include <QtPurchasing/qtpurchasingglobal.h>
+#include <QtPurchasing/qinappproduct.h>
 
 QT_BEGIN_NAMESPACE
 
