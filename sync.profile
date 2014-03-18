@@ -1,5 +1,5 @@
 %modules = ( # path to module name map
-    "QtMobileExtras" => "$basedir/src/mobileextras",
+    "QtPurchasing" => "$basedir/src/purchasing",
 );
 %moduleheaders = ( # restrict the module headers to those found in relative path
 );

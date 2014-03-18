@@ -1,7 +1,7 @@
 CONFIG += java
 DESTDIR = $$[QT_INSTALL_PREFIX/get]/jar
 
-PATHPREFIX = $$PWD/src/com/digia/qt5/android/mobileextras/
+PATHPREFIX = $$PWD/src/com/digia/qt5/android/purchasing/
 
 !build_pass {
     isEmpty(SDK_ROOT): SDK_ROOT = $$(ANDROID_SDK_ROOT)

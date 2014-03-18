@@ -1,2 +1,2 @@
-TARGET = QtMobileExtras
+TARGET = QtPurchasing
 include(jar.pri)
