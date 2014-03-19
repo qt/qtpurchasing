@@ -51,6 +51,7 @@ public:
                                  QIosInAppPurchaseBackend *backend);
 
     void finalize();
+    QString orderId() const;
     QString platformProperty(const QString &propertyName) const;
 
 private:

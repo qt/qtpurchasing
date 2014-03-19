@@ -39,12 +39,13 @@ void QIosInAppPurchaseTransaction::finalize()
     [[SKPaymentQueue defaultQueue] finishTransaction:m_nativeTransaction];
 }
 
+QString QIosInAppPurchaseTransaction::orderId() const
+{
+    return QString::fromNSString(m_nativeTransaction.transactionIdentifier);
+}
+
 QString QIosInAppPurchaseTransaction::platformProperty(const QString &propertyName) const
 {
-    if (propertyName == QStringLiteral("transactionIdentifier")) {
-        return QString::fromNSString(m_nativeTransaction.transactionIdentifier);
-    }
-
     if (propertyName == QStringLiteral("error")) {
         if (status() != PurchaseFailed)
             return QString();
