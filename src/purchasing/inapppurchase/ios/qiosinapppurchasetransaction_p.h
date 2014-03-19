@@ -52,10 +52,14 @@ public:
 
     void finalize();
     QString orderId() const;
-    QString platformProperty(const QString &propertyName) const;
+    FailureReason failureReason() const;
+    QString errorString() const;
+    QDateTime timestamp() const;
 
 private:
     SKPaymentTransaction *m_nativeTransaction;
+    QString m_errorString;
+    FailureReason m_failureReason;
 };
 
 Q_DECLARE_METATYPE(QIosInAppPurchaseTransaction*);

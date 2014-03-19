@@ -31,7 +31,32 @@ QIosInAppPurchaseTransaction::QIosInAppPurchaseTransaction(SKPaymentTransaction 
                                            QIosInAppPurchaseBackend *backend)
     : QInAppTransaction(status, product, backend)
     , m_nativeTransaction(transaction)
+    , m_failureReason(NoFailure)
 {
+    if (status == PurchaseFailed) {
+        m_failureReason = ErrorOccurred;
+        switch (m_nativeTransaction.error.code) {
+        case SKErrorClientInvalid:
+            m_errorString = QStringLiteral("Client Invalid");
+            break;
+        case SKErrorPaymentCancelled:
+            m_errorString = QStringLiteral("Payment Cancelled");
+            m_failureReason = CanceledByUser;
+            break;
+        case SKErrorPaymentInvalid:
+            m_errorString = QStringLiteral("Payment Invalid");
+            break;
+        case SKErrorPaymentNotAllowed:
+            m_errorString = QStringLiteral("Payment Not Allowed");
+            break;
+        case SKErrorStoreProductNotAvailable:
+            m_errorString = QStringLiteral("Store Product Not Available");
+            break;
+        case SKErrorUnknown:
+        default:
+            m_errorString = QStringLiteral("Unknown");
+        }
+    }
 }
 
 void QIosInAppPurchaseTransaction::finalize()
@@ -44,36 +69,21 @@ QString QIosInAppPurchaseTransaction::orderId() const
     return QString::fromNSString(m_nativeTransaction.transactionIdentifier);
 }
 
-QString QIosInAppPurchaseTransaction::platformProperty(const QString &propertyName) const
+QInAppTransaction::FailureReason QIosInAppPurchaseTransaction::failureReason() const
 {
-    if (propertyName == QStringLiteral("error")) {
-        if (status() != PurchaseFailed)
-            return QString();
-        QString errorString;
-        switch (m_nativeTransaction.error.code) {
-        case SKErrorClientInvalid:
-            errorString = QStringLiteral("Client Invalid");
-            break;
-        case SKErrorPaymentCancelled:
-            errorString = QStringLiteral("Payment Cancelled");
-            break;
-        case SKErrorPaymentInvalid:
-            errorString = QStringLiteral("Payment Invalid");
-            break;
-        case SKErrorPaymentNotAllowed:
-            errorString = QStringLiteral("Payment Not Allowed");
-            break;
-        case SKErrorStoreProductNotAvailable:
-            errorString = QStringLiteral("Store Product Not Available");
-        case SKErrorUnknown:
-        default:
-            errorString = QStringLiteral("Unknown");
-            break;
-        }
-        return errorString;
-    }
+    return m_failureReason;
+}
 
-    return QInAppTransaction::platformProperty(propertyName);
+QString QIosInAppPurchaseTransaction::errorString() const
+{
+    return m_errorString;
+}
+
+QDateTime QIosInAppPurchaseTransaction::timestamp() const
+{
+    //Get time in seconds since 1970
+    double timeInterval = [[m_nativeTransaction transactionDate] timeIntervalSince1970];
+    return QDateTime::fromMSecsSinceEpoch(qint64(timeInterval * 1000));
 }
 
 QT_END_NAMESPACE
