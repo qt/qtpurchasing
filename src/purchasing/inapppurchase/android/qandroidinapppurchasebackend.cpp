@@ -229,7 +229,10 @@ void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *produc
     }
 }
 
-void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, const QString &price)
+void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId,
+                                                   const QString &price,
+                                                   const QString &title,
+                                                   const QString &description)
 {
 #if defined(QANDROIDINAPPPURCHASEBACKEND_DEBUG)
     qDebug("Registering product %s with price %s", qPrintable(productId), qPrintable(price));
@@ -239,7 +242,7 @@ void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, con
     QHash<QString, QInAppProduct::ProductType>::iterator it = m_productTypeForPendingId.find(productId);
     Q_ASSERT(it != m_productTypeForPendingId.end());
 
-    QAndroidInAppProduct *product = new QAndroidInAppProduct(this, price, it.value(), it.key(), this);
+    QAndroidInAppProduct *product = new QAndroidInAppProduct(this, price, title, description, it.value(), it.key(), this);
     checkFinalizationStatus(product);
 
     emit productQueryDone(product);

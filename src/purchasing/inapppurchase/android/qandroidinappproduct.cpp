@@ -25,10 +25,12 @@ QT_BEGIN_NAMESPACE
 
 QAndroidInAppProduct::QAndroidInAppProduct(QAndroidInAppPurchaseBackend *backend,
                                            const QString &price,
+                                           const QString &title,
+                                           const QString &description,
                                            ProductType productType,
                                            const QString &identifier,
                                            QObject *parent)
-    : QInAppProduct(price, productType, identifier, parent)
+    : QInAppProduct(price, title, description, productType, identifier, parent)
     , m_backend(backend)
 {
 }

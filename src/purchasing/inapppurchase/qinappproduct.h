@@ -35,6 +35,8 @@ class Q_PURCHASING_EXPORT QInAppProduct: public QObject
     Q_PROPERTY(QString identifier READ identifier CONSTANT)
     Q_PROPERTY(ProductType productType READ productType CONSTANT)
     Q_PROPERTY(QString price READ price CONSTANT)
+    Q_PROPERTY(QString title READ title CONSTANT)
+    Q_PROPERTY(QString description READ description CONSTANT)
 
 public:
     enum ProductType
@@ -49,11 +51,13 @@ public:
     ProductType productType() const;
 
     QString price() const;
+    QString title() const;
+    QString description() const;
 
     Q_INVOKABLE virtual void purchase() = 0;
 
 protected:
-    explicit QInAppProduct(const QString &price, ProductType productType, const QString &identifier, QObject *parent = 0);
+    explicit QInAppProduct(const QString &price, const QString &title, const QString &description, ProductType productType, const QString &identifier, QObject *parent = 0);
 
 private:
     friend class QInAppStore;

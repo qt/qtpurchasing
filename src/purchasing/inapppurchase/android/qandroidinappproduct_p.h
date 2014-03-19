@@ -43,6 +43,8 @@ class QAndroidInAppProduct : public QInAppProduct
 public:
     explicit QAndroidInAppProduct(QAndroidInAppPurchaseBackend *backend,
                                   const QString &price,
+                                  const QString &title,
+                                  const QString &description,
                                   ProductType productType,
                                   const QString &identifier,
                                   QObject *parent = 0);

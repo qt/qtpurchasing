@@ -250,10 +250,16 @@ public class QtInAppPurchase
                             JSONObject jo = new JSONObject(details);
                             String queriedProductId = jo.getString("productId");
                             String queriedPrice = jo.getString("price");
-                            if (queriedProductId == null || queriedPrice == null) {
+                            String queriedTitle = jo.getString("title");
+                            String queriedDescription = jo.getString("description");
+                            if (queriedProductId == null || queriedPrice == null || queriedTitle == null || queriedDescription == null) {
                                 Log.e(TAG, "Data missing from product details.");
                             } else if (productId.equals(queriedProductId)) {
-                                registerProduct(m_nativePointer, queriedProductId, queriedPrice);
+                                registerProduct(m_nativePointer,
+                                                queriedProductId,
+                                                queriedPrice,
+                                                queriedTitle,
+                                                queriedDescription);
                                 return;
                             }
                         } catch (JSONException e) {
@@ -400,7 +406,11 @@ public class QtInAppPurchase
 
     private native static void queryFailed(long nativePointer, String productId);
     private native static void purchasedProductsQueried(long nativePointer);
-    private native static void registerProduct(long nativePointer, String productId, String price);
+    private native static void registerProduct(long nativePointer,
+                                               String productId,
+                                               String price,
+                                               String title,
+                                               String description);
     private native static void purchaseFailed(long nativePointer, int requestCode, int failureReason, String errorString);
     private native static void purchaseSucceeded(long nativePointer,
                                                  int requestCode,

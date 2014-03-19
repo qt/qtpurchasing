@@ -50,7 +50,12 @@ QT_BEGIN_NAMESPACE
 QIosInAppPurchaseProduct::QIosInAppPurchaseProduct(SKProduct *product,
                                                    ProductType productType,
                                                    QIosInAppPurchaseBackend *backend)
-    : QInAppProduct(QString::fromNSString([product localizedPrice]), productType, QString::fromNSString([product productIdentifier]), backend)
+    : QInAppProduct(QString::fromNSString([product localizedPrice]),
+                    QString::fromNSString([product localizedTitle]),
+                    QString::fromNSString([product localizedDescription]),
+                    productType,
+                    QString::fromNSString([product productIdentifier]),
+                    backend)
     , m_nativeProduct(product)
 {
 }

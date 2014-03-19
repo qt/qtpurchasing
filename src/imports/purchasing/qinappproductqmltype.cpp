@@ -215,15 +215,43 @@ QString QInAppProductQmlType::price() const
     return m_product != 0 ? m_product->price() : QString();
 }
 
+/*!
+  \qmlproperty string QtPurchasing::Product::title
+  This property holds the title of the product once it has been successfully queried from the
+  external market place. The title is localized if the external market place has defined a title
+  in the current users locale.
+*/
+QString QInAppProductQmlType::title() const
+{
+    return m_product != 0 ? m_product->title() : QString();
+}
+
+/*!
+  \qmlproperty string QtPurchasing::Product::description
+  This property holds the description of the product once it has been successfully queried from the
+  external market place. The title is localized if the external market place has defined a description
+  in the current users locale.
+*/
+QString QInAppProductQmlType::description() const
+{
+    return m_product != 0 ? m_product->description() : QString();
+}
+
 void QInAppProductQmlType::setProduct(QInAppProduct *product)
 {
     if (m_product == product)
         return;
 
     QString oldPrice = price();
+    QString oldTitle = title();
+    QString oldDescription = description();
     m_product = product;
     if (price() != oldPrice)
         emit priceChanged();
+    if (title() != oldTitle)
+        emit titleChanged();
+    if (description() != oldDescription)
+        emit descriptionChanged();
 }
 
 void QInAppProductQmlType::handleProductRegistered(QInAppProduct *product)

@@ -43,14 +43,16 @@ static void purchasedProductsQueried(jclass, jlong nativePointer)
                               Qt::AutoConnection);
 }
 
-static void registerProduct(jclass, jlong nativePointer, jstring productId, jstring price)
+static void registerProduct(jclass, jlong nativePointer, jstring productId, jstring price, jstring title, jstring description)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
                               "registerProduct",
                               Qt::AutoConnection,
                               Q_ARG(QString, QAndroidJniObject(productId).toString()),
-                              Q_ARG(QString, QAndroidJniObject(price).toString()));
+                              Q_ARG(QString, QAndroidJniObject(price).toString()),
+                              Q_ARG(QString, QAndroidJniObject(title).toString()),
+                              Q_ARG(QString, QAndroidJniObject(description).toString()));
 }
 
 static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
@@ -103,7 +105,7 @@ static void purchaseFailed(jclass, jlong nativePointer, jint requestCode, jint f
 static JNINativeMethod methods[] = {
     {"queryFailed", "(JLjava/lang/String;)V", (void *)queryFailed},
     {"purchasedProductsQueried", "(J)V", (void *)purchasedProductsQueried},
-    {"registerProduct", "(JLjava/lang/String;Ljava/lang/String;)V", (void *)registerProduct},
+    {"registerProduct", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *)registerProduct},
     {"registerPurchased", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V", (void *)registerPurchased},
     {"purchaseSucceeded", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V", (void *)purchaseSucceeded},
     {"purchaseFailed", "(JIILjava/lang/String;)V", (void *)purchaseFailed}

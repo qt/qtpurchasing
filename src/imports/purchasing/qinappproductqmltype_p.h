@@ -35,6 +35,8 @@ class QInAppProductQmlType : public QObject, public QQmlParserStatus
     Q_ENUMS(Status)
     Q_PROPERTY(QString identifier READ identifier WRITE setIdentifier NOTIFY identifierChanged)
     Q_PROPERTY(QString price READ price NOTIFY priceChanged)
+    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
+    Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
 public:
     enum Status {
@@ -54,6 +56,8 @@ public:
 
     Status status() const;
     QString price() const;
+    QString title() const;
+    QString description() const;
 
     void setStore(QInAppStore *store);
 
@@ -64,6 +68,8 @@ Q_SIGNALS:
     void identifierChanged();
     void statusChanged();
     void priceChanged();
+    void titleChanged();
+    void descriptionChanged();
 
 protected:
     void componentComplete();

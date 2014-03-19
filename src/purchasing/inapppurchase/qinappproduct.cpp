@@ -24,14 +24,18 @@ QT_BEGIN_NAMESPACE
 
 struct QInAppProductPrivate
 {
-    QInAppProductPrivate(const QString &price, QInAppProduct::ProductType type, const QString &id)
+    QInAppProductPrivate(const QString &price, const QString &title, const QString &description, QInAppProduct::ProductType type, const QString &id)
         : localPrice(price)
+        , localTitle(title)
+        , localDescription(description)
         , productType(type)
         , identifier(id)
     {
     }
 
     QString localPrice;
+    QString localTitle;
+    QString localDescription;
     QInAppProduct::ProductType productType;
     QString identifier;
 };
@@ -52,10 +56,10 @@ struct QInAppProductPrivate
 /*!
  * \internal
  */\
-QInAppProduct::QInAppProduct(const QString &price, ProductType productType, const QString &identifier, QObject *parent)
+QInAppProduct::QInAppProduct(const QString &price, const QString &title, const QString &description, ProductType productType, const QString &identifier, QObject *parent)
     : QObject(parent)
 {
-    d = QSharedPointer<QInAppProductPrivate>(new QInAppProductPrivate(price, productType, identifier));
+    d = QSharedPointer<QInAppProductPrivate>(new QInAppProductPrivate(price, title, description, productType, identifier));
 }
 
 /*!
@@ -72,6 +76,24 @@ QInAppProduct::~QInAppProduct()
 QString QInAppProduct::price() const
 {
     return d->localPrice;
+}
+
+/*!
+ * Returns the title of the product as reported by the external store.  This title is returned from the
+ * store in the locale language if available.
+ */
+QString QInAppProduct::title() const
+{
+    return d->localTitle;
+}
+
+/*!
+ * Returns the description of the product as reported by the external store.  This description is returned
+ * from the store in the locale language if available.
+ */
+QString QInAppProduct::description() const
+{
+    return d->localDescription;
 }
 
 /*!

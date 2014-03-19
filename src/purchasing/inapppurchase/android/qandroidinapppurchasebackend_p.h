@@ -68,7 +68,9 @@ public:
     // Callbacks from Java
     Q_INVOKABLE void registerQueryFailure(const QString &productId);
     Q_INVOKABLE void registerProduct(const QString &productId,
-                                     const QString &price);
+                                     const QString &price,
+                                     const QString &title,
+                                     const QString &description);
     Q_INVOKABLE void registerPurchased(const QString &identifier,
                                        const QString &signature,
                                        const QString &data,
