@@ -29,9 +29,11 @@
 @interface InAppPurchaseManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 {
     QIosInAppPurchaseBackend *backend;
+    NSMutableArray *pendingTransactions;
 }
 
 -(void)requestProductData:(NSString *)identifier;
+-(void)processPendingTransactions;
 
 @end
 
@@ -40,6 +42,7 @@
 -(id)initWithBackend:(QIosInAppPurchaseBackend *)iapBackend {
     if (self = [super init]) {
         backend = iapBackend;
+        pendingTransactions = [[NSMutableArray alloc] init];
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
     }
     return self;
@@ -48,6 +51,7 @@
 -(void)dealloc
 {
     [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+    [pendingTransactions release];
     [super dealloc];
 }
 
@@ -58,6 +62,23 @@
     productsRequest.delegate = self;
     [productsRequest start];
 }
+
+-(void)processPendingTransactions
+{
+    for (SKPaymentTransaction *transaction in pendingTransactions) {
+        QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
+
+        QIosInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
+
+        if (product) {
+            //It is possible that the product doesn't exist yet (because of previous restores).
+            QIosInAppPurchaseTransaction *qtTransaction = new QIosInAppPurchaseTransaction(transaction, status, product, backend);
+            [pendingTransactions removeObject:transaction];
+            QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseTransaction*, qtTransaction));
+        }
+    }
+}
+
 
 //SKProductsRequestDelegate
 -(void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
@@ -79,38 +100,54 @@
     [request release];
 }
 
++(QInAppTransaction::TransactionStatus)statusFromTransaction:(SKPaymentTransaction *)transaction
+{
+    QInAppTransaction::TransactionStatus status;
+    switch (transaction.transactionState) {
+        case SKPaymentTransactionStatePurchasing:
+            //Ignore the purchasing state as it's not really a transaction
+            //And its important that it doesn't need to be finalized as
+            //Calling finishTransaction: on a transaction that is
+            //in the SKPaymentTransactionStatePurchasing state throws an exception
+            status = QInAppTransaction::Unknown;
+            break;
+        case SKPaymentTransactionStatePurchased:
+            status = QInAppTransaction::PurchaseApproved;
+            break;
+        case SKPaymentTransactionStateFailed:
+            status = QInAppTransaction::PurchaseFailed;
+            break;
+        case SKPaymentTransactionStateRestored:
+            status = QInAppTransaction::PurchaseRestored;
+            break;
+        default:
+            status = QInAppTransaction::Unknown;
+            break;
+    }
+    return status;
+}
+
 //SKPaymentTransactionObserver
 - (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
 {
     Q_UNUSED(queue);
     for (SKPaymentTransaction *transaction in transactions) {
         //Create QIosInAppPurchaseTransaction
-        QInAppTransaction::TransactionStatus status;
-        switch (transaction.transactionState) {
-            case SKPaymentTransactionStatePurchasing:
-                //Ignore the purchasing state as it's not really a transaction
-                //And its important that it doesn't need to be finalized as
-                //Calling finishTransaction: on a transaction that is
-                //in the SKPaymentTransactionStatePurchasing state throws an exception
-                continue;
-            case SKPaymentTransactionStatePurchased:
-                status = QInAppTransaction::PurchaseApproved;
-                break;
-            case SKPaymentTransactionStateFailed:
-                status = QInAppTransaction::PurchaseFailed;
-                break;
-            case SKPaymentTransactionStateRestored:
-                status = QInAppTransaction::PurchaseRestored;
-                break;
-            default:
-                status = QInAppTransaction::Unknown;
-                break;
-        }
+        QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
+
+        if (status == QInAppTransaction::Unknown)
+            continue;
 
         QIosInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
 
-        QIosInAppPurchaseTransaction *qtTransaction = new QIosInAppPurchaseTransaction(transaction, status, product, backend);
-        QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseTransaction*, qtTransaction));
+        if (product) {
+            //It is possible that the product doesn't exist yet (because of previous restores).
+            QIosInAppPurchaseTransaction *qtTransaction = new QIosInAppPurchaseTransaction(transaction, status, product, backend);
+            QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseTransaction*, qtTransaction));
+        } else {
+            //Add the transaction to the pending transactions list
+            [pendingTransactions addObject:transaction];
+        }
     }
 }
 
@@ -176,6 +213,7 @@ void QIosInAppPurchaseBackend::registerProduct(QIosInAppPurchaseProduct *product
     m_registeredProductForId[product->identifier()] = product;
     emit productQueryDone(product);
     m_productTypeForPendingId.erase(it);
+    [m_iapManager processPendingTransactions];
 }
 
 void QIosInAppPurchaseBackend::registerQueryFailure(const QString &productId)
