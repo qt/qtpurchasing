@@ -45,6 +45,12 @@
     return self;
 }
 
+-(void)dealloc
+{
+    [[SKPaymentQueue defaultQueue] removeTransactionObserver:self];
+    [super dealloc];
+}
+
 -(void)requestProductData:(NSString *)identifier
 {
     NSSet *productId = [NSSet setWithObject:identifier];
