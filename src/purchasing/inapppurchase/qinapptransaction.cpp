@@ -102,6 +102,17 @@ QInAppTransaction::TransactionStatus QInAppTransaction::status() const
 }
 
 /*!
+ * Returns a unique identifier for this transaction. This value may be an empty
+ * string if no transaction was registered (for example for canceled purchases).
+ *
+ * \sa platformProperty()
+ */
+QString QInAppTransaction::orderId() const
+{
+    return QString();
+}
+
+/*!
  * Returns the platform-specific property given by \a propertyName.
  *
  * The following properties are available on Google Play:

@@ -35,6 +35,7 @@ class Q_PURCHASING_EXPORT QInAppTransaction: public QObject
     Q_ENUMS(TransactionStatus)
     Q_PROPERTY(TransactionStatus status READ status CONSTANT)
     Q_PROPERTY(QInAppProduct * product READ product CONSTANT)
+    Q_PROPERTY(QString orderId READ orderId CONSTANT)
 public:
     enum TransactionStatus {
         Unknown,
@@ -46,6 +47,8 @@ public:
     ~QInAppTransaction();
 
     QInAppProduct *product() const;
+
+    virtual QString orderId() const;
 
     Q_INVOKABLE virtual void finalize() = 0;
     Q_INVOKABLE virtual QString platformProperty(const QString &propertyName) const;

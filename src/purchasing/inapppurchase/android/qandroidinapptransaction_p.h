@@ -51,6 +51,8 @@ public:
                                       QObject *parent = 0);
 
     void finalize();
+
+    QString orderId() const;
     QString platformProperty(const QString &propertyName) const;
 
 private:

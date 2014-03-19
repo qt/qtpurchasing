@@ -40,14 +40,17 @@ QAndroidInAppTransaction::QAndroidInAppTransaction(const QString &signature,
     Q_ASSERT(qobject_cast<QAndroidInAppPurchaseBackend *>(parent) != 0);
 }
 
+QString QAndroidInAppTransaction::orderId() const
+{
+    return m_orderId;
+}
+
 QString QAndroidInAppTransaction::platformProperty(const QString &propertyName) const
 {
     if (propertyName.compare(QStringLiteral("AndroidSignature"), Qt::CaseInsensitive) == 0)
         return m_signature;
     else if (propertyName.compare(QStringLiteral("AndroidPurchaseData"), Qt::CaseInsensitive) == 0)
         return m_data;
-    else if (propertyName.compare(QStringLiteral("AndroidOrderId"), Qt::CaseInsensitive) == 0)
-        return m_orderId;
     else
         return QInAppTransaction::platformProperty(propertyName);
 }
