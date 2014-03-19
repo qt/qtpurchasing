@@ -20,6 +20,7 @@
 
 #include "qandroidinapppurchasebackend_p.h"
 
+#include <QtCore/qdatetime.h>
 #include <QtAndroidExtras/qandroidjniobject.h>
 #include <jni.h>
 
@@ -53,8 +54,11 @@ static void registerProduct(jclass, jlong nativePointer, jstring productId, jstr
 }
 
 static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
-                              jstring signature, jstring data, jstring purchaseToken, jstring orderId)
+                              jstring signature, jstring data, jstring purchaseToken, jstring orderId, jlong timestamp)
 {
+    QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(qint64(timestamp));
+    dateTime.setTimeSpec(Qt::LocalTime);
+
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
                               "registerPurchased",
@@ -63,12 +67,16 @@ static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
                               Q_ARG(QString, QAndroidJniObject(signature).toString()),
                               Q_ARG(QString, QAndroidJniObject(data).toString()),
                               Q_ARG(QString, QAndroidJniObject(purchaseToken).toString()),
-                              Q_ARG(QString, QAndroidJniObject(orderId).toString()));
+                              Q_ARG(QString, QAndroidJniObject(orderId).toString()),
+                              Q_ARG(QDateTime, dateTime));
 }
 
 static void purchaseSucceeded(jclass, jlong nativePointer, jint requestCode,
-                              jstring signature, jstring data, jstring purchaseToken, jstring orderId)
+                              jstring signature, jstring data, jstring purchaseToken, jstring orderId, jlong timestamp)
 {
+    QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(qint64(timestamp));
+    dateTime.setTimeSpec(Qt::LocalTime);
+
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
                               "purchaseSucceeded",
@@ -77,25 +85,28 @@ static void purchaseSucceeded(jclass, jlong nativePointer, jint requestCode,
                               Q_ARG(QString, QAndroidJniObject(signature).toString()),
                               Q_ARG(QString, QAndroidJniObject(data).toString()),
                               Q_ARG(QString, QAndroidJniObject(purchaseToken).toString()),
-                              Q_ARG(QString, QAndroidJniObject(orderId).toString()));
+                              Q_ARG(QString, QAndroidJniObject(orderId).toString()),
+                              Q_ARG(QDateTime, dateTime));
 }
 
-static void purchaseFailed(jclass, jlong nativePointer, jint requestCode)
+static void purchaseFailed(jclass, jlong nativePointer, jint requestCode, jint failureReason, jstring errorString)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
                               "purchaseFailed",
                               Qt::AutoConnection,
-                              Q_ARG(int, int(requestCode)));
+                              Q_ARG(int, int(requestCode)),
+                              Q_ARG(int, int(failureReason)),
+                              Q_ARG(QString, QAndroidJniObject(errorString).toString()));
 }
 
 static JNINativeMethod methods[] = {
     {"queryFailed", "(JLjava/lang/String;)V", (void *)queryFailed},
     {"purchasedProductsQueried", "(J)V", (void *)purchasedProductsQueried},
     {"registerProduct", "(JLjava/lang/String;Ljava/lang/String;)V", (void *)registerProduct},
-    {"registerPurchased", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *)registerPurchased},
-    {"purchaseSucceeded", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V", (void *)purchaseSucceeded},
-    {"purchaseFailed", "(JI)V", (void *)purchaseFailed}
+    {"registerPurchased", "(JLjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V", (void *)registerPurchased},
+    {"purchaseSucceeded", "(JILjava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;J)V", (void *)purchaseSucceeded},
+    {"purchaseFailed", "(JIILjava/lang/String;)V", (void *)purchaseFailed}
 };
 
 jint JNICALL JNI_OnLoad(JavaVM *vm, void *)

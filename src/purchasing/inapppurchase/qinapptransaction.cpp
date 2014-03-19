@@ -67,7 +67,9 @@ struct QInAppTransactionPrivate
 /*!
  * \internal
  */\
-QInAppTransaction::QInAppTransaction(TransactionStatus status, QInAppProduct *product, QObject *parent)
+QInAppTransaction::QInAppTransaction(TransactionStatus status,
+                                     QInAppProduct *product,
+                                     QObject *parent)
     : QObject(parent)
 {
     d = QSharedPointer<QInAppTransactionPrivate>(new QInAppTransactionPrivate(status, product));
@@ -102,6 +104,82 @@ QInAppTransaction::TransactionStatus QInAppTransaction::status() const
 }
 
 /*!
+ * \qmlproperty enum QtPurchasing::Transaction::failureReason
+ *
+ * This property holds the reason for the failure if the transaction failed.
+ *
+ * \list
+ * \li Transaction.NoFailure The transaction did not fail.
+ * \li Transaction.CanceledByUser The transaction was canceled by the user.
+ * \li Transaction.ErrorOccurred The transaction failed due to an error.
+ * \endlist
+ *
+ * \sa errorString
+ */
+
+/*!
+ * \property QInAppTransaction::failureReason
+ *
+ * This property holds the reason for the failure if the transaction's status is
+ * \l{PurchaseFailed}. If the purchase was canceled by the user, the failure
+ * reason will be \l{CanceledByUser}. If the purchase failed due to an error, it
+ * will be \l{ErrorOccurred}. If the purchase did not fail, the failure reason
+ * will be \l{NoFailure}.
+ *
+ * \sa errorString, status
+ */
+QInAppTransaction::FailureReason QInAppTransaction::failureReason() const
+{
+    return NoFailure;
+}
+
+/*!
+ * \qmlproperty string QtPurchasing::Transaction::errorString
+ *
+ * This property holds a string describing the error if the transaction failed
+ * due to an error. The contents of the error string is platform-specific.
+ *
+ * \sa failureReason, status
+ */
+
+/*!
+ * \property QInAppTransaction::errorString
+ *
+ * This property holds a string describing the error if the transaction failed
+ * due to an error. The contents of the error string is platform-specific.
+ *
+ * \sa failureReason, status
+ */
+QString QInAppTransaction::errorString() const
+{
+    return QString();
+}
+
+/*!
+ * \qmlproperty time QtPurchasing::Transaction::timestamp
+ *
+ * This property holds the timestamp of the transaction. The timestamp
+ * can be invalid if there is no valid transaction, for example if the user
+ * canceled the purchase.
+ *
+ * \sa orderId
+ */
+
+/*!
+ * \property QInAppTransaction::timestamp
+ *
+ * This property holds the timestamp of the transaction. The timestamp
+ * can be invalid if there is no valid transaction, for example if the user
+ * canceled the purchase.
+ *
+ * \sa orderId
+ */
+QDateTime QInAppTransaction::timestamp() const
+{
+    return QDateTime();
+}
+
+/*!
  * Returns a unique identifier for this transaction. This value may be an empty
  * string if no transaction was registered (for example for canceled purchases).
  *
@@ -111,6 +189,8 @@ QString QInAppTransaction::orderId() const
 {
     return QString();
 }
+
+
 
 /*!
  * Returns the platform-specific property given by \a propertyName.

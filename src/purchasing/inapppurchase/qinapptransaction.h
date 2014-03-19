@@ -23,6 +23,7 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qsharedpointer.h>
+#include <QtCore/qdatetime.h>
 #include <QtPurchasing/qtpurchasingglobal.h>
 
 QT_BEGIN_NAMESPACE
@@ -32,10 +33,13 @@ class QInAppTransactionPrivate;
 class Q_PURCHASING_EXPORT QInAppTransaction: public QObject
 {
     Q_OBJECT
-    Q_ENUMS(TransactionStatus)
+    Q_ENUMS(TransactionStatus FailureReason)
     Q_PROPERTY(TransactionStatus status READ status CONSTANT)
     Q_PROPERTY(QInAppProduct * product READ product CONSTANT)
     Q_PROPERTY(QString orderId READ orderId CONSTANT)
+    Q_PROPERTY(FailureReason failureReason READ failureReason CONSTANT)
+    Q_PROPERTY(QString errorString READ errorString CONSTANT)
+    Q_PROPERTY(QDateTime timestamp READ timestamp CONSTANT)
 public:
     enum TransactionStatus {
         Unknown,
@@ -44,11 +48,20 @@ public:
         PurchaseRestored
     };
 
+    enum FailureReason {
+        NoFailure,
+        CanceledByUser,
+        ErrorOccurred
+    };
+
     ~QInAppTransaction();
 
     QInAppProduct *product() const;
 
     virtual QString orderId() const;
+    virtual FailureReason failureReason() const;
+    virtual QString errorString() const;
+    virtual QDateTime timestamp() const;
 
     Q_INVOKABLE virtual void finalize() = 0;
     Q_INVOKABLE virtual QString platformProperty(const QString &propertyName) const;
@@ -56,7 +69,9 @@ public:
     TransactionStatus status() const;
 
 protected:
-    explicit QInAppTransaction(TransactionStatus status, QInAppProduct *product, QObject *parent = 0);
+    explicit QInAppTransaction(TransactionStatus status,
+                               QInAppProduct *product,
+                               QObject *parent = 0);
 
 private:
     Q_DISABLE_COPY(QInAppTransaction)

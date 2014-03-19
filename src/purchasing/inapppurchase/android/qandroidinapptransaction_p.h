@@ -34,6 +34,8 @@
 //
 
 #include <QtCore/qobject.h>
+#include <QtCore/qdatetime.h>
+
 #include "qinapptransaction.h"
 
 QT_BEGIN_NAMESPACE
@@ -48,11 +50,17 @@ public:
                                       const QString &orderId,
                                       TransactionStatus status,
                                       QInAppProduct *product,
+                                      const QDateTime &timestamp,
+                                      FailureReason failureReason,
+                                      const QString &errorString,
                                       QObject *parent = 0);
 
     void finalize();
 
     QString orderId() const;
+    QString errorString() const;
+    FailureReason failureReason() const;
+    QDateTime timestamp() const;
     QString platformProperty(const QString &propertyName) const;
 
 private:
@@ -60,6 +68,9 @@ private:
     QString m_data;
     QString m_purchaseToken;
     QString m_orderId;
+    QDateTime m_timestamp;
+    QString m_errorString;
+    FailureReason m_failureReason;
 };
 
 QT_END_NAMESPACE

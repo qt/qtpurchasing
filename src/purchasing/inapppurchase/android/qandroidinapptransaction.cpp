@@ -30,12 +30,18 @@ QAndroidInAppTransaction::QAndroidInAppTransaction(const QString &signature,
                                                    const QString &orderId,
                                                    TransactionStatus status,
                                                    QInAppProduct *product,
+                                                   const QDateTime &timestamp,
+                                                   FailureReason failureReason,
+                                                   const QString &errorString,
                                                    QObject *parent)
     : QInAppTransaction(status, product, parent)
     , m_signature(signature)
     , m_data(data)
     , m_purchaseToken(purchaseToken)
     , m_orderId(orderId)
+    , m_timestamp(timestamp)
+    , m_errorString(errorString)
+    , m_failureReason(failureReason)
 {
     Q_ASSERT(qobject_cast<QAndroidInAppPurchaseBackend *>(parent) != 0);
 }
@@ -43,6 +49,21 @@ QAndroidInAppTransaction::QAndroidInAppTransaction(const QString &signature,
 QString QAndroidInAppTransaction::orderId() const
 {
     return m_orderId;
+}
+
+QDateTime QAndroidInAppTransaction::timestamp() const
+{
+    return m_timestamp;
+}
+
+QString QAndroidInAppTransaction::errorString() const
+{
+    return m_errorString;
+}
+
+QInAppTransaction::FailureReason QAndroidInAppTransaction::failureReason() const
+{
+    return m_failureReason;
 }
 
 QString QAndroidInAppTransaction::platformProperty(const QString &propertyName) const

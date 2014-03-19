@@ -221,6 +221,9 @@ void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *produc
                                                                              info.orderId,
                                                                              status,
                                                                              product,
+                                                                             info.timestamp,
+                                                                             QInAppTransaction::NoFailure,
+                                                                             QString(),
                                                                              this);
         emit transactionReady(transaction);
     }
@@ -244,15 +247,18 @@ void QAndroidInAppPurchaseBackend::registerProduct(const QString &productId, con
 }
 
 void QAndroidInAppPurchaseBackend::registerPurchased(const QString &identifier,
-                                                     const QString &signature, const QString &data,
-                                                     const QString &purchaseToken, const QString &orderId)
+                                                     const QString &signature,
+                                                     const QString &data,
+                                                     const QString &purchaseToken,
+                                                     const QString &orderId,
+                                                     const QDateTime &timestamp)
 {
 #if defined(QANDROIDINAPPPURCHASEBACKEND_DEBUG)
     qDebug("Registering previously purchased product: %s", qPrintable(identifier));
 #endif
 
     QMutexLocker locker(&m_mutex);
-    m_infoForPurchase.insert(identifier, PurchaseInfo(signature, data, purchaseToken, orderId));
+    m_infoForPurchase.insert(identifier, PurchaseInfo(signature, data, purchaseToken, orderId, timestamp));
 }
 
 void QAndroidInAppPurchaseBackend::registerReady()
@@ -285,8 +291,7 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
 
     QMutexLocker locker(&m_mutex);
     if (!m_javaObject.isValid()) {
-        qWarning("Cannot request purchase, because Java backend is not initialized.");
-        purchaseFailed(product);
+        purchaseFailed(product, QInAppTransaction::ErrorOccurred, QStringLiteral("Java backend is not initialized"));
         return;
     }
 
@@ -294,8 +299,7 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
                                                                    "(Ljava/lang/String;)Landroid/content/IntentSender;",
                                                                    QAndroidJniObject::fromString(product->identifier()).object<jstring>());
     if (!intentSender.isValid()) {
-        qWarning("Unable to get intent sender from service");
-        purchaseFailed(product);
+        purchaseFailed(product, QInAppTransaction::ErrorOccurred, QStringLiteral("Unable to get intent sender from service"));
         return;
     }
 
@@ -312,7 +316,7 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
     QtAndroid::startIntentSender(intentSender, requestCode, this);
 }
 
-void QAndroidInAppPurchaseBackend::purchaseFailed(int requestCode)
+void QAndroidInAppPurchaseBackend::purchaseFailed(int requestCode, int failureReason, const QString &errorString)
 {
     QMutexLocker locker(&m_mutex);
     QInAppProduct *product = m_activePurchaseRequests.take(requestCode);
@@ -321,10 +325,10 @@ void QAndroidInAppPurchaseBackend::purchaseFailed(int requestCode)
         return;
     }
 
-    purchaseFailed(product);
+    purchaseFailed(product, failureReason, errorString);
 }
 
-void QAndroidInAppPurchaseBackend::purchaseFailed(QInAppProduct *product)
+void QAndroidInAppPurchaseBackend::purchaseFailed(QInAppProduct *product, int failureReason, const QString &errorString)
 {
 #if defined(QANDROIDINAPPPURCHASEBACKEND_DEBUG)
     qDebug("Purchase failed for %s", qPrintable(product->identifier()));
@@ -336,6 +340,9 @@ void QAndroidInAppPurchaseBackend::purchaseFailed(QInAppProduct *product)
                                                                   QString(),
                                                                   QInAppTransaction::PurchaseFailed,
                                                                   product,
+                                                                  QDateTime(),
+                                                                  QInAppTransaction::FailureReason(failureReason),
+                                                                  errorString,
                                                                   this);
     emit transactionReady(transaction);
 }
@@ -344,7 +351,8 @@ void QAndroidInAppPurchaseBackend::purchaseSucceeded(int requestCode,
                                                      const QString &signature,
                                                      const QString &data,
                                                      const QString &purchaseToken,
-                                                     const QString &orderId)
+                                                     const QString &orderId,
+                                                     const QDateTime &timestamp)
 
 {
     QMutexLocker locker(&m_mutex);
@@ -359,13 +367,16 @@ void QAndroidInAppPurchaseBackend::purchaseSucceeded(int requestCode,
 #endif
 
 
-    m_infoForPurchase.insert(product->identifier(), PurchaseInfo(signature, data, purchaseToken, orderId));
+    m_infoForPurchase.insert(product->identifier(), PurchaseInfo(signature, data, purchaseToken, orderId, timestamp));
     QInAppTransaction *transaction = new QAndroidInAppTransaction(signature,
                                                                   data,
                                                                   purchaseToken,
                                                                   orderId,
                                                                   QInAppTransaction::PurchaseApproved,
                                                                   product,
+                                                                  timestamp,
+                                                                  QInAppTransaction::NoFailure,
+                                                                  QString(),
                                                                   this);
     emit transactionReady(transaction);
 }
