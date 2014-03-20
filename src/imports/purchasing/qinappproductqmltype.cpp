@@ -54,7 +54,7 @@ QInAppProductQmlType::QInAppProductQmlType(QObject *parent)
 }
 
 /*!
-  \qmlproperty QtPurchasing::Product::store
+  \qmlproperty object QtPurchasing::Product::store
 
   This property holds the store containing the product. When the product is created as
   a child of the store, this is set automatically to the parent, as in the following
@@ -228,8 +228,9 @@ QString QInAppProductQmlType::identifier() const
   is uninstalled and reinstalled on the device (or installed on a new device by the same user),
   purchases of unlockable products can be restored using the store's
   \l{QtPurchasing::Store::restorePurchases()}{restorePurchases()} method.
+  \endlist
 
-  When both the identifier and \l type is set, the product is queried from the external market place,
+  When both the \l identifier and type is set, the product is queried from the external market place,
   and its other properties are updated asynchronously. At this point, the identifier and type
   can no longer be changed.
 
@@ -244,6 +245,7 @@ QString QInAppProductQmlType::identifier() const
         // ...
       }
   }
+  \endqml
 */
 void QInAppProductQmlType::setType(QInAppProductQmlType::ProductType type)
 {

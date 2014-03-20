@@ -130,21 +130,33 @@ QInAppProduct *QInAppTransaction::product() const
   network connection.
   \value PurchaseRestored The product has previously been purchased and the purchase has
   now been restored as a result of calling \l{QInAppStore::restorePurchases()}.
+
 */
 
 /*!
- * \qmlproperty enum QtPurchasing::Transaction::status
- *
- * This property holds the status of the transaction.
- *
- * \list
- * \li Transaction.PurchaseApproved The purchase was successfully completed.
- * \li Transaction.PurchaseFailed The purchase was not completed for some reason. This could be because
- * the user canceled the transaction, but it could also for example be caused by a missing
- * network connection.
- * \li PurchaseRestored The product has previously been purchased and the purchase has
- * now been restored as a result of calling \l{QtPurchasing::Store::restorePurchases()}{restorePurchases()}.
- * \endlist
+  \enum QInAppTransaction::FailureReason
+
+  This enum type specifies the reason for failure if a transaction has the \l PurchaseFailed status.
+
+  \value NoFailure The status of the transaction is not \l PurchaseFailed.
+  \value CanceledByUser The transaction was manually canceled by the user.
+  \value ErrorOccurred An error occurred, preventing the transaction from completing. See the \l errorString
+  property for more information on the precise error that occurred.
+*/
+
+/*!
+  \qmlproperty enum QtPurchasing::Transaction::status
+
+  This property holds the status of the transaction.
+
+  \list
+  \li Transaction.PurchaseApproved The purchase was successfully completed.
+  \li Transaction.PurchaseFailed The purchase was not completed for some reason. This could be because
+  the user canceled the transaction, but it could also for example be caused by a missing
+  network connection.
+  \li PurchaseRestored The product has previously been purchased and the purchase has
+  now been restored as a result of calling \l{QtPurchasing::Store::restorePurchases()}{restorePurchases()}.
+  \endlist
  */
 
 /*!
@@ -239,7 +251,7 @@ QDateTime QInAppTransaction::timestamp() const
 }
 
 /*!
- * \qmlproperty QtPurchasing::Transaction::orderId
+ * \qmlproperty string QtPurchasing::Transaction::orderId
  *
  * This property holds a unique identifier for this transaction. This value may be an empty
  * string if no transaction was registered (for example for canceled purchases).
