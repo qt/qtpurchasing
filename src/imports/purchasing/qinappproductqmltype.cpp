@@ -51,27 +51,80 @@ QInAppProductQmlType::QInAppProductQmlType(QInAppProduct::ProductType requiredTy
 {
 }
 
-void QInAppProductQmlType::setStore(QInAppStore *store)
+/*!
+  \qmlproperty QtPurchasing::Product::store
+
+  This property holds the store containing the product. When the product is created as
+  a child of the store, this is set automatically to the parent, as in the following
+  example:
+
+  \qml
+  Store {
+      ConsumableProduct {
+        // No need to set the store explicitly here, as it will automatically be
+        // bound to the parent
+        identifier: "product1"
+      }
+      ConsumableProduct {
+        // No need to set the store explicitly here, as it will automatically be
+        // bound to the parent
+        identifier: "product2"
+      }
+  }
+  \endqml
+
+  However, in some advanced use cases, for example when products are created based on
+  a model, it's also possible to create the product anywhere in the QML document
+  and set the store explicitly, like in the following example:
+
+  \code
+  ListModel {
+      id: productModel
+      ListElement {
+          productIdentifier: "product1"
+      }
+      ListElement {
+          productIdentifier: "product2"
+      }
+  }
+
+  Store {
+      id: myStore
+  }
+
+  Instantiator {
+      model: productModel
+      delegate: ConsumableProduct {
+                      identifier: productIdentifier
+                      store: myStore
+                }
+  }
+  \endcode
+ */
+void QInAppProductQmlType::setStore(QInAppStoreQmlType *store)
 {
-    if (m_store == store && m_store != 0)
+    if (m_store == store)
         return;
 
     if (m_store != 0)
-        m_store->disconnect(this);
+        m_store->store()->disconnect(this);
 
     m_store = store;
-    if (m_store == 0) {
-        qWarning("Parent of products should be a Store instance.");
-    } else {
-        connect(m_store, SIGNAL(productRegistered(QInAppProduct*)),
-                this, SLOT(handleProductRegistered(QInAppProduct *)));
-        connect(m_store, SIGNAL(productUnknown(QInAppProduct::ProductType,QString)),
-                this, SLOT(handleProductUnknown(QInAppProduct::ProductType,QString)));
-        connect(m_store, SIGNAL(transactionReady(QInAppTransaction*)),
-                this, SLOT(handleTransaction(QInAppTransaction*)));
-    }
+    connect(m_store->store(), SIGNAL(productRegistered(QInAppProduct*)),
+            this, SLOT(handleProductRegistered(QInAppProduct *)));
+    connect(m_store->store(), SIGNAL(productUnknown(QInAppProduct::ProductType,QString)),
+            this, SLOT(handleProductUnknown(QInAppProduct::ProductType,QString)));
+    connect(m_store->store(), SIGNAL(transactionReady(QInAppTransaction*)),
+            this, SLOT(handleTransaction(QInAppTransaction*)));
 
     updateProduct();
+
+    emit storeChanged();
+}
+
+QInAppStoreQmlType *QInAppProductQmlType::store() const
+{
+    return m_store;
 }
 
 void QInAppProductQmlType::componentComplete()
@@ -122,13 +175,13 @@ void QInAppProductQmlType::updateProduct()
     if (m_identifier.isEmpty()) {
         m_status = Unknown;
     } else {
-        product = m_store->registeredProduct(m_identifier);
+        product = m_store->store()->registeredProduct(m_identifier);
         if (product != 0 && product == m_product)
             return;
 
         if (product == 0) {
             m_status = PendingRegistration;
-            m_store->registerProduct(m_requiredType, m_identifier);
+            m_store->store()->registerProduct(m_requiredType, m_identifier);
         } else if (product->productType() != m_requiredType) {
             product = 0;
             m_status = Unknown;

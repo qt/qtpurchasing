@@ -27,8 +27,8 @@
 
 QT_BEGIN_NAMESPACE
 
-class QInAppStore;
 class QInAppTransaction;
+class QInAppStoreQmlType;
 class QInAppProductQmlType : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
@@ -38,6 +38,7 @@ class QInAppProductQmlType : public QObject, public QQmlParserStatus
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
     Q_PROPERTY(Status status READ status NOTIFY statusChanged)
+    Q_PROPERTY(QInAppStoreQmlType *store READ store WRITE setStore NOTIFY storeChanged)
 public:
     enum Status {
         Uninitialized,
@@ -59,7 +60,8 @@ public:
     QString title() const;
     QString description() const;
 
-    void setStore(QInAppStore *store);
+    void setStore(QInAppStoreQmlType *store);
+    QInAppStoreQmlType *store() const;
 
 Q_SIGNALS:
     void purchaseSucceeded(QInAppTransaction *transaction);
@@ -70,6 +72,7 @@ Q_SIGNALS:
     void priceChanged();
     void titleChanged();
     void descriptionChanged();
+    void storeChanged();
 
 protected:
     void componentComplete();
@@ -89,7 +92,7 @@ private:
     QInAppProduct::ProductType m_requiredType;
     bool m_componentComplete;
 
-    QInAppStore *m_store;
+    QInAppStoreQmlType *m_store;
     QInAppProduct *m_product;
 };
 

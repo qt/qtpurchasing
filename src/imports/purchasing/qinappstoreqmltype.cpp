@@ -66,7 +66,7 @@ static void addProduct(QQmlListProperty<QInAppProductQmlType> *property, QInAppP
 {
     QInAppStoreQmlType *store = qobject_cast<QInAppStoreQmlType *>(property->object);
     Q_ASSERT(store != 0);
-    product->setStore(store->store());
+    product->setStore(store);
 
     QList<QInAppProductQmlType *> *products = reinterpret_cast<QList<QInAppProductQmlType *> *>(property->data);
     Q_ASSERT(products != 0);
