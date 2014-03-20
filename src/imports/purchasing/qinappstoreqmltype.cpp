@@ -39,20 +39,23 @@ QT_BEGIN_NAMESPACE
   products and one unlockable.
   \qml
   Store {
-      ConsumableProduct {
+      Product {
           identifier: "myConsumableProduct1"
+          type: Product.Consumable
 
           // ...
       }
 
-      ConsumableProduct {
+      Product {
           identifier: "myConsumableProduct2"
+          type: Product.Consumable
 
           // ...
       }
 
-      UnlockableProduct {
+      Product {
           identifier: "myUnlockableProduct"
+          type: Product.Unlockable
 
           // ...
       }

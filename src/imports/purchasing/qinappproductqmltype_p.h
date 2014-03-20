@@ -32,8 +32,9 @@ class QInAppStoreQmlType;
 class QInAppProductQmlType : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
-    Q_ENUMS(Status)
+    Q_ENUMS(Status ProductType)
     Q_PROPERTY(QString identifier READ identifier WRITE setIdentifier NOTIFY identifierChanged)
+    Q_PROPERTY(ProductType type READ type WRITE setType NOTIFY typeChanged)
     Q_PROPERTY(QString price READ price NOTIFY priceChanged)
     Q_PROPERTY(QString title READ title NOTIFY titleChanged)
     Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
@@ -47,8 +48,13 @@ public:
         Unknown
     };
 
-    explicit QInAppProductQmlType(QInAppProduct::ProductType productType,
-                                  QObject *parent = 0);
+    // Must match QInAppProduct::ProductType
+    enum ProductType {
+        Consumable,
+        Unlockable
+    };
+
+    explicit QInAppProductQmlType(QObject *parent = 0);
 
     Q_INVOKABLE void purchase();
 
@@ -63,6 +69,9 @@ public:
     void setStore(QInAppStoreQmlType *store);
     QInAppStoreQmlType *store() const;
 
+    void setType(ProductType type);
+    ProductType type() const;
+
 Q_SIGNALS:
     void purchaseSucceeded(QInAppTransaction *transaction);
     void purchaseFailed(QInAppTransaction *transaction);
@@ -73,6 +82,7 @@ Q_SIGNALS:
     void titleChanged();
     void descriptionChanged();
     void storeChanged();
+    void typeChanged();
 
 protected:
     void componentComplete();
@@ -89,7 +99,7 @@ private:
 
     QString m_identifier;
     Status m_status;
-    QInAppProduct::ProductType m_requiredType;
+    QInAppProductQmlType::ProductType m_type;
     bool m_componentComplete;
 
     QInAppStoreQmlType *m_store;

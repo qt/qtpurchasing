@@ -31,20 +31,22 @@ QT_BEGIN_NAMESPACE
     \inqmlmodule QtPurchasing
     \since QtPurchasing 1.0
     \ingroup qtpurchasing
-    \brief Base of products for in-app purchasing.
+    \brief A product for in-app purchasing.
 
-    Product is the base of the different product types in the Qt Purchasing
-    API. It cannot be created directly, but must be created via one of its
-    subtypes.
+    Product contains information about a product in the external market place. Once
+    the product's \l identifier and \l type are set, the product will be queried from
+    the external market place. Properties such as \l price will then be set, and
+    it will be possible to purchase the product. The \l status property holds information
+    on the registration process.
 
-    For products that should only be purchased once per user, use \l UnlockableProduct, and for
-    products that can be purchased any number of times, use \l ConsumableProduct
+    \note It is not possible to change the identifier and type once they have both been set
+    and the product has been registered.
 */
 
-QInAppProductQmlType::QInAppProductQmlType(QInAppProduct::ProductType requiredType, QObject *parent)
+QInAppProductQmlType::QInAppProductQmlType(QObject *parent)
     : QObject(parent)
     , m_status(Uninitialized)
-    , m_requiredType(requiredType)
+    , m_type(QInAppProductQmlType::ProductType(-1))
     , m_componentComplete(false)
     , m_store(0)
     , m_product(0)
@@ -60,15 +62,17 @@ QInAppProductQmlType::QInAppProductQmlType(QInAppProduct::ProductType requiredTy
 
   \qml
   Store {
-      ConsumableProduct {
+      Product {
         // No need to set the store explicitly here, as it will automatically be
         // bound to the parent
-        identifier: "product1"
+        identifier: "myConsumableProduct"
+        type: Product.Consumable
       }
-      ConsumableProduct {
+      Product {
         // No need to set the store explicitly here, as it will automatically be
         // bound to the parent
-        identifier: "product2"
+        identifier: "myUnlockableProduct"
+        type: Product.Unlockable
       }
   }
   \endqml
@@ -81,10 +85,12 @@ QInAppProductQmlType::QInAppProductQmlType(QInAppProduct::ProductType requiredTy
   ListModel {
       id: productModel
       ListElement {
-          productIdentifier: "product1"
+          productIdentifier: "myConsumableProduct"
+          productType: Product.Consumable
       }
       ListElement {
-          productIdentifier: "product2"
+          productIdentifier: "myUnlockableProduct"
+          productType: Product.Unlockable
       }
   }
 
@@ -94,8 +100,9 @@ QInAppProductQmlType::QInAppProductQmlType(QInAppProduct::ProductType requiredTy
 
   Instantiator {
       model: productModel
-      delegate: ConsumableProduct {
+      delegate: Product {
                       identifier: productIdentifier
+                      type: productType
                       store: myStore
                 }
   }
@@ -140,15 +147,17 @@ void QInAppProductQmlType::componentComplete()
   This property holds the identifier of the product in the external market place. It must match the
   identifier used to register the product externally before-hand.
 
-  When the identifier is set, the product is queried from the external market place, and its other
-  properties are updated asynchronously.
+  When both the identifier and \l type is set, the product is queried from the external market place,
+  and its other properties are updated asynchronously. At this point, the identifier and type
+  can no longer be changed.
 
   The following example queries an unlockable product named "myUnlockableProduct" from the external
   market place.
   \qml
   Store {
-      UnlockableProduct {
+      Product {
         identifier: "myUnlockableProduct"
+        type: Product.Unlockable
 
         // ...
       }
@@ -158,6 +167,11 @@ void QInAppProductQmlType::setIdentifier(const QString &identifier)
 {
     if (m_identifier == identifier)
         return;
+
+    if (m_status != Uninitialized) {
+        qWarning("A product's identifier cannot be changed once the product has been initialized.");
+        return;
+    }
 
     m_identifier = identifier;
     if (m_componentComplete)
@@ -172,8 +186,8 @@ void QInAppProductQmlType::updateProduct()
 
     Status oldStatus = m_status;
     QInAppProduct *product = 0;
-    if (m_identifier.isEmpty()) {
-        m_status = Unknown;
+    if (m_identifier.isEmpty() || m_type == QInAppProductQmlType::ProductType(-1)) {
+        m_status = Uninitialized;
     } else {
         product = m_store->store()->registeredProduct(m_identifier);
         if (product != 0 && product == m_product)
@@ -181,10 +195,11 @@ void QInAppProductQmlType::updateProduct()
 
         if (product == 0) {
             m_status = PendingRegistration;
-            m_store->store()->registerProduct(m_requiredType, m_identifier);
-        } else if (product->productType() != m_requiredType) {
+            m_store->store()->registerProduct(QInAppProduct::ProductType(m_type), m_identifier);
+        } else if (product->productType() != QInAppProduct::ProductType(m_type)) {
+            qWarning("Product registered multiple times with different product types.");
             product = 0;
-            m_status = Unknown;
+            m_status = Uninitialized;
         } else {
             m_status = Registered;
         }
@@ -198,6 +213,57 @@ void QInAppProductQmlType::updateProduct()
 QString QInAppProductQmlType::identifier() const
 {
     return m_identifier;
+}
+
+/*!
+  \qmlproperty string QtPurchasing::Product::type
+  This property holds the type of the product in the external market place.
+
+  It can hold one of the following values:
+  \list
+  \li Product.Consumable The product is consumable and can be purchased more than once
+  by the same user, granted that the transaction for the previous purchase has been finalized.
+  \li Product.Unlockable The product can only be purchased once per user. If the application
+  is uninstalled and reinstalled on the device (or installed on a new device by the same user),
+  purchases of unlockable products can be restored using the store's
+  \l{QtPurchasing::Store::restorePurchases()}{restorePurchases()} method.
+
+  When both the identifier and \l type is set, the product is queried from the external market place,
+  and its other properties are updated asynchronously. At this point, the identifier and type
+  can no longer be changed.
+
+  The following example queries an unlockable product named "myUnlockableProduct" from the external
+  market place.
+  \qml
+  Store {
+      Product {
+        identifier: "myUnlockableProduct"
+        type: Product.Unlockable
+
+        // ...
+      }
+  }
+*/
+void QInAppProductQmlType::setType(QInAppProductQmlType::ProductType type)
+{
+    if (m_type == type)
+        return;
+
+    if (m_status != Uninitialized) {
+        qWarning("A product's type cannot be changed once the product has been initialized.");
+        return;
+    }
+
+    m_type = type;
+    if (m_componentComplete)
+        updateProduct();
+
+    emit typeChanged();
+}
+
+QInAppProductQmlType::ProductType QInAppProductQmlType::type() const
+{
+    return m_type;
 }
 
 /*!
@@ -216,8 +282,9 @@ QString QInAppProductQmlType::identifier() const
 
   \qml
   Store {
-      ConsumableProduct {
+      Product {
           identifier: "myConsumableProduct"
+          type: Product.Consumable
           onStatusChanged: {
               switch (status) {
               case Product.PendingRegistration: console.debug("Registering " + identifier); break
@@ -246,9 +313,10 @@ QInAppProductQmlType::Status QInAppProductQmlType::status() const
   "myUnlockableProduct":
   \qml
   Store {
-      UnlockableProduct {
+      Product {
           id: myUnlockableProduct
           identifier: "myUnlockableProduct"
+          type: Product.Unlockable
 
           // ...
       }
@@ -309,16 +377,11 @@ void QInAppProductQmlType::setProduct(QInAppProduct *product)
 
 void QInAppProductQmlType::handleProductRegistered(QInAppProduct *product)
 {
-    if (product->identifier() == m_identifier && product->productType() == m_requiredType) {
+    if (product->identifier() == m_identifier) {
+        Q_ASSERT(product->productType() == QInAppProduct::ProductType(m_type));
         setProduct(product);
         if (m_status != Registered) {
             m_status = Registered;
-            emit statusChanged();
-        }
-    } else if (product->identifier() == m_identifier) {
-        setProduct(0);
-        if (m_status != Unknown) {
-            m_status = Unknown;
             emit statusChanged();
         }
     }
@@ -387,9 +450,10 @@ void QInAppProductQmlType::purchase()
 
   \qml
   Store {
-      ConsumableProduct {
+      Product {
           id: myConsumableProduct
           identifier: "myConsumableProduct"
+          type: Product.Consumable
 
           onPurchaseSucceeded: {
               if (myStorage.savePurchaseInformation(identifier)) {
@@ -431,9 +495,10 @@ void QInAppProductQmlType::purchase()
   message to the user.
   \qml
   Store {
-      ConsumableProduct {
+      Product {
           id: myConsumableProduct
           identifier: "myConsumableProduct"
+          type: Product.Consumable
 
           onPurchaseFailed: {
               myDisplayHelper.message("Product was not purchased. You have not been charged.")
@@ -468,9 +533,10 @@ void QInAppProductQmlType::purchase()
 
   \qml
   Store {
-      UnlockableProduct {
+      Product {
           id: myUnlockableProduct
           identifier: "myUnlockableProduct"
+          type: Product.Unlockable
 
           onPurchaseRestored: {
               if (myStorage.savePurchaseInformation(identifier)) {
