@@ -24,5 +24,171 @@
   \title Registering products in App Store on iOS
   \brief A short guide to registering in-app products in the iOS App Store.
 
+  To take advantage of In-App purchasing functionality on iOS you need to first
+  register your App and all of your available products in
+  \l{http://itunesconnect.apple.com}{iTunes Connect}.
+  This guide will give a brief introduction on how to register your App and
+  products with Apple so that you can develop and deploy an App.
+
+  In-App purchasing can only be tested on actual hardware for the iOS platform,
+  so keep this in mind when working from the iOS simulator.
+
+  For more information please refer the the
+  \l{http://developer.apple.com/in-app-purchase/}{official documentation}.
+
+
+  \section1 Register a Unique App ID
+
+  One of the requirements to support in-app purchases on iOS is to have registered
+  a unique App ID. This means that it is not possible to use an App ID that contains
+  a wildcard character. You can check your existing App IDs and create new ones from the
+  \l{https://developer.apple.com/account/ios/identifiers/bundle/bundleList.action}{Apple Developer Certificate, Identifiers, and Profiles manager}.
+
+  If you do not already have a unique App ID then you will need to create one.
+
+  In the \uicontrol{App IDs} tab of the \uicontrol{Developer Certificate, Identifiers, and Profiles}
+  manager click the \uicontrol{+} button to create a New App ID. This will open up the
+  page to register a new iOS App ID.
+
+  Give your App a relevant ID description and prefix. Your App ID Suffix
+  should be an Explicit App ID type. Enter a unique App ID in the Bundle ID
+  field in reverse domain name style like the following example:
+  \c{com.digia.appname}
+
+  In the \uicontrol{App Services} area make sure that the \uicontrol{In-App Purchases}
+  box is checked. After clicking \uicontrol{continue} your App ID should be registered.
+
+  \section1 Create a new Provisioning Profile
+
+  To be able to use your new App ID you will need to also generate a new provision
+  profile that includes the new ID to sign and run your App. Provisioning Profiles
+  are also managed through the \uicontrol{Apple Developer Certificate, Identifiers, and Profiles} manager.
+
+  Navigate to the \uicontrol{Provisioning Profiles} tab of the manager and click the \uicontrol{+} button
+  to create a new Provisioning Profile.  Make sure that the \uicontrol{iOS App Development}
+  radio button is activated and click the \uicontrol{Continue} button.
+
+  You are now given a choice of which App ID to use for this profile, which will
+  be the unique App ID you created in the previous section. Once again make sure
+  that the App ID does not contain any wildcard characters “*” as it will not be
+  possible to use the In-App Purchasing service with an App ID containing them.
+
+  On the next page you will need to select the certificates that will be
+  distributed with your Provisioning Profile. You will have needed to uploaded
+  a certificate on your local development machine to the Apple Developer
+  Certificate, Identifiers, and Profiles manger previously. Generally you will
+  want to add any certificates of the members of your team who will need to build
+  your App.
+
+  On the next page you will need to select the devices you will be developing and
+  testing your App on. You will have needed to registered your devices unique IDs
+  to the Apple Developer Certificate, Identifiers, and Profiles manger previously.
+  The devices you select here will be the only ones capable of running Apps signed
+  against this provisioning profile so select all of the devices you intend use
+  during the development and testing phase.
+
+  Then you will be asked to give your Provisioning Profile a descriptive display
+  name, and then just click \uicontrol{Generate} to create the actual profile. When this
+  process is completed you’ll be given a choice to download the Provisioning
+  Profile.
+
+  Open the downloaded file in XCode to install. Now the next time you plug in one
+  of the specified development devices your Provisioning Profile should be installed
+  to it automatically.
+
+  \section1 Register your Application
+  Before you can register new products available to the in-app purchasing service,
+  you need to register your application in iTunes Connect. iTunes Connect is the
+  place where you register an App when you want to submit it to the Apple iOS App Store.
+
+  Start by going to \l{https://itunesconnect.apple.com}{iTunes Connect} and logging in.
+  Once logged in open the \uicontrol{Manage your Apps} link. If you have already registered your
+  App here, you can skip the registration step, otherwhile click the \uicontrol{Add New App}
+  button in the top left corner of the page.
+
+  Select iOS App and then proceed to fill out the required information on the next page.
+  When you get to the \uicontrol{Bundle ID} section select the unique App ID we created in the
+  previous steps.
+
+  It is likely at this point that you do not have all the necessary details to
+  complete the information required to register your App. For now just fill out
+  the forms with stub data as everything except the \uicontrol{SKU} and \uicontrol{Version}
+  fields are editable later.
+
+  \section1 Register the Products
+  Once your App is registered in iTunes Connect you will have additional options
+  available to manage that App. In the \uicontrol{Manage Your Apps} page of iTunes Connect
+  click on icon representing your App to manage its details. Within this menu you can select
+  the \uicontrol{Manage In-App Purchases} button the right to register any products you wish
+  to offer through the in-app purchasing service.
+
+  To register a new product click the \uicontrol{Create New} button in the top left corner
+  of the page  the first choice you will be given is the type of In-App purchase
+  you would like to create. The QtPurchasing API currently only supports Consumable
+  and Non-Consumable types so limit your selection to these.  See QInAppProduct
+  for an explanation for the differences between product types.
+
+  On the next page you will need to fill out the details about your product. The
+  \uicontrol{Reference Name} field refers to how the product will be displayed in
+  iTunes Connect and in sales reports, but not in the App Store itself. The \uicontrol{Product ID}
+  field is very important since this is the unique ID that will be used when we
+  query for the product from your App itself. If possible make this the same ID as
+  the corresponding products in the other platform’s App Stores otherwise you will
+  need to have conditional logic in your App for each platform when specifying
+  product identifiers.
+
+  Select the pricing and availability details for you product next. For the iOS App
+  Store pricing is set via a tier system. Each tier represents a price level in
+  each iOS App Store region. Your end users will be given the actual price expected
+  for a product in terms of what region their App Store is in.
+
+  In the next section \uicontrol{In-App Purchase Details} you specify the details
+  for at least one language. When you App requests the product details like \c title
+  and \c description they will be provided in the language of their locale if they are
+  available. Create language details for any regions you expect to distribute Apps
+  in, keeping in mind that these can be added later.
+
+  Finally you will need to attach a screenshot that will be used for review purposes.
+  This again can be a stub for now, but you your product will need to pass review
+  before it can go live to be sold in your published App. Click \uicontrol{save}
+  to conclude the product registration.
+
+  \section1 Create an iTunes Test User
+  Once your products are registered you will be able to purchase them from your App.
+  When you are developing your App it is desirable to test buying your products
+  without spending real currency. There are actually two separate stores that
+  requests can be sent to when using the In-App Purchasing service on iOS. While your
+  App is being developed any iOS App Store requests will be sent to a sandbox store.
+  This occurs when your App has been signed with a developer Provisioning Profile.
+  The sandbox store will only accept requests from test users and will not actually
+  make any real-world charges for purchases. However when you submit your App to the
+  iOS App Store and it is accepted all In-App Purchasing requests will then be sent to the
+  production store which requires real iTunes users accounts, and will make real
+  work currency charges.
+
+  To create an iTunes test user log into \l{https://itunesconnect.apple.com}{iTunes Connect}.
+
+  Select the \uicontrol{Manage Users} link on the left and then click the \uicontrol{Test User} button.
+  Here you will see any existing iTunes test users associated with your account
+  already. To add an iTunes test user click the \uicontrol{Add New User} button on the top
+  left of the page. Fill out the details to your preference, bearing in mind that
+  the most important selection is the \uicontrol{Select iTunes Store} which specifies which
+  store region your users will be testing from.
+
+  \section1 Using the Sandbox App Store
+  Once you have created your iTunes test user, you will be able to log into the
+  sandbox app store when developing your App.
+
+  It is important that you first log out of the current iTunes user on your Apple
+  device. To do this open the \uicontrol{Settings} App from the homescreen and go to the
+  \uicontrol{iTunes & App Store} entry. Click on the first entry which should be \uicontrol{Apple ID}
+  the select \uicontrol{Sign Out}.
+
+  Do not sign in with your iTunes test user from the Settings App as this connects
+  the production App Store and your request will fail.
+
+  The first time your App makes a request to the sandbox App Store it will request
+  that you login. This is where you should log in using your iTunes test user
+  credentials.
 */
 
