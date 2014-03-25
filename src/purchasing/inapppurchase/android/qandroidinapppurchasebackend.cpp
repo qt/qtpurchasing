@@ -185,8 +185,8 @@ void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &id
 bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
 {
     Q_ASSERT(m_infoForPurchase.contains(product->identifier()));
-    return product->productType() == QInAppProduct::Consumable
-            || m_finalizedUnlockableProducts.contains(product->identifier());
+    return product->productType() != QInAppProduct::Consumable
+            && m_finalizedUnlockableProducts.contains(product->identifier());
 }
 
 void QAndroidInAppPurchaseBackend::checkFinalizationStatus(QInAppProduct *product,
