@@ -49,6 +49,8 @@ Item {
     property bool locked: false
     property bool hideVowels: false
 
+    Component.onCompleted: topLevel.buttonHeight = keyHeight
+    onKeyHeightChanged: topLevel.buttonHeight = keyHeight
 
     property var keys: [keyA, keyB, keyC, keyD, keyE, keyF, keyG, keyH, keyI, keyJ,
             keyH, keyJ, keyK, keyL, keyM, keyN, keyO, keyP, keyQ, keyR, keyS,

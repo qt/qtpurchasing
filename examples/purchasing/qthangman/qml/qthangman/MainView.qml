@@ -48,6 +48,7 @@ Item {
 
     height: 480
     width: 320
+    property real buttonHeight: 0
 
     HangmanGame {
         id: applicationData

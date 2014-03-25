@@ -44,7 +44,7 @@ Item {
     id: header
 
     property alias title: titleText.text
-    property int buttonHeight: 32
+    property int buttonHeight: topLevel.buttonHeight
     signal clicked()
 
 

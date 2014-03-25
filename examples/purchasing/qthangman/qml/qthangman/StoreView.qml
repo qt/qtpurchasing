@@ -72,7 +72,7 @@ Item {
         anchors.bottom: parent.bottom
         anchors.margins: 8
         anchors.horizontalCenter: parent.horizontalCenter
-        height: 32
+        height: topLevel.buttonHeight
         width: parent.width * .5
         text: "Restore Purchases"
         onClicked: {
@@ -96,7 +96,8 @@ Item {
 
         onPurchaseFailed: {
             console.log(identifier + " purchase failed");
-            console.log("reason: " + transaction.platformProperty("error"));
+            console.log("reason: "
+                        + transaction.failureReason === Transaction.CanceledByUser ? "Canceled" : transaction.errorString);
             transaction.finalize();
         }
     }
@@ -116,7 +117,8 @@ Item {
 
         onPurchaseFailed: {
             console.log(identifier + " purchase failed");
-            console.log("reason: " + transaction.platformProperty("error"));
+            console.log("reason: "
+                        + transaction.failureReason === Transaction.CanceledByUser ? "Canceled" : transaction.errorString);
             transaction.finalize();
         }
 
