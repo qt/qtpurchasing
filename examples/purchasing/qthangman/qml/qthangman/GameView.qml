@@ -105,7 +105,7 @@ Item {
         width: globalButtonHeight
         text: "?"
         onClicked: {
-            pageStack.push(Qt.resolvedUrl("HowtoView.qml"))
+            pageStack.push(Qt.resolvedUrl("HowToView.qml"))
         }
     }
 
