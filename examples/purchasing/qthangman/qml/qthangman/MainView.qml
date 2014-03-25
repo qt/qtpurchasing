@@ -51,6 +51,18 @@ Item {
     property real buttonHeight: 0
     property real globalMargin: width * 0.025
 
+    Component.onCompleted: forceActiveFocus()
+    Keys.onBackPressed: {
+        if (pageStack.depth === 1) {
+            Qt.quit()
+        } else {
+            pageStack.pop()
+            event.accepted = true
+            forceActiveFocus()
+        }
+    }
+    focus: true
+
     HangmanGame {
         id: applicationData
         onWordChanged: {
