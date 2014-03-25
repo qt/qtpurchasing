@@ -80,7 +80,7 @@ Item {
         anchors.right: word.right
         anchors.left: word.left
         height: word.height
-        anchors.topMargin: 16
+        anchors.topMargin: topLevel.globalMargin * 2
         font.pixelSize: height * 0.75
         onAccepted: {
             dialog.guess();

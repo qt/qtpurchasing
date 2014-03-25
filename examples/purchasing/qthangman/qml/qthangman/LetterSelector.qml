@@ -44,8 +44,8 @@ Item {
     id: keyView
     property real keyWidth: (width - (horizontalSpacing * 9)) / 10
     property real keyHeight: (height - (verticalSpacing * 2)) / 3
-    property real horizontalSpacing: 2
-    property real verticalSpacing: 2
+    property real horizontalSpacing: topLevel.globalMargin / 4
+    property real verticalSpacing: topLevel.globalMargin / 4
     property bool locked: false
     property bool hideVowels: false
 

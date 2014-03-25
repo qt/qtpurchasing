@@ -83,14 +83,14 @@ Item {
         text: "Vowels: " + applicationData.vowelsAvailable
         anchors.left: parent.left
         anchors.verticalCenter: helpButton.verticalCenter
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         onClicked: {
             pageStack.push(Qt.resolvedUrl("StoreView.qml"));
         }
     }
 
     ScoreItem {
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         anchors.right: helpButton.left
         anchors.verticalCenter: helpButton.verticalCenter
         height: globalButtonHeight
@@ -100,7 +100,7 @@ Item {
         id: helpButton
         anchors.top: parent.top
         anchors.right: parent.right
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         height: globalButtonHeight
         width: globalButtonHeight
         text: "?"
@@ -137,7 +137,7 @@ Item {
         id: letterSelector
         locked: gameOver || success
         hideVowels: applicationData.vowelsAvailable < 1 && !applicationData.vowelsUnlocked
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         anchors.bottom: guessButton.top
         anchors.left: parent.left
         anchors.right: parent.right
@@ -152,7 +152,7 @@ Item {
 
     SimpleButton {
         id: revealButton
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         visible: !(gameOver || success)
         anchors.bottom: parent.bottom
         anchors.left: parent.left
@@ -165,7 +165,7 @@ Item {
     }
     SimpleButton {
         id: guessButton
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         visible: !(gameOver || success)
         anchors.bottom: parent.bottom
         anchors.left: revealButton.right
@@ -178,7 +178,7 @@ Item {
     }
     SimpleButton {
         id: resetButton
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         visible: gameOver || success
         anchors.bottom: parent.bottom
         anchors.left: parent.left

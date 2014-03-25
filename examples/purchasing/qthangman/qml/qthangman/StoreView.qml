@@ -52,10 +52,10 @@ Item {
     Column {
         anchors.top: header.bottom
         anchors.bottom: restoreButton.top
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         anchors.right: parent.right
         anchors.left: parent.left
-        spacing: 8
+        spacing: topLevel.globalMargin
 
         StoreItem {
             product: product100Vowels
@@ -72,7 +72,7 @@ Item {
     SimpleButton {
         id: restoreButton
         anchors.bottom: parent.bottom
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         anchors.horizontalCenter: parent.horizontalCenter
         height: topLevel.buttonHeight
         width: parent.width * .5

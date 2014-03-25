@@ -51,12 +51,12 @@ Item {
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right
-    height: buttonHeight + 16
+    height: buttonHeight + (topLevel.globalMargin * 2)
     SimpleButton {
         id: backButton
         anchors.top: parent.top
         anchors.left: parent.left
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         height: buttonHeight
         width: parent.width * 0.25
         text: "Back"
@@ -71,10 +71,10 @@ Item {
         anchors.top: parent.top
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        anchors.margins: 8
+        anchors.margins: topLevel.globalMargin
         font.family: ".Helvetica Neue Interface -M3"
         color: "white"
-        font.pointSize: 24
+        font.pointSize: 64
         fontSizeMode: Text.Fit
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
