@@ -53,7 +53,6 @@ Rectangle {
     radius: 10
     color: "white"
 
-    width: 300
     height: titleText.contentHeight + descriptionText.contentHeight + 16
 
     Text {
