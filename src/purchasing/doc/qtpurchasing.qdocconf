@@ -30,7 +30,7 @@ qhp.QtPurchasing.subprojects.classes.indexTitle    = Qt Purchasing C++ Classes
 qhp.QtPurchasing.subprojects.classes.selectors     = class fake:headerfile
 qhp.QtPurchasing.subprojects.classes.sortPages     = true
 qhp.QtPurchasing.subprojects.examples.title        = Examples
-qhp.QtPurchasing.subprojects.examples.indexTitle   = Qt Purchasing Examples and Tutorials
+qhp.QtPurchasing.subprojects.examples.indexTitle   = Qt Purchasing Examples
 qhp.QtPurchasing.subprojects.examples.selectors    = fake:example
 
 HTML.footer = \
@@ -56,6 +56,7 @@ indexes +=  $QT_INSTALL_DOCS/qtqml/qtqml.index \
 
 headerdirs += ../ ../../imports/purchasing
 sourcedirs += ../ ../../imports/purchasing
+exampledirs += ../../../examples/purchasing
 imagedirs  += images
 
 navigation.landingpage    = "Qt Purchasing"

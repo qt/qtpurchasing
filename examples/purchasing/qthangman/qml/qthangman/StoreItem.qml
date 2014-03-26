@@ -54,7 +54,7 @@ Rectangle {
     color: "white"
 
     height: titleText.contentHeight + descriptionText.contentHeight + topLevel.globalMargin * 2
-
+    // ![0]
     Text {
         id: titleText
         text: product.title
@@ -103,6 +103,7 @@ Rectangle {
             storeItem.state = "NORMAL";
         }
     }
+    // ![0]
 
     Rectangle {
         id: pendingRect

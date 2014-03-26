@@ -76,8 +76,9 @@ Item {
         anchors.fill: topLevel
         initialItem: Qt.resolvedUrl("GameView.qml")
     }
-
+    // ![0]
     Store {
         id: iapStore
     }
+    // ![0]
 }

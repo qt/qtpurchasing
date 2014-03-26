@@ -56,7 +56,7 @@ Item {
         anchors.right: parent.right
         anchors.left: parent.left
         spacing: topLevel.globalMargin
-
+        // ![2]
         StoreItem {
             product: product100Vowels
             width: parent.width
@@ -66,7 +66,7 @@ Item {
             product: productUnlockVowels
             width: parent.width
         }
-
+        // ![2]
     }
 
     SimpleButton {
@@ -82,7 +82,7 @@ Item {
         }
     }
 
-
+    // ![0]
     Product {
         id: product100Vowels
         store: iapStore
@@ -103,7 +103,8 @@ Item {
             transaction.finalize();
         }
     }
-
+    // ![0]
+    // ![1]
     Product {
         id: productUnlockVowels
         type: Product.Unlockable
@@ -132,5 +133,6 @@ Item {
             pageStack.pop();
         }
     }
+    // ![1]
 
 }
