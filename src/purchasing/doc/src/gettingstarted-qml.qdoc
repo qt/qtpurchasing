@@ -21,30 +21,32 @@
 /*!
 
   \page qtpurchasing-gettingstarted-qml.html
-  \title Getting started with Qt Purchasing in QML
-  \brief Guide to getting started using the Qt Purchasing module in QML.
+  \title Getting Started with Qt Purchasing in QML
+  \brief Guide to getting started with Qt Purchasing using QML.
 
-  This guide assumes that you have first registered products to your
-  application in the external market place. Please refer to the
-  \l{Qt Purchasing} landing page for more information.
+  This guide assumes that you have registered the in-app products for your
+  application in the external store. For more information about registering
+  products, see \l{Registering Products in Google Play} and
+  \l{Registering Products in App Store}
 
   \section1 Preparing The Application
 
-  Before the Qt Purchasing APIs can be accessed from your application code,
-  you must add the following to your \c .pro file:
+  Use the following \c import statement in the QML files to access the Qt
+  Purchasing QML types:
+
+  \qml
+  import QtPurchasing 1.0
+  \endqml
+
+  Add the following statement to your \c .pro file to link against the Qt
+  Purchasing library:
 
   \code
   QT += purchasing
   \endcode
 
-  In the QML files where the Qt Purchasing API is accessed, you also need
-  to declare the following import:
 
-  \code
-  import QtPurchasing 1.0
-  \endcode
-
-  \section1 Registering Products For Use In Your Application
+  \section1 Registering Products
 
   Before you can operate on the products in your code, they must be
   registered in the QML graph. You start by making a \l{Store} item,

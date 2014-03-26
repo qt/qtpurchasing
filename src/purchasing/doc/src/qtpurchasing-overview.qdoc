@@ -21,55 +21,52 @@
 /*!
   \page index.html
   \title Qt Purchasing
-  \brief Cross-platform library to facilitate in-app purchases in Qt and Qt Quick application
+  \brief A cross-platform library to facilitate in-app purchases in Qt and Qt Quick application
 
-  Qt Purchasing provides a set of classes and components to facilitate in-app purchases
-  in Qt applications in a cross-platform way. The library currently supports purchases made
-  to the App Store on iOS, and Google Play on Android.
+  Qt Purchasing is an add-on library that enables Qt applications to support
+  in-app purchases. It is a cross-platform library that currently supports
+  purchases made to the App Store on iOS, and Google Play on Android.
 
   \section1 In-App Purchases
 
-  In-app purchases is a way to monetize an application. Such purchases are made from inside
-  the application and can include anything from unlocking content to virtual items. The
-  Qt Purchasing API builds on the system APIs for in-app purchases, which means that the
-  purchase process will consist of familiar steps to the user, and the information already
-  stored by the platform (such as credit card information) can be employed to simplify the
-  purchase process.
+  In-app purchases are a way to monetize an application. These purchases are
+  made from inside the application and can include anything from unlocking
+  content to virtual items. The Qt Purchasing API is built on the system APIs
+  for in-app purchases, which means the purchase process is more familiar to
+  the user, and the information already stored by the platform (such as credit
+  card information) can be employed to simplify the purchase process.
 
   \section1 Getting Started
 
-  The Qt Purchasing APIs provide a way to access information about products that have been
-  registered in the external store on the current platform, as well as to request purchases
-  for these products. The APIs contain both C++ classes and QML types.
+  Qt Purchasing provides C++ classes and QML types to access information about
+  in-app products registered in the external store on the current platform, as
+  well as to request purchases for those products.
 
   \section2 The Store
 
-  Before products can be queried and purchased in an application, they should be registered
-  in the target market places. It is recommended that the same identifiers are used to name
-  the products in each of the stores, as this will make the code to query and operate on
-  the products simpler.
+  The in-app products must be registered in the target stores, before they
+  could be queried or purchased in an application. Using same identifiers for
+  the products in each of the stores is recommended, as it makes the code to
+  query and purchase the products simpler.
 
   \list
-  \li \l{Registering products in Google Play on Android}.
-  \li \l{Registering products in App Store on iOS}.
+  \li \l{Registering Products in Google Play}.
+  \li \l{Registering Products in App Store}.
   \endlist
 
   \section2 Writing the Code
 
   Depending on what fits best with the application, you can choose to use either C++ or
-  QML to access the Qt Purchasing APIs. If the majority of the user interface is written
-  in QML, it is recommended that you use the Qt Quick APIs. These provide a simple and
+  QML to support in-app purchasing. If the majority of the user interface is written
+  in QML, it is recommended that you use the QML types, which provide a simple and
   declarative point of access for the products in the store.
 
   \list
-  \li \l{Getting started with Qt Purchasing in QML}
+  \li \l{Getting Started with Qt Purchasing in QML}
   \li \l{Getting started with Qt Purchasing in C++}
   \endlist
 
-  \section1 API Documentation
-
-  The API is divided into QML types and C++ classes. Please refer to the APIs which are
-  best suited for your application.
+  \section1 API Reference
 
   \list
   \li \l{Qt Purchasing QML Types}
