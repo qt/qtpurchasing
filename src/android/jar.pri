@@ -28,8 +28,11 @@ PATHPREFIX = $$PWD/src/com/digia/qt5/android/purchasing/
     }
 
     AIDL_CMD = $$SDK_ROOT/platform-tools/aidl
-    contains(QMAKE_HOST.os, Windows): AIDL_CMD += ".exe"
-    !exists($$AIDL_CMD): AIDL_CMD = $$SDK_ROOT/build-tools/$$BUILD_TOOLS_REVISION/aidl
+    contains(QMAKE_HOST.os, Windows): AIDL_CMD = $$AIDL_CMD".exe"
+    !exists($$AIDL_CMD) {
+        AIDL_CMD = $$SDK_ROOT/build-tools/$$BUILD_TOOLS_REVISION/aidl
+        contains(QMAKE_HOST.os, Windows): AIDL_CMD = $$AIDL_CMD".exe"
+    }
     !exists($$AIDL_CMD): error("The path $$AIDL_CMD does not exist. Please set the environment variable ANDROID_BUILD_TOOLS_REVISION to the revision of the build tools installed in your Android SDK.")
 
     system($$AIDL_CMD -I$$PWD/src -p$$FRAMEWORK_AIDL_FILE $$PWD/src/com/android/vending/billing/IInAppBillingService.aidl $$PWD/src/com/android/vending/billing/IInAppBillingService.java)
