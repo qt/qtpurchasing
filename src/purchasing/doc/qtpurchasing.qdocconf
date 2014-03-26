@@ -1,6 +1,8 @@
+include($QT_INSTALL_DOCS/global/macros.qdocconf)
 include($QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf)
+include($QT_INSTALL_DOCS/global/compat.qdocconf)
 include($QT_INSTALL_DOCS/global/fileextensions.qdocconf)
-include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
+include($QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf)
 
 project                                            = QtPurchasing
 description                                        = Qt Purchasing Reference Documentation
@@ -30,6 +32,22 @@ qhp.QtPurchasing.subprojects.classes.sortPages     = true
 qhp.QtPurchasing.subprojects.examples.title        = Examples
 qhp.QtPurchasing.subprojects.examples.indexTitle   = Qt Purchasing Examples and Tutorials
 qhp.QtPurchasing.subprojects.examples.selectors    = fake:example
+
+HTML.footer = \
+    "<div class=\"footer\">\n" \
+    "    <p>\n" \
+    "      <acronym title=\"Copyright\">&copy;</acronym> 2014 Digia. Qt and Qt logos are\n" \
+    "      trademarks of of Digia Corporation in Finland and/or other countries worldwide.\n" \
+    "    </p>\n" \
+    "      All other trademarks are property of their respective owners.\n" \
+    "    <br />\n" \
+    "    <p>\n" \
+    "      Licensees holding valid Qt Enterprise licenses may use this document in accordance\n" \
+    "      with the Qt Enterprise License Agreement provided with the Software or,\n" \
+    "      alternatively, in accordance with the terms contained in a written agreement\n" \
+    "      between you and Digia.\n" \
+    "    </p>\n" \
+    "</div>\n"
 
 indexes +=  $QT_INSTALL_DOCS/qtqml/qtqml.index \
             $QT_INSTALL_DOCS/qtquick/qtquick.index \
