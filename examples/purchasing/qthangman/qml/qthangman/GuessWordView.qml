@@ -66,6 +66,7 @@ Item {
         input.text = ""
         Qt.inputMethod.hide();
         pageStack.pop();
+        topLevel.forceActiveFocus()
     }
 
     TextField {
@@ -88,7 +89,6 @@ Item {
     }
 
     Component.onCompleted: {
-
         Qt.inputMethod.show();
         input.forceActiveFocus();
     }
