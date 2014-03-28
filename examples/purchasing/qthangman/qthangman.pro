@@ -32,5 +32,9 @@ OTHER_FILES += \
     enable2.txt
 
 ios {
-    QMAKE_TARGET_BUNDLE_PREFIX = "com.digia.qt.iosteam"
+    #Change the following lines to match your unique App ID
+    #to enable in-app purchases on iOS
+    #For example if your App ID is com.digia.qt.iosteam.qthangman"
+    #QMAKE_TARGET_BUNDLE_PREFIX = "com.digia.qt.iosteam"
+    #TARGET = qthangman
 }
