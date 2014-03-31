@@ -32,6 +32,7 @@ class QInAppStoreQmlType;
 class QInAppProductQmlType : public QObject, public QQmlParserStatus
 {
     Q_OBJECT
+    Q_INTERFACES(QQmlParserStatus)
     Q_ENUMS(Status ProductType)
     Q_PROPERTY(QString identifier READ identifier WRITE setIdentifier NOTIFY identifierChanged)
     Q_PROPERTY(ProductType type READ type WRITE setType NOTIFY typeChanged)
