@@ -66,6 +66,11 @@
   \li \l{Getting started with Qt Purchasing in C++}
   \endlist
 
+  \section1 Examples
+
+  Take a look at the \l{Qt Purchasing Examples} for a demonstration on
+  how the APIs can be used in applications.
+
   \section1 API Reference
 
   \list
