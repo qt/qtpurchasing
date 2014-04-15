@@ -82,7 +82,7 @@
 
   \section1 Making Connections
 
-  Registering a product is an asynchronous operation, as is all operations
+  Registering a product is an asynchronous operation, as are all operations
   supported by Qt Purchasing. Before you start registering a product, you must
   listen to the corresponding signal to know the status of your registration.
 
