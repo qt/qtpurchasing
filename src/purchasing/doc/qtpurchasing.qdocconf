@@ -59,6 +59,8 @@ sourcedirs += ../ ../../imports/purchasing
 exampledirs += ../../../examples/purchasing
 imagedirs  += images
 
+examplesinstallpath = purchasing
+
 navigation.landingpage    = "Qt Purchasing"
 navigation.qmltypespage   = "Qt Purchasing QML Types"
 navigation.cppclassespage = "Qt Purchasing C++ Classes"
