@@ -26,7 +26,7 @@
 
 QT_USE_NAMESPACE
 
-static void queryFailed(jclass, jlong nativePointer, jstring productId)
+static void queryFailed(JNIEnv *, jclass, jlong nativePointer, jstring productId)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
@@ -35,7 +35,7 @@ static void queryFailed(jclass, jlong nativePointer, jstring productId)
                               Q_ARG(QString, QAndroidJniObject(productId).toString()));
 }
 
-static void purchasedProductsQueried(jclass, jlong nativePointer)
+static void purchasedProductsQueried(JNIEnv *, jclass, jlong nativePointer)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
@@ -43,7 +43,7 @@ static void purchasedProductsQueried(jclass, jlong nativePointer)
                               Qt::AutoConnection);
 }
 
-static void registerProduct(jclass, jlong nativePointer, jstring productId, jstring price, jstring title, jstring description)
+static void registerProduct(JNIEnv *, jclass, jlong nativePointer, jstring productId, jstring price, jstring title, jstring description)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
@@ -55,7 +55,7 @@ static void registerProduct(jclass, jlong nativePointer, jstring productId, jstr
                               Q_ARG(QString, QAndroidJniObject(description).toString()));
 }
 
-static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
+static void registerPurchased(JNIEnv *, jclass, jlong nativePointer, jstring identifier,
                               jstring signature, jstring data, jstring purchaseToken, jstring orderId, jlong timestamp)
 {
     QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(qint64(timestamp));
@@ -73,7 +73,7 @@ static void registerPurchased(jclass, jlong nativePointer, jstring identifier,
                               Q_ARG(QDateTime, dateTime));
 }
 
-static void purchaseSucceeded(jclass, jlong nativePointer, jint requestCode,
+static void purchaseSucceeded(JNIEnv *, jclass, jlong nativePointer, jint requestCode,
                               jstring signature, jstring data, jstring purchaseToken, jstring orderId, jlong timestamp)
 {
     QDateTime dateTime = QDateTime::fromMSecsSinceEpoch(qint64(timestamp));
@@ -91,7 +91,7 @@ static void purchaseSucceeded(jclass, jlong nativePointer, jint requestCode,
                               Q_ARG(QDateTime, dateTime));
 }
 
-static void purchaseFailed(jclass, jlong nativePointer, jint requestCode, jint failureReason, jstring errorString)
+static void purchaseFailed(JNIEnv *, jclass, jlong nativePointer, jint requestCode, jint failureReason, jstring errorString)
 {
     QAndroidInAppPurchaseBackend *backend = reinterpret_cast<QAndroidInAppPurchaseBackend *>(nativePointer);
     QMetaObject::invokeMethod(backend,
