@@ -84,10 +84,13 @@
 
   Registering a product is an asynchronous operation, as are all operations
   supported by Qt Purchasing. Before you start registering a product, you must
-  listen to the corresponding signal to know the status of your registration.
+  listen to the \l{QInAppStore::productRegistered()} and
+  \l{QInAppStore::productUnknown()} signals in QInAppStore to know the status
+  of your registration.
 
   If the application intends to allow users to purchase products, it also needs
-  to listen for the signal that a transaction is pending.
+  to listen for the \l{QInAppStore::transactionReady()} signal to be notified
+  when a transaction is pending.
 
   \code
   void MyApplication::setupConnections()
