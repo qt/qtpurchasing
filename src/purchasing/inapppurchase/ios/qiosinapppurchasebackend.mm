@@ -65,6 +65,8 @@
 
 -(void)processPendingTransactions
 {
+    NSMutableArray *registeredTransactions = [NSMutableArray array];
+
     for (SKPaymentTransaction *transaction in pendingTransactions) {
         QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
 
@@ -73,10 +75,13 @@
         if (product) {
             //It is possible that the product doesn't exist yet (because of previous restores).
             QIosInAppPurchaseTransaction *qtTransaction = new QIosInAppPurchaseTransaction(transaction, status, product, backend);
-            [pendingTransactions removeObject:transaction];
+            [registeredTransactions addObject:transaction];
             QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseTransaction*, qtTransaction));
         }
     }
+
+    //Remove registeredTransactions from pendingTransactions
+    [pendingTransactions removeObjectsInArray:registeredTransactions];
 }
 
 
