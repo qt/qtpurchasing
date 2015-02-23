@@ -221,57 +221,59 @@ public class QtInAppPurchase
         {
             public void run()
             {
-                try {
-                    ArrayList<String> productIds = new ArrayList<String>();
-                    productIds.add(productId);
-                    Bundle productIdBundle = new Bundle();
-                    productIdBundle.putStringArrayList("ITEM_ID_LIST", productIds);
+                synchronized(m_service) {
+                    try {
+                        ArrayList<String> productIds = new ArrayList<String>();
+                        productIds.add(productId);
+                        Bundle productIdBundle = new Bundle();
+                        productIdBundle.putStringArrayList("ITEM_ID_LIST", productIds);
 
-                    Bundle bundle = m_service.getSkuDetails(IAP_VERSION,
-                                                            m_context.getPackageName(),
-                                                            "inapp",
-                                                            productIdBundle);
-                    int responseCode = bundleResponseCode(bundle);
-                    if (responseCode != RESULT_OK) {
-                        Log.e(TAG, "queryDetails: Couldn't retrieve sku details.");
-                        queryFailed(m_nativePointer, productId);
-                        return;
-                    }
-
-                    ArrayList<String> detailsList = bundle.getStringArrayList("DETAILS_LIST");
-                    if (detailsList == null) {
-                        Log.e(TAG, "queryDetails: No details list in response.");
-                        queryFailed(m_nativePointer, productId);
-                        return;
-                    }
-
-                    for (String details : detailsList) {
-                        try {
-                            JSONObject jo = new JSONObject(details);
-                            String queriedProductId = jo.getString("productId");
-                            String queriedPrice = jo.getString("price");
-                            String queriedTitle = jo.getString("title");
-                            String queriedDescription = jo.getString("description");
-                            if (queriedProductId == null || queriedPrice == null || queriedTitle == null || queriedDescription == null) {
-                                Log.e(TAG, "Data missing from product details.");
-                            } else if (productId.equals(queriedProductId)) {
-                                registerProduct(m_nativePointer,
-                                                queriedProductId,
-                                                queriedPrice,
-                                                queriedTitle,
-                                                queriedDescription);
-                                return;
-                            }
-                        } catch (JSONException e) {
-                            e.printStackTrace();
+                        Bundle bundle = m_service.getSkuDetails(IAP_VERSION,
+                                                                m_context.getPackageName(),
+                                                                "inapp",
+                                                                productIdBundle);
+                        int responseCode = bundleResponseCode(bundle);
+                        if (responseCode != RESULT_OK) {
+                            Log.e(TAG, "queryDetails: Couldn't retrieve sku details.");
+                            queryFailed(m_nativePointer, productId);
+                            return;
                         }
 
-                    }
+                        ArrayList<String> detailsList = bundle.getStringArrayList("DETAILS_LIST");
+                        if (detailsList == null) {
+                            Log.e(TAG, "queryDetails: No details list in response.");
+                            queryFailed(m_nativePointer, productId);
+                            return;
+                        }
 
-                    queryFailed(m_nativePointer, productId);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                    queryFailed(m_nativePointer, productId);
+                        for (String details : detailsList) {
+                            try {
+                                JSONObject jo = new JSONObject(details);
+                                String queriedProductId = jo.getString("productId");
+                                String queriedPrice = jo.getString("price");
+                                String queriedTitle = jo.getString("title");
+                                String queriedDescription = jo.getString("description");
+                                if (queriedProductId == null || queriedPrice == null || queriedTitle == null || queriedDescription == null) {
+                                    Log.e(TAG, "Data missing from product details.");
+                                } else if (productId.equals(queriedProductId)) {
+                                    registerProduct(m_nativePointer,
+                                                    queriedProductId,
+                                                    queriedPrice,
+                                                    queriedTitle,
+                                                    queriedDescription);
+                                    return;
+                                }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+
+                        queryFailed(m_nativePointer, productId);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                        queryFailed(m_nativePointer, productId);
+                    }
                 }
             }
         });
