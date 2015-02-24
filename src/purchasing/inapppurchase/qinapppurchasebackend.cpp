@@ -38,6 +38,12 @@ bool QInAppPurchaseBackend::isReady() const
     return true;
 }
 
+void QInAppPurchaseBackend::queryProducts(const QList<Product> &products)
+{
+    foreach (const Product &product, products)
+        queryProduct(product.productType, product.identifier);
+}
+
 void QInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productType,
                                                     const QString &identifier)
 {

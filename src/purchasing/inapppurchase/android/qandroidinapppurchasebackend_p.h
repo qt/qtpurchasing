@@ -55,6 +55,7 @@ public:
     void initialize();
     bool isReady() const;
 
+    void queryProducts(const QList<Product> &products);
     void queryProduct(QInAppProduct::ProductType productType, const QString &identifier);
     void restorePurchases();
 

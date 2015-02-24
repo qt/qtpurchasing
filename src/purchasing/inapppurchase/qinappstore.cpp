@@ -185,14 +185,15 @@ void QInAppStore::registerProduct(QInAppProduct *product)
  */
 void QInAppStore::registerPendingProducts()
 {
+    QList<QInAppPurchaseBackend::Product> products;
+    products.reserve(d->pendingProducts.size());
+
     QHash<QString, QInAppProduct::ProductType>::const_iterator it;
-    for (it = d->pendingProducts.constBegin(); it != d->pendingProducts.constEnd(); ++it) {
-        QString identifier = it.key();
-        QInAppProduct::ProductType productType = it.value();
-        d->backend->queryProduct(productType, identifier);
-    }
+    for (it = d->pendingProducts.constBegin(); it != d->pendingProducts.constEnd(); ++it)
+        products.append(QInAppPurchaseBackend::Product(it.value(), it.key()));
     d->pendingProducts.clear();
 
+    d->backend->queryProducts(products);
     if (d->pendingRestorePurchases)
         restorePurchases();
 }

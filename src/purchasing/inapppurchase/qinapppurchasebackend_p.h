@@ -44,11 +44,23 @@ class QInAppPurchaseBackend : public QObject
 {
     Q_OBJECT
 public:
+    struct Product
+    {
+        Product(QInAppProduct::ProductType type, const QString &id)
+            : productType(type), identifier(id)
+        {
+        }
+
+        QInAppProduct::ProductType productType;
+        QString identifier;
+    };
+
     explicit QInAppPurchaseBackend(QObject *parent = 0);
 
     virtual void initialize();
     virtual bool isReady() const;
 
+    virtual void queryProducts(const QList<Product> &products);
     virtual void queryProduct(QInAppProduct::ProductType productType, const QString &identifier);
     virtual void restorePurchases();
 

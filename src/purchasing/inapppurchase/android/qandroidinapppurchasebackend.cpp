@@ -24,6 +24,7 @@
 #include "qinappstore.h"
 
 #include <QtAndroidExtras/qandroidfunctions.h>
+#include <QtAndroidExtras/qandroidjnienvironment.h>
 #include <QtCore/qfile.h>
 #include <QtCore/qfileinfo.h>
 #include <QtCore/qdir.h>
@@ -104,6 +105,34 @@ void QAndroidInAppPurchaseBackend::restorePurchases()
     }
 }
 
+void QAndroidInAppPurchaseBackend::queryProducts(const QList<Product> &products)
+{
+    QMutexLocker locker(&m_mutex);
+    QAndroidJniEnvironment environment;
+
+    jclass cls = environment->FindClass("java/lang/String");
+    jobjectArray productIds = environment->NewObjectArray(products.size(), cls, 0);
+    environment->DeleteLocalRef(cls);
+
+    for (int i = 0; i < products.size(); ++i) {
+        const Product &product = products.at(i);
+        if (m_productTypeForPendingId.contains(product.identifier)) {
+            qWarning("Product query already pending for %s", qPrintable(product.identifier));
+            continue;
+        }
+
+        m_productTypeForPendingId[product.identifier] = product.productType;
+
+        QAndroidJniObject identifier = QAndroidJniObject::fromString(product.identifier);
+        environment->SetObjectArrayElement(productIds, i, identifier.object());
+    }
+
+    m_javaObject.callMethod<void>("queryDetails",
+                                  "([Ljava/lang/String;)V",
+                                  productIds);
+    environment->DeleteLocalRef(productIds);
+}
+
 void QAndroidInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productType,
                                                 const QString &identifier)
 {
@@ -111,16 +140,7 @@ void QAndroidInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType produ
     qDebug("Querying product: %s (%d)", qPrintable(identifier), productType);
 #endif
 
-    QMutexLocker locker(&m_mutex);
-    if (m_productTypeForPendingId.contains(identifier)) {
-        qWarning("Product query already pending for %s", qPrintable(identifier));
-        return;
-    }
-
-    m_productTypeForPendingId[identifier] = productType;
-    m_javaObject.callMethod<void>("queryDetails",
-                                  "(Ljava/lang/String;)V",
-                                  QAndroidJniObject::fromString(identifier).object<jstring>());
+    queryProducts(QList<Product>() << Product(productType, identifier));
 }
 
 void QAndroidInAppPurchaseBackend::setPlatformProperty(const QString &propertyName, const QString &value)
