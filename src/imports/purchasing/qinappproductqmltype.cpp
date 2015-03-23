@@ -211,6 +211,22 @@ void QInAppProductQmlType::updateProduct()
         emit statusChanged();
 }
 
+/*!
+  \qmlmethod QtPurchasing::Product::resetStatus()
+
+  Resets the \l status of this product and retries querying it from the external
+  market place.
+
+  This method can be used when querying the product failed for some reason
+  (such as network timeouts).
+
+  \since QtPurchasing 1.1
+*/
+void QInAppProductQmlType::resetStatus()
+{
+    updateProduct();
+}
+
 QString QInAppProductQmlType::identifier() const
 {
     return m_identifier;

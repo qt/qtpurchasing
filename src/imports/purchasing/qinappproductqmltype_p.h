@@ -58,6 +58,7 @@ public:
     explicit QInAppProductQmlType(QObject *parent = 0);
 
     Q_INVOKABLE void purchase();
+    Q_INVOKABLE void resetStatus();
 
     void setIdentifier(const QString &identifier);
     QString identifier() const;

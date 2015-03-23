@@ -163,8 +163,9 @@ void QAndroidInAppPurchaseBackend::registerQueryFailure(const QString &productId
     QHash<QString, QInAppProduct::ProductType>::iterator it = m_productTypeForPendingId.find(productId);
     Q_ASSERT(it != m_productTypeForPendingId.end());
 
-    emit productQueryFailed(it.value(), it.key());
+    QInAppProduct::ProductType productType = it.value();
     m_productTypeForPendingId.erase(it);
+    emit productQueryFailed(productType, productId);
 }
 
 void QAndroidInAppPurchaseBackend::consumeTransaction(const QString &purchaseToken)
