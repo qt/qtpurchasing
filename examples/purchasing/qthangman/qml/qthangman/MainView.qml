@@ -21,7 +21,7 @@
 import QtQuick 2.2
 import QtQuick.Controls 1.1
 import com.digia.qthangman 1.0
-import QtPurchasing 1.0
+import QtPurchasing 1.1
 
 Item {
     id: topLevel
