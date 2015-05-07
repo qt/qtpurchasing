@@ -1,7 +1,7 @@
 CXX_MODULE = purchasing
 TARGET  = declarative_purchasing
 TARGETPATH = QtPurchasing
-IMPORT_VERSION = 1.1
+IMPORT_VERSION = 1.0
 
 QT += qml quick purchasing purchasing-private
 SOURCES += \

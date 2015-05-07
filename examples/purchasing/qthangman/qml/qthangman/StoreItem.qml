@@ -19,7 +19,7 @@
 ****************************************************************************/
 
 import QtQuick 2.2
-import QtPurchasing 1.1
+import QtPurchasing 1.0
 import QtQuick.Controls 1.1
 
 Rectangle {

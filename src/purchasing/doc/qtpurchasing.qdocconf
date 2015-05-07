@@ -7,18 +7,18 @@ include($QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf)
 project                                            = QtPurchasing
 description                                        = Qt Purchasing Reference Documentation
 url                                                = http://doc.qt.digia.com/QtPurchasing/
-version                                            = 1.1
+version                                            = 1.0.1
 
 qhp.projects                                       = QtPurchasing
 
 qhp.QtPurchasing.file                              = qtpurchasing.qhp
-qhp.QtPurchasing.namespace                         = com.digia.qtpurchasing.1.1
+qhp.QtPurchasing.namespace                         = com.digia.qtpurchasing.1.0
 qhp.QtPurchasing.virtualFolder                     = qtpurchasing
 qhp.QtPurchasing.indexTitle                        = Qt Purchasing
 qhp.QtPurchasing.indexRoot                         =
-qhp.QtPurchasing.filterAttributes                  = qtpurchasing 1.1 qtrefdoc
-qhp.QtPurchasing.customFilters.Qt.name             = QtPurchasing 1.1
-qhp.QtPurchasing.customFilters.Qt.filterAttributes = qtpurchasing 1.1
+qhp.QtPurchasing.filterAttributes                  = qtpurchasing 1.0 qtrefdoc
+qhp.QtPurchasing.customFilters.Qt.name             = QtPurchasing 1.0
+qhp.QtPurchasing.customFilters.Qt.filterAttributes = qtpurchasing 1.0
 
 qhp.QtPurchasing.subprojects                       = qmltypes classes examples
 qhp.QtPurchasing.subprojects.qmltypes.title        = QML Types
@@ -64,4 +64,4 @@ examplesinstallpath = purchasing
 navigation.landingpage    = "Qt Purchasing"
 navigation.qmltypespage   = "Qt Purchasing QML Types"
 navigation.cppclassespage = "Qt Purchasing C++ Classes"
-buildversion              = "Qt Purchasing 1.1"
+buildversion              = "Qt Purchasing 1.0"

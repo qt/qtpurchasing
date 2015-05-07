@@ -35,7 +35,7 @@
   Purchasing QML types:
 
   \qml
-  import QtPurchasing 1.1
+  import QtPurchasing 1.0
   \endqml
 
   Add the following statement to your \c .pro file to link against the Qt

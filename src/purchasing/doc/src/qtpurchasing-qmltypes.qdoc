@@ -19,7 +19,7 @@
 ****************************************************************************/
 
 /*!
-  \qmlmodule QtPurchasing 1.1
+  \qmlmodule QtPurchasing 1.0
   \title Qt Purchasing QML Types
   \ingroup qmlmodules
   \brief Provides QML types for in-app purchasing.
@@ -32,7 +32,7 @@
   import statement:
 
   \code
-  import QtPurchasing 1.1
+  import QtPurchasing 1.0
   \endcode
 
   To link against the module, add this line to your \l qmake \c .pro file:
