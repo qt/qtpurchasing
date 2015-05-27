@@ -220,7 +220,7 @@ void QInAppProductQmlType::updateProduct()
   This method can be used when querying the product failed for some reason
   (such as network timeouts).
 
-  \since QtPurchasing 1.0.1
+  \since QtPurchasing 1.0.2
 */
 void QInAppProductQmlType::resetStatus()
 {
