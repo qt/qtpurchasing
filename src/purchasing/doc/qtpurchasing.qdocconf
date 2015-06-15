@@ -33,22 +33,6 @@ qhp.QtPurchasing.subprojects.examples.title        = Examples
 qhp.QtPurchasing.subprojects.examples.indexTitle   = Qt Purchasing Examples
 qhp.QtPurchasing.subprojects.examples.selectors    = fake:example
 
-HTML.footer = \
-    "<div class=\"footer\">\n" \
-    "    <p>\n" \
-    "      <acronym title=\"Copyright\">&copy;</acronym> 2014 Digia. Qt and Qt logos are\n" \
-    "      trademarks of of Digia Corporation in Finland and/or other countries worldwide.\n" \
-    "    </p>\n" \
-    "      All other trademarks are property of their respective owners.\n" \
-    "    <br />\n" \
-    "    <p>\n" \
-    "      Licensees holding valid Qt Enterprise licenses may use this document in accordance\n" \
-    "      with the Qt Enterprise License Agreement provided with the Software or,\n" \
-    "      alternatively, in accordance with the terms contained in a written agreement\n" \
-    "      between you and Digia.\n" \
-    "    </p>\n" \
-    "</div>\n"
-
 indexes +=  $QT_INSTALL_DOCS/qtqml/qtqml.index \
             $QT_INSTALL_DOCS/qtquick/qtquick.index \
             $QT_INSTALL_DOCS/qtdoc/qtdoc.index \
