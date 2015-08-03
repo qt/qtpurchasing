@@ -1,5 +1,5 @@
 /* Copyright (c) 2012 Google Inc.
- * Copyright (c) 2014 Digia Plc and/or its subsidiary(-ies).
+ * Copyright (c) 2015 The Qt Company Ltd.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
