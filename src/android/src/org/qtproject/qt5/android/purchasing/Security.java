@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.digia.qt5.android.purchasing;
+package org.qtproject.qt5.android.purchasing;
 
 import android.text.TextUtils;
 import android.util.Log;

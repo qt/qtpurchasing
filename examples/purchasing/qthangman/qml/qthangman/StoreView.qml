@@ -67,7 +67,7 @@ Item {
         id: product100Vowels
         store: iapStore
         type: Product.Consumable
-        identifier: "com.digia.qthangman.100vowels"
+        identifier: "org.qtproject.qthangman.100vowels"
 
         onPurchaseSucceeded: {
             console.log(identifier + " purchase successful");
@@ -89,7 +89,7 @@ Item {
         id: productUnlockVowels
         type: Product.Unlockable
         store: iapStore
-        identifier: "com.digia.qthangman.unlockvowels"
+        identifier: "org.qtproject.qthangman.unlockvowels"
 
         onPurchaseSucceeded: {
             console.log(identifier + " purchase successful");

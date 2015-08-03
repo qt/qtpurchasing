@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
 
-    qmlRegisterType<HangmanGame>("com.digia.qthangman", 1, 0, "HangmanGame");
+    qmlRegisterType<HangmanGame>("org.qtproject.qthangman", 1, 0, "HangmanGame");
 
     QQmlApplicationEngine engine(QUrl("qrc:/qml/qthangman/main.qml"));
 

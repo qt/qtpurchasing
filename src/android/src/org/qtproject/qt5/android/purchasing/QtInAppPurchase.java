@@ -18,7 +18,7 @@
 **
 ****************************************************************************/
 
-package com.digia.qt5.android.purchasing;
+package org.qtproject.qt5.android.purchasing;
 
 import java.util.ArrayList;
 import java.util.HashSet;

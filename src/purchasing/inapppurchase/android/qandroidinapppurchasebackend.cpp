@@ -44,7 +44,7 @@ QAndroidInAppPurchaseBackend::QAndroidInAppPurchaseBackend(QObject *parent)
     qDebug("Creating backend");
 #endif
 
-    m_javaObject = QAndroidJniObject("com/digia/qt5/android/purchasing/QtInAppPurchase",
+    m_javaObject = QAndroidJniObject("org/qtproject/qt5/android/purchasing/QtInAppPurchase",
                                        "(Landroid/content/Context;J)V",
                                        QtAndroid::androidActivity().object<jobject>(),
                                        reinterpret_cast<jlong>(this));

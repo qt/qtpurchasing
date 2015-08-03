@@ -12,7 +12,7 @@ version                                            = 1.0.2
 qhp.projects                                       = QtPurchasing
 
 qhp.QtPurchasing.file                              = qtpurchasing.qhp
-qhp.QtPurchasing.namespace                         = com.digia.qtpurchasing.1.0
+qhp.QtPurchasing.namespace                         = org.qtproject.qtpurchasing.1.0
 qhp.QtPurchasing.virtualFolder                     = qtpurchasing
 qhp.QtPurchasing.indexTitle                        = Qt Purchasing
 qhp.QtPurchasing.indexRoot                         =

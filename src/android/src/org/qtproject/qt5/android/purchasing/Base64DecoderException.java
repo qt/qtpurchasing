@@ -13,7 +13,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package com.digia.qt5.android.purchasing;
+package org.qtproject.qt5.android.purchasing;
 
 /**
  * Exception thrown when encountering an invalid Base64 input character.

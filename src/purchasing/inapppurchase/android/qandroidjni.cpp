@@ -117,7 +117,7 @@ jint JNICALL JNI_OnLoad(JavaVM *vm, void *)
     if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_4) != JNI_OK)
         return JNI_FALSE;
 
-    jclass clazz = env->FindClass("com/digia/qt5/android/purchasing/QtInAppPurchase");
+    jclass clazz = env->FindClass("org/qtproject/qt5/android/purchasing/QtInAppPurchase");
     if (env->RegisterNatives(clazz, methods, sizeof(methods) / sizeof(methods[0])) < 0)
         return JNI_FALSE;
 
