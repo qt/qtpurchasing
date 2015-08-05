@@ -26,8 +26,8 @@
 **
 ****************************************************************************/
 
-#ifndef QIOSINAPPPURCHASEPRODUCT_P_H
-#define QIOSINAPPPURCHASEPRODUCT_P_H
+#ifndef QMACINAPPTRANSACTION_P_H
+#define QMACINAPPTRANSACTION_P_H
 
 //
 //  W A R N I N G
@@ -40,29 +40,38 @@
 // We mean it.
 //
 
-#include "qinappproduct.h"
+#include "qinapptransaction.h"
+#include <QtCore/QString>
 
-@class SKProduct;
+@class SKPaymentTransaction;
 
 QT_BEGIN_NAMESPACE
 
-class QIosInAppPurchaseBackend;
+class QMacInAppPurchaseBackend;
 
-class QIosInAppPurchaseProduct : public QInAppProduct
+class QMacInAppPurchaseTransaction : public QInAppTransaction
 {
     Q_OBJECT
 public:
-    explicit QIosInAppPurchaseProduct(SKProduct *product,
-                                      ProductType productType,
-                                      QIosInAppPurchaseBackend *backend);
-    void purchase();
+    QMacInAppPurchaseTransaction(SKPaymentTransaction *transaction,
+                                 const TransactionStatus status,
+                                 QInAppProduct *product,
+                                 QMacInAppPurchaseBackend *backend = 0);
+
+    void finalize();
+    QString orderId() const;
+    FailureReason failureReason() const;
+    QString errorString() const;
+    QDateTime timestamp() const;
 
 private:
-    SKProduct *m_nativeProduct;
+    SKPaymentTransaction *m_nativeTransaction;
+    QString m_errorString;
+    FailureReason m_failureReason;
 };
 
-Q_DECLARE_METATYPE(QIosInAppPurchaseProduct*);
+Q_DECLARE_METATYPE(QMacInAppPurchaseTransaction*)
 
 QT_END_NAMESPACE
 
-#endif // QIOSINAPPPURCHASEPRODUCT_P_H
+#endif // QMACINAPPTRANSACTION_P_H

@@ -31,9 +31,9 @@ OTHER_FILES += \
     qml/qthangman/Word.qml \
     enable2.txt
 
-ios {
+mac {
     #Change the following lines to match your unique App ID
-    #to enable in-app purchases on iOS
+    #to enable in-app purchases on OS X and iOS
     #For example if your App ID is org.qtproject.qt.iosteam.qthangman"
     #QMAKE_TARGET_BUNDLE_PREFIX = "org.qtproject.qt.iosteam"
     #TARGET = qthangman

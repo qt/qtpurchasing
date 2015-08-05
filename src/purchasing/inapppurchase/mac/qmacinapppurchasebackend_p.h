@@ -26,8 +26,8 @@
 **
 ****************************************************************************/
 
-#ifndef QIOSINAPPTRANSACTION_P_H
-#define QIOSINAPPTRANSACTION_P_H
+#ifndef QMACINAPPPURCHASEBACKEND_P_H
+#define QMACINAPPPURCHASEBACKEND_P_H
 
 //
 //  W A R N I N G
@@ -40,38 +40,45 @@
 // We mean it.
 //
 
+#include "qinapppurchasebackend_p.h"
+#include "qinappproduct.h"
 #include "qinapptransaction.h"
-#include <QtCore/QString>
 
-@class SKPaymentTransaction;
+#include <QtCore/QHash>
+
+Q_FORWARD_DECLARE_OBJC_CLASS(QT_MANGLE_NAMESPACE(InAppPurchaseManager));
 
 QT_BEGIN_NAMESPACE
 
-class QIosInAppPurchaseBackend;
+class QMacInAppPurchaseProduct;
+class QMacInAppPurchaseTransaction;
 
-class QIosInAppPurchaseTransaction : public QInAppTransaction
+class QMacInAppPurchaseBackend : public QInAppPurchaseBackend
 {
     Q_OBJECT
 public:
-    QIosInAppPurchaseTransaction(SKPaymentTransaction *transaction,
-                                 const TransactionStatus status,
-                                 QInAppProduct *product,
-                                 QIosInAppPurchaseBackend *backend);
+    QMacInAppPurchaseBackend(QObject *parent = 0);
+    ~QMacInAppPurchaseBackend();
 
-    void finalize();
-    QString orderId() const;
-    FailureReason failureReason() const;
-    QString errorString() const;
-    QDateTime timestamp() const;
+    void initialize();
+    bool isReady() const;
+    void queryProduct(QInAppProduct::ProductType productType, const QString &identifier);
+    void restorePurchases();
+    void setPlatformProperty(const QString &propertyName, const QString &value);
+
+    //Called by InAppPurchaseManager
+    Q_INVOKABLE void registerProduct(QMacInAppPurchaseProduct *product);
+    Q_INVOKABLE void registerQueryFailure(const QString &productId);
+    Q_INVOKABLE void registerTransaction(QMacInAppPurchaseTransaction *transaction);
+    QInAppProduct::ProductType productTypeForProductId(const QString &productId);
+    QMacInAppPurchaseProduct *registeredProductForProductId(const QString &productId);
 
 private:
-    SKPaymentTransaction *m_nativeTransaction;
-    QString m_errorString;
-    FailureReason m_failureReason;
+    QT_MANGLE_NAMESPACE(InAppPurchaseManager) *m_iapManager;
+    QHash<QString, QInAppProduct::ProductType> m_productTypeForPendingId;
+    QHash<QString, QMacInAppPurchaseProduct*> m_registeredProductForId;
 };
 
-Q_DECLARE_METATYPE(QIosInAppPurchaseTransaction*);
+#endif // QMACINAPPPURCHASEBACKEND_P_H
 
 QT_END_NAMESPACE
-
-#endif // QIOSINAPPTRANSACTION_P_H

@@ -26,8 +26,8 @@
 **
 ****************************************************************************/
 
-#ifndef QIOSINAPPPURCHASEBACKEND_P_H
-#define QIOSINAPPPURCHASEBACKEND_P_H
+#ifndef QMACINAPPPURCHASEPRODUCT_P_H
+#define QMACINAPPPURCHASEPRODUCT_P_H
 
 //
 //  W A R N I N G
@@ -40,43 +40,29 @@
 // We mean it.
 //
 
-#include "qinapppurchasebackend_p.h"
 #include "qinappproduct.h"
-#include "qinapptransaction.h"
 
-#include <QtCore/QHash>
+@class SKProduct;
 
 QT_BEGIN_NAMESPACE
 
-class QIosInAppPurchaseProduct;
-class QIosInAppPurchaseTransaction;
+class QMacInAppPurchaseBackend;
 
-class QIosInAppPurchaseBackend : public QInAppPurchaseBackend
+class QMacInAppPurchaseProduct : public QInAppProduct
 {
     Q_OBJECT
 public:
-    QIosInAppPurchaseBackend(QObject *parent = 0);
-    ~QIosInAppPurchaseBackend();
-
-    void initialize();
-    bool isReady() const;
-    void queryProduct(QInAppProduct::ProductType productType, const QString &identifier);
-    void restorePurchases();
-    void setPlatformProperty(const QString &propertyName, const QString &value);
-
-    //Called by InAppPurchaseManager
-    Q_INVOKABLE void registerProduct(QIosInAppPurchaseProduct *product);
-    Q_INVOKABLE void registerQueryFailure(const QString &productId);
-    Q_INVOKABLE void registerTransaction(QIosInAppPurchaseTransaction *transaction);
-    QInAppProduct::ProductType productTypeForProductId(const QString &productId);
-    QIosInAppPurchaseProduct *registeredProductForProductId(const QString &productId);
+    explicit QMacInAppPurchaseProduct(SKProduct *product,
+                                      ProductType productType,
+                                      QMacInAppPurchaseBackend *backend = 0);
+    void purchase();
 
 private:
-    void *m_iapManager;
-    QHash<QString, QInAppProduct::ProductType> m_productTypeForPendingId;
-    QHash<QString, QIosInAppPurchaseProduct*> m_registeredProductForId;
+    SKProduct *m_nativeProduct;
 };
 
-#endif // QIOSINAPPPURCHASEBACKEND_P_H
+Q_DECLARE_METATYPE(QMacInAppPurchaseProduct*)
 
 QT_END_NAMESPACE
+
+#endif // QMACINAPPPURCHASEPRODUCT_P_H

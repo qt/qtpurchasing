@@ -23,6 +23,6 @@ android {
     include ($$PWD/android/android.pri)
 }
 
-ios {
-    include ($$PWD/ios/ios.pri)
+mac {
+    include ($$PWD/mac/mac.pri)
 }

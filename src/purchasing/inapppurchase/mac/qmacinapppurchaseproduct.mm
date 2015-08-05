@@ -26,19 +26,19 @@
 **
 ****************************************************************************/
 
-#include "qiosinapppurchaseproduct_p.h"
-#include "qiosinapppurchasebackend_p.h"
+#include "qmacinapppurchaseproduct_p.h"
+#include "qmacinapppurchasebackend_p.h"
 
 #import <StoreKit/StoreKit.h>
 
 //Use a Catagory to add a localizedPrice method to SKProduct
-@interface SKProduct (LocalizedPrice)
+@interface SKProduct (QT_MANGLE_NAMESPACE(LocalizedPrice))
 
 @property (nonatomic, readonly) NSString *localizedPrice;
 
 @end
 
-@implementation SKProduct (LocalizedPrice)
+@implementation SKProduct (QT_MANGLE_NAMESPACE(LocalizedPrice))
 
 - (NSString *)localizedPrice
 {
@@ -55,9 +55,9 @@
 
 QT_BEGIN_NAMESPACE
 
-QIosInAppPurchaseProduct::QIosInAppPurchaseProduct(SKProduct *product,
+QMacInAppPurchaseProduct::QMacInAppPurchaseProduct(SKProduct *product,
                                                    ProductType productType,
-                                                   QIosInAppPurchaseBackend *backend)
+                                                   QMacInAppPurchaseBackend *backend)
     : QInAppProduct(QString::fromNSString([product localizedPrice]),
                     QString::fromNSString([product localizedTitle]),
                     QString::fromNSString([product localizedDescription]),
@@ -68,7 +68,7 @@ QIosInAppPurchaseProduct::QIosInAppPurchaseProduct(SKProduct *product,
 {
 }
 
-void QIosInAppPurchaseProduct::purchase()
+void QMacInAppPurchaseProduct::purchase()
 {
     SKPayment *payment = [SKPayment paymentWithProduct:m_nativeProduct];
     [[SKPaymentQueue defaultQueue] addPayment:payment];
@@ -76,4 +76,4 @@ void QIosInAppPurchaseProduct::purchase()
 
 QT_END_NAMESPACE
 
-#include "moc_qiosinapppurchaseproduct_p.cpp"
+#include "moc_qmacinapppurchaseproduct_p.cpp"

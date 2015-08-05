@@ -136,7 +136,7 @@ QT_BEGIN_NAMESPACE
     \note This depends on support for this functionality in the remote store. If
     the remote store does not save the purchase state of unlockable products for
     you, the call will yield no transactionReady() signals, as if no products have
-    been purchased. Both the Android and iOS backends support restoring unlockable
+    been purchased. Both the Android and OS X / iOS backends support restoring unlockable
     products.
 
 */

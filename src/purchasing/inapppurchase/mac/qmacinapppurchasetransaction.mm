@@ -26,17 +26,17 @@
 **
 ****************************************************************************/
 
-#include "qiosinapppurchasetransaction_p.h"
-#include "qiosinapppurchasebackend_p.h"
+#include "qmacinapppurchasetransaction_p.h"
+#include "qmacinapppurchasebackend_p.h"
 
 #import <StoreKit/StoreKit.h>
 
 QT_BEGIN_NAMESPACE
 
-QIosInAppPurchaseTransaction::QIosInAppPurchaseTransaction(SKPaymentTransaction *transaction,
+QMacInAppPurchaseTransaction::QMacInAppPurchaseTransaction(SKPaymentTransaction *transaction,
                                            const TransactionStatus status,
                                            QInAppProduct *product,
-                                           QIosInAppPurchaseBackend *backend)
+                                           QMacInAppPurchaseBackend *backend)
     : QInAppTransaction(status, product, backend)
     , m_nativeTransaction(transaction)
     , m_failureReason(NoFailure)
@@ -57,9 +57,11 @@ QIosInAppPurchaseTransaction::QIosInAppPurchaseTransaction(SKPaymentTransaction 
         case SKErrorPaymentNotAllowed:
             m_errorString = QStringLiteral("Payment Not Allowed");
             break;
+#ifdef Q_OS_IOS
         case SKErrorStoreProductNotAvailable:
             m_errorString = QStringLiteral("Store Product Not Available");
             break;
+#endif
         case SKErrorUnknown:
         default:
             m_errorString = QStringLiteral("Unknown");
@@ -67,27 +69,27 @@ QIosInAppPurchaseTransaction::QIosInAppPurchaseTransaction(SKPaymentTransaction 
     }
 }
 
-void QIosInAppPurchaseTransaction::finalize()
+void QMacInAppPurchaseTransaction::finalize()
 {
     [[SKPaymentQueue defaultQueue] finishTransaction:m_nativeTransaction];
 }
 
-QString QIosInAppPurchaseTransaction::orderId() const
+QString QMacInAppPurchaseTransaction::orderId() const
 {
     return QString::fromNSString(m_nativeTransaction.transactionIdentifier);
 }
 
-QInAppTransaction::FailureReason QIosInAppPurchaseTransaction::failureReason() const
+QInAppTransaction::FailureReason QMacInAppPurchaseTransaction::failureReason() const
 {
     return m_failureReason;
 }
 
-QString QIosInAppPurchaseTransaction::errorString() const
+QString QMacInAppPurchaseTransaction::errorString() const
 {
     return m_errorString;
 }
 
-QDateTime QIosInAppPurchaseTransaction::timestamp() const
+QDateTime QMacInAppPurchaseTransaction::timestamp() const
 {
     //Get time in seconds since 1970
     double timeInterval = [[m_nativeTransaction transactionDate] timeIntervalSince1970];
@@ -96,4 +98,4 @@ QDateTime QIosInAppPurchaseTransaction::timestamp() const
 
 QT_END_NAMESPACE
 
-#include "moc_qiosinapppurchasetransaction_p.cpp"
+#include "moc_qmacinapppurchasetransaction_p.cpp"

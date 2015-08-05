@@ -26,17 +26,17 @@
 **
 ****************************************************************************/
 
-#include "qiosinapppurchasebackend_p.h"
-#include "qiosinapppurchaseproduct_p.h"
-#include "qiosinapppurchasetransaction_p.h"
+#include "qmacinapppurchasebackend_p.h"
+#include "qmacinapppurchaseproduct_p.h"
+#include "qmacinapppurchasetransaction_p.h"
 
 #include <QtCore/QString>
 
 #import <StoreKit/StoreKit.h>
 
-@interface InAppPurchaseManager : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
+@interface QT_MANGLE_NAMESPACE(InAppPurchaseManager) : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 {
-    QIosInAppPurchaseBackend *backend;
+    QMacInAppPurchaseBackend *backend;
     NSMutableArray *pendingTransactions;
 }
 
@@ -45,13 +45,15 @@
 
 @end
 
-@implementation InAppPurchaseManager
+@implementation QT_MANGLE_NAMESPACE(InAppPurchaseManager)
 
--(id)initWithBackend:(QIosInAppPurchaseBackend *)iapBackend {
+-(id)initWithBackend:(QMacInAppPurchaseBackend *)iapBackend {
     if (self = [super init]) {
         backend = iapBackend;
         pendingTransactions = [[NSMutableArray alloc] init];
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        qRegisterMetaType<QMacInAppPurchaseProduct*>("QMacInAppPurchaseProduct*");
+        qRegisterMetaType<QMacInAppPurchaseTransaction*>("QMacInAppPurchaseTransaction*");
     }
     return self;
 }
@@ -78,13 +80,17 @@
     for (SKPaymentTransaction *transaction in pendingTransactions) {
         QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
 
-        QIosInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
+        QMacInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
 
         if (product) {
             //It is possible that the product doesn't exist yet (because of previous restores).
-            QIosInAppPurchaseTransaction *qtTransaction = new QIosInAppPurchaseTransaction(transaction, status, product, backend);
+            QMacInAppPurchaseTransaction *qtTransaction = new QMacInAppPurchaseTransaction(transaction, status, product);
+            if (qtTransaction->thread() != backend->thread()) {
+                qtTransaction->moveToThread(backend->thread());
+                qtTransaction->setParent(backend);
+            }
             [registeredTransactions addObject:transaction];
-            QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseTransaction*, qtTransaction));
+            QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QMacInAppPurchaseTransaction*, qtTransaction));
         }
     }
 
@@ -105,9 +111,13 @@
         QMetaObject::invokeMethod(backend, "registerQueryFailure", Qt::AutoConnection, Q_ARG(QString, QString::fromNSString(invalidId)));
     } else {
         //Valid product query
-        //Create a QIosInAppPurchaseProduct
-        QIosInAppPurchaseProduct *validProduct = new QIosInAppPurchaseProduct(product, backend->productTypeForProductId(QString::fromNSString([product productIdentifier])), backend);
-        QMetaObject::invokeMethod(backend, "registerProduct", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseProduct*, validProduct));
+        //Create a QMacInAppPurchaseProduct
+        QMacInAppPurchaseProduct *validProduct = new QMacInAppPurchaseProduct(product, backend->productTypeForProductId(QString::fromNSString([product productIdentifier])));
+        if (validProduct->thread() != backend->thread()) {
+            validProduct->moveToThread(backend->thread());
+            validProduct->setParent(backend);
+        }
+        QMetaObject::invokeMethod(backend, "registerProduct", Qt::AutoConnection, Q_ARG(QMacInAppPurchaseProduct*, validProduct));
     }
 
     [request release];
@@ -145,18 +155,22 @@
 {
     Q_UNUSED(queue);
     for (SKPaymentTransaction *transaction in transactions) {
-        //Create QIosInAppPurchaseTransaction
+        //Create QMacInAppPurchaseTransaction
         QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
 
         if (status == QInAppTransaction::Unknown)
             continue;
 
-        QIosInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
+        QMacInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
 
         if (product) {
             //It is possible that the product doesn't exist yet (because of previous restores).
-            QIosInAppPurchaseTransaction *qtTransaction = new QIosInAppPurchaseTransaction(transaction, status, product, backend);
-            QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QIosInAppPurchaseTransaction*, qtTransaction));
+            QMacInAppPurchaseTransaction *qtTransaction = new QMacInAppPurchaseTransaction(transaction, status, product);
+            if (qtTransaction->thread() != backend->thread()) {
+                qtTransaction->moveToThread(backend->thread());
+                qtTransaction->setParent(backend);
+            }
+            QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QMacInAppPurchaseTransaction*, qtTransaction));
         } else {
             //Add the transaction to the pending transactions list
             [pendingTransactions addObject:transaction];
@@ -169,31 +183,31 @@
 
 QT_BEGIN_NAMESPACE
 
-QIosInAppPurchaseBackend::QIosInAppPurchaseBackend(QObject *parent)
+QMacInAppPurchaseBackend::QMacInAppPurchaseBackend(QObject *parent)
     : QInAppPurchaseBackend(parent)
     , m_iapManager(0)
 {
 }
 
-QIosInAppPurchaseBackend::~QIosInAppPurchaseBackend()
+QMacInAppPurchaseBackend::~QMacInAppPurchaseBackend()
 {
-    [(InAppPurchaseManager*)m_iapManager release];
+    [m_iapManager release];
 }
 
-void QIosInAppPurchaseBackend::initialize()
+void QMacInAppPurchaseBackend::initialize()
 {
     m_iapManager = [[InAppPurchaseManager alloc] initWithBackend:this];
     emit QInAppPurchaseBackend::ready();
 }
 
-bool QIosInAppPurchaseBackend::isReady() const
+bool QMacInAppPurchaseBackend::isReady() const
 {
     if (m_iapManager)
         return true;
     return false;
 }
 
-void QIosInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productType, const QString &identifier)
+void QMacInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productType, const QString &identifier)
 {
     Q_UNUSED(productType)
 
@@ -204,21 +218,21 @@ void QIosInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productTy
 
     m_productTypeForPendingId[identifier] = productType;
 
-    [(InAppPurchaseManager*)m_iapManager requestProductData:(identifier.toNSString())];
+    [m_iapManager requestProductData:(identifier.toNSString())];
 }
 
-void QIosInAppPurchaseBackend::restorePurchases()
+void QMacInAppPurchaseBackend::restorePurchases()
 {
     [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
 }
 
-void QIosInAppPurchaseBackend::setPlatformProperty(const QString &propertyName, const QString &value)
+void QMacInAppPurchaseBackend::setPlatformProperty(const QString &propertyName, const QString &value)
 {
     Q_UNUSED(propertyName);
     Q_UNUSED(value);
 }
 
-void QIosInAppPurchaseBackend::registerProduct(QIosInAppPurchaseProduct *product)
+void QMacInAppPurchaseBackend::registerProduct(QMacInAppPurchaseProduct *product)
 {
     QHash<QString, QInAppProduct::ProductType>::iterator it = m_productTypeForPendingId.find(product->identifier());
     Q_ASSERT(it != m_productTypeForPendingId.end());
@@ -229,7 +243,7 @@ void QIosInAppPurchaseBackend::registerProduct(QIosInAppPurchaseProduct *product
     [m_iapManager processPendingTransactions];
 }
 
-void QIosInAppPurchaseBackend::registerQueryFailure(const QString &productId)
+void QMacInAppPurchaseBackend::registerQueryFailure(const QString &productId)
 {
     QHash<QString, QInAppProduct::ProductType>::iterator it = m_productTypeForPendingId.find(productId);
     Q_ASSERT(it != m_productTypeForPendingId.end());
@@ -238,21 +252,21 @@ void QIosInAppPurchaseBackend::registerQueryFailure(const QString &productId)
     m_productTypeForPendingId.erase(it);
 }
 
-void QIosInAppPurchaseBackend::registerTransaction(QIosInAppPurchaseTransaction *transaction)
+void QMacInAppPurchaseBackend::registerTransaction(QMacInAppPurchaseTransaction *transaction)
 {
     emit QInAppPurchaseBackend::transactionReady(transaction);
 }
 
-QInAppProduct::ProductType QIosInAppPurchaseBackend::productTypeForProductId(const QString &productId)
+QInAppProduct::ProductType QMacInAppPurchaseBackend::productTypeForProductId(const QString &productId)
 {
     return m_productTypeForPendingId[productId];
 }
 
-QIosInAppPurchaseProduct *QIosInAppPurchaseBackend::registeredProductForProductId(const QString &productId)
+QMacInAppPurchaseProduct *QMacInAppPurchaseBackend::registeredProductForProductId(const QString &productId)
 {
     return m_registeredProductForId[productId];
 }
 
 QT_END_NAMESPACE
 
-#include "moc_qiosinapppurchasebackend_p.cpp"
+#include "moc_qmacinapppurchasebackend_p.cpp"
