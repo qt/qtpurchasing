@@ -81,6 +81,10 @@ void tst_QInAppStore::registerUnknownProduct()
     store.registerProduct(QInAppProduct::Consumable, QStringLiteral("unknownConsumable"));
     store.registerProduct(QInAppProduct::Unlockable, QStringLiteral("unknownUnlockable"));
 
+#if !defined(Q_OS_IOS) && !defined(Q_OS_ANDROID)
+    QEXPECT_FAIL("", "Qt Purchasing not implemented on this platform.", Abort);
+#endif
+
     QTRY_COMPARE(receiver.unknownProducts.size(), 2);
     QCOMPARE(receiver.registeredProducts.size(), 0);
     QCOMPARE(receiver.readyTransactions.size(), 0);
