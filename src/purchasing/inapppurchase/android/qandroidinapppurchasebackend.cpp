@@ -164,7 +164,7 @@ void QAndroidInAppPurchaseBackend::setPlatformProperty(const QString &propertyNa
     QMutexLocker locker(&m_mutex);
     if (propertyName.compare(QStringLiteral("AndroidPublicKey"), Qt::CaseInsensitive) == 0) {
         m_javaObject.callMethod<void>("setPublicKey",
-                                      "(Ljava/lang/String;)",
+                                      "(Ljava/lang/String;)V",
                                       QAndroidJniObject::fromString(value).object<jstring>());
     }
 }
