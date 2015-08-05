@@ -225,7 +225,7 @@ public class QtInAppPurchase
 
     }
 
-    private void queryDetails(final String[] productIds)
+    public void queryDetails(final String[] productIds)
     {
         if (m_service == null) {
             Log.e(TAG, "queryDetails: Service not initialized");
@@ -420,8 +420,11 @@ public class QtInAppPurchase
         }
     }
 
+    private void purchaseFailed(int requestCode, int failureReason, String errorString)
+    {
+        purchaseFailed(m_nativePointer, requestCode, failureReason, errorString);
+    }
 
-    private void purchaseFailed(int requestCode, int failureReason, String errorString) { purchaseFailed(m_nativePointer, requestCode, failureReason, errorString); }
     private void purchaseSucceeded(int requestCode,
                                    String signature,
                                    String purchaseData,
