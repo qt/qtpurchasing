@@ -51,9 +51,9 @@
   application to Google Play.
 
   Create your own manifest by clicking the
-  \uicontrol{Create AndroidManifest.xml} button in Qt Creator. You can find the
-  button under \uicontrol{Projects} > \uicontrol{Run} tab. Expand
-  \uicontrol{Deployment configurations} to see it.
+  \uicontrol{Create Templates} button in Qt Creator. You can find the
+  button under \uicontrol{Projects} > \uicontrol{Build} tab. Expand
+  \uicontrol{Build Android APK} to see it.
 
   Once the manifest is added to your project, you can modify it. The most
   important part is the application name and package name. The
@@ -68,17 +68,26 @@
   is presented in the store listing, such as the application name and version
   name.
 
+  Finally, the application needs the billing permission. If you disabled
+  \uicontrol{Include default permissions for Qt modules} from  Qt Creator,
+  you'll need to add
+  \code
+    <uses-permission android:name="com.android.vending.BILLING" />
+  \endcode
+  to your manifest file.
+
+
   For more information on the \c AndroidManifest.xml, see
   \l{http://developer.android.com/guide/topics/manifest/manifest-element.html}{Android documentation}.
 
   \section2 Signing the Application
 
-  Qt uses a special debug key by default to enable running the application
-  on a device. Same key cannot be used to sign the Application Package (APK)
+  Qt uses the default debug key to sign your application to enable running the
+  application on a device. Same key cannot be used to sign the Application Package (APK)
   that is meant to be published on Google Play.
 
   Use a private a key to sign your application to publish it on Google Play.
-  To do so, open the \uicontrol{Deployment configurations} in Qt Creator and
+  To do so, open the \uicontrol{Build Android APK} in Qt Creator and
   add keystore information. When you are done, select \uicontrol{Release} as
   the build configuration and deploy your project.
 
@@ -136,7 +145,7 @@
    the only type supported by the Qt Purchasing API.
    \li Price for the product in all the different geographical areas where it is
    available.
-  \list
+  \endlist
 
   Once these details are added, \uicontrol{Activate} the product. If you have
   not published the application yet, the product is marked as
