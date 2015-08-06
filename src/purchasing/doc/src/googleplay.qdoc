@@ -58,7 +58,7 @@
   Once the manifest is added to your project, you can modify it. The most
   important part is the application name and package name. The
   package name must be unique, and it is recommended to follow the
-  com.mycompany.myappname naming convention. Where, the "com.mycompany"
+  com.mycompany.myappname naming convention. The "com.mycompany"
   namespace is based on the Internet domain ownership to avoid naming
   collisions with other applications.
 
@@ -94,7 +94,7 @@
   This should create an \c APK file in the build directory of your project.
 
   \note Save the key used to sign the application for future use. You must
-  sign the the future versions of the application using the same key.
+  sign the future versions of the application using the same key.
 
   \section1 Registering Your Application
 
@@ -112,24 +112,24 @@
   Fill out as much information as you want in the store listing, and also the
   \uicontrol{Pricing and distribution} page.
 
-  \section2 Alpha, Beta, or Unpublished?
+  \section2 Publishing Your Application
 
-  It's possible to test your in-app purchases with both an unpublished
-  application, as well as an application published to alpha or beta
-  testers. To allow in-app purchases for an unpublished application, register
-  the e-mail addresses that should have testing access, under
-  \uicontrol{Settings} in the developer console. The users with these
-  e-mail addresses can purchase your in-app products as
-  "test purchases", without being charged for the purchase, and the transaction
-  is canceled automatically at a later stage.
+  In order to test in-app purchases in your application, you first have to
+  publish it. To limit the users who can access the application before it is
+  ready for production, it can be published as either alpha or beta, in the
+  respective tabs on the \uicontrol{APK} page of the developer console. In
+  order to make an alpha or beta application, fill out all the required
+  information about the application, upload the \c APK file under the
+  \uicontrol{Beta testing} or \uicontrol{Alpha testing} tab, and mark the
+  application as \uicontrol{published}.
 
-  It's also possible to publish the application as an alpha or beta version in
-  Google Play. Such applications are available only to selected users, who can
-  make actual purchases in the application. In order to make an alpha or beta
-  application, fill out all the required information about the application,
-  upload the \c APK file under the \uicontrol{Beta testing} or
-  \uicontrol{Alpha testing} tab, and mark the application as
-  \uicontrol{published}.
+  When the selected test users you add to your alpha or beta program purchase
+  in-app products in your application, they will make actual purchases and will
+  be charged for them. For testing purchases, you can register the e-mail
+  addresses that should have testing access, under \uicontrol{Settings}
+  in the developer console. The users with these e-mail addresses can purchase
+  your in-app products as without being charged for the purchase, and the
+  transaction is canceled automatically at a later stage.
 
   \section2 Adding In-App Products
 
@@ -149,8 +149,13 @@
 
   Once these details are added, \uicontrol{Activate} the product. If you have
   not published the application yet, the product is marked as
-  \uicontrol{To be activated}. Otherwise, it is marked as active. Either way,
-  the product can now be queried and purchased using the Qt Purchasing API.
+  \uicontrol{To be activated}. Otherwise, it is marked as active. The product
+  must be activated before it can be queried from the Qt Purchasing API. If
+  the application has recently been published, then it may take a few hours
+  before the in-app products can be accessed from your application. Look for
+  the \uicontrol{Updates pending} label on the top right side of the screen.
+  If this is visible, then there are updates pending which are not yet visible
+  from the outside.
 
   \note Only application packages signed with the same key used for the one in
   Google Play can make purchases in the application. If you want to test
