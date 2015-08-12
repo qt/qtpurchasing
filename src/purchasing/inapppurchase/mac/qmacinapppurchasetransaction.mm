@@ -91,9 +91,7 @@ QString QMacInAppPurchaseTransaction::errorString() const
 
 QDateTime QMacInAppPurchaseTransaction::timestamp() const
 {
-    //Get time in seconds since 1970
-    double timeInterval = [[m_nativeTransaction transactionDate] timeIntervalSince1970];
-    return QDateTime::fromMSecsSinceEpoch(qint64(timeInterval * 1000));
+    return QDateTime::fromNSDate(m_nativeTransaction.transactionDate);
 }
 
 QT_END_NAMESPACE
