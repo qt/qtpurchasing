@@ -31,34 +31,23 @@
 
 #import <StoreKit/StoreKit.h>
 
-//Use a Catagory to add a localizedPrice method to SKProduct
-@interface SKProduct (QT_MANGLE_NAMESPACE(LocalizedPrice))
+QT_BEGIN_NAMESPACE
 
-@property (nonatomic, readonly) NSString *localizedPrice;
-
-@end
-
-@implementation SKProduct (QT_MANGLE_NAMESPACE(LocalizedPrice))
-
-- (NSString *)localizedPrice
+static NSString *localizedPrice(SKProduct *product)
 {
     NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
     [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
     [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
-    [numberFormatter setLocale:self.priceLocale];
-    NSString *formattedString = [numberFormatter stringFromNumber:self.price];
+    [numberFormatter setLocale:product.priceLocale];
+    NSString *formattedString = [numberFormatter stringFromNumber:product.price];
     [numberFormatter release];
     return formattedString;
 }
 
-@end
-
-QT_BEGIN_NAMESPACE
-
 QMacInAppPurchaseProduct::QMacInAppPurchaseProduct(SKProduct *product,
                                                    ProductType productType,
                                                    QMacInAppPurchaseBackend *backend)
-    : QInAppProduct(QString::fromNSString([product localizedPrice]),
+    : QInAppProduct(QString::fromNSString(localizedPrice(product)),
                     QString::fromNSString([product localizedTitle]),
                     QString::fromNSString([product localizedDescription]),
                     productType,
