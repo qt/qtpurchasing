@@ -6,7 +6,7 @@ include($QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf)
 
 project                                            = QtPurchasing
 description                                        = Qt Purchasing Reference Documentation
-url                                                = http://doc.qt.digia.com/QtPurchasing/
+url                                                = http://doc.qt.io/QtPurchasing/
 version                                            = 1.0.3
 
 qhp.projects                                       = QtPurchasing
