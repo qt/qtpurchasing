@@ -87,7 +87,7 @@
             QMacInAppPurchaseTransaction *qtTransaction = new QMacInAppPurchaseTransaction(transaction, status, product);
             if (qtTransaction->thread() != backend->thread()) {
                 qtTransaction->moveToThread(backend->thread());
-                qtTransaction->setParent(backend);
+                QMetaObject::invokeMethod(backend, "setParentToBackend", Qt::AutoConnection, Q_ARG(QObject*, qtTransaction));
             }
             [registeredTransactions addObject:transaction];
             QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QMacInAppPurchaseTransaction*, qtTransaction));
@@ -115,7 +115,7 @@
         QMacInAppPurchaseProduct *validProduct = new QMacInAppPurchaseProduct(product, backend->productTypeForProductId(QString::fromNSString([product productIdentifier])));
         if (validProduct->thread() != backend->thread()) {
             validProduct->moveToThread(backend->thread());
-            validProduct->setParent(backend);
+            QMetaObject::invokeMethod(backend, "setParentToBackend", Qt::AutoConnection, Q_ARG(QObject*, validProduct));
         }
         QMetaObject::invokeMethod(backend, "registerProduct", Qt::AutoConnection, Q_ARG(QMacInAppPurchaseProduct*, validProduct));
     }
@@ -168,7 +168,7 @@
             QMacInAppPurchaseTransaction *qtTransaction = new QMacInAppPurchaseTransaction(transaction, status, product);
             if (qtTransaction->thread() != backend->thread()) {
                 qtTransaction->moveToThread(backend->thread());
-                qtTransaction->setParent(backend);
+                QMetaObject::invokeMethod(backend, "setParentToBackend", Qt::AutoConnection, Q_ARG(QObject*, qtTransaction));
             }
             QMetaObject::invokeMethod(backend, "registerTransaction", Qt::AutoConnection, Q_ARG(QMacInAppPurchaseTransaction*, qtTransaction));
         } else {
@@ -265,6 +265,11 @@ QInAppProduct::ProductType QMacInAppPurchaseBackend::productTypeForProductId(con
 QMacInAppPurchaseProduct *QMacInAppPurchaseBackend::registeredProductForProductId(const QString &productId)
 {
     return m_registeredProductForId[productId];
+}
+
+void QMacInAppPurchaseBackend::setParentToBackend(QObject *object)
+{
+    object->setParent(this);
 }
 
 QT_END_NAMESPACE

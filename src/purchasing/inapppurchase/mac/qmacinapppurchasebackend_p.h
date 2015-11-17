@@ -77,6 +77,9 @@ private:
     QT_MANGLE_NAMESPACE(InAppPurchaseManager) *m_iapManager;
     QHash<QString, QInAppProduct::ProductType> m_productTypeForPendingId;
     QHash<QString, QMacInAppPurchaseProduct*> m_registeredProductForId;
+
+private slots:
+    void setParentToBackend(QObject *object);
 };
 
 #endif // QMACINAPPPURCHASEBACKEND_P_H
