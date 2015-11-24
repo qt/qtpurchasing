@@ -11,6 +11,13 @@ SOURCES += \
 
 load(qml_plugin)
 
+win32 {
+    CONFIG += skip_target_version_ext
+    VERSION = $$MODULE_VERSION
+    QMAKE_TARGET_PRODUCT = "Qt Purchasing (Qt $$QT_VERSION)"
+    QMAKE_TARGET_DESCRIPTION = "Purchasing QML plugin for Qt."
+}
+
 HEADERS += \
     $$PWD/qinappproductqmltype_p.h \
     $$PWD/qinappstoreqmltype_p.h

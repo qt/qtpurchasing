@@ -1,13 +1,9 @@
-include($QT_INSTALL_DOCS/global/macros.qdocconf)
-include($QT_INSTALL_DOCS/global/qt-cpp-defines.qdocconf)
-include($QT_INSTALL_DOCS/global/compat.qdocconf)
-include($QT_INSTALL_DOCS/global/fileextensions.qdocconf)
-include($QT_INSTALL_DOCS/global/qt-html-templates-offline.qdocconf)
+include($QT_INSTALL_DOCS/global/qt-module-defaults.qdocconf)
 
 project                                            = QtPurchasing
 description                                        = Qt Purchasing Reference Documentation
-url                                                = http://doc.qt.digia.com/QtPurchasing/
-version                                            = 1.0.2
+url                                                = http://doc.qt.io/QtPurchasing/
+version                                            = 1.0.3
 
 qhp.projects                                       = QtPurchasing
 
@@ -23,7 +19,7 @@ qhp.QtPurchasing.customFilters.Qt.filterAttributes = qtpurchasing 1.0
 qhp.QtPurchasing.subprojects                       = qmltypes classes examples
 qhp.QtPurchasing.subprojects.qmltypes.title        = QML Types
 qhp.QtPurchasing.subprojects.qmltypes.indexTitle   = Qt Purchasing QML Types
-qhp.QtPurchasing.subprojects.qmltypes.selectors    = fake:qmlclass
+qhp.QtPurchasing.subprojects.qmltypes.selectors    = qmlclass
 qhp.QtPurchasing.subprojects.qmltypes.sortPages    = true
 qhp.QtPurchasing.subprojects.classes.title         = C++ Classes
 qhp.QtPurchasing.subprojects.classes.indexTitle    = Qt Purchasing C++ Classes
