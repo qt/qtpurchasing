@@ -78,7 +78,7 @@
     NSMutableArray *registeredTransactions = [NSMutableArray array];
 
     for (SKPaymentTransaction *transaction in pendingTransactions) {
-        QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
+        QInAppTransaction::TransactionStatus status = [QT_MANGLE_NAMESPACE(InAppPurchaseManager) statusFromTransaction:transaction];
 
         QMacInAppPurchaseProduct *product = backend->registeredProductForProductId(QString::fromNSString(transaction.payment.productIdentifier));
 
@@ -156,7 +156,7 @@
     Q_UNUSED(queue);
     for (SKPaymentTransaction *transaction in transactions) {
         //Create QMacInAppPurchaseTransaction
-        QInAppTransaction::TransactionStatus status = [InAppPurchaseManager statusFromTransaction:transaction];
+        QInAppTransaction::TransactionStatus status = [QT_MANGLE_NAMESPACE(InAppPurchaseManager) statusFromTransaction:transaction];
 
         if (status == QInAppTransaction::Unknown)
             continue;
@@ -196,7 +196,7 @@ QMacInAppPurchaseBackend::~QMacInAppPurchaseBackend()
 
 void QMacInAppPurchaseBackend::initialize()
 {
-    m_iapManager = [[InAppPurchaseManager alloc] initWithBackend:this];
+    m_iapManager = [[QT_MANGLE_NAMESPACE(InAppPurchaseManager) alloc] initWithBackend:this];
     emit QInAppPurchaseBackend::ready();
 }
 

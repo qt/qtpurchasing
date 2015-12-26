@@ -61,8 +61,8 @@ private:
     SKProduct *m_nativeProduct;
 };
 
-Q_DECLARE_METATYPE(QMacInAppPurchaseProduct*)
-
 QT_END_NAMESPACE
+
+Q_DECLARE_METATYPE(QMacInAppPurchaseProduct*)
 
 #endif // QMACINAPPPURCHASEPRODUCT_P_H

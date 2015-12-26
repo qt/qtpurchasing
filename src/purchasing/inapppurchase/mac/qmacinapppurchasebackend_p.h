@@ -82,6 +82,6 @@ private slots:
     void setParentToBackend(QObject *object);
 };
 
-#endif // QMACINAPPPURCHASEBACKEND_P_H
-
 QT_END_NAMESPACE
+
+#endif // QMACINAPPPURCHASEBACKEND_P_H

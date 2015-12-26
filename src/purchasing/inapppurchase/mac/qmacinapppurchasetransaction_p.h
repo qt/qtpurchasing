@@ -70,8 +70,8 @@ private:
     FailureReason m_failureReason;
 };
 
-Q_DECLARE_METATYPE(QMacInAppPurchaseTransaction*)
-
 QT_END_NAMESPACE
+
+Q_DECLARE_METATYPE(QMacInAppPurchaseTransaction*)
 
 #endif // QMACINAPPTRANSACTION_P_H
