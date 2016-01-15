@@ -123,6 +123,7 @@ public class QtInAppPurchase
     {
 
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
+        serviceIntent.setPackage("com.android.vending.billing");
         if (!m_context.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
             m_context.bindService(serviceIntent, m_serviceConnection, Context.BIND_AUTO_CREATE);
         } else {
