@@ -26,3 +26,7 @@ android {
 mac {
     include ($$PWD/mac/mac.pri)
 }
+
+winrt {
+    include ($$PWD/winrt/winrt.pri)
+}

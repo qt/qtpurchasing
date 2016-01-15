@@ -41,3 +41,11 @@ mac {
     #QMAKE_TARGET_BUNDLE_PREFIX = "org.qtproject.qt.iosteam"
     #TARGET = qthangman
 }
+
+winrt {
+    # Add a StoreSimulation.xml file to the root resource folder
+    # and Qt Purchasing will switch into simulation mode.
+    # Remove the file in the publishing process.
+    RESOURCES += \
+        winrt/winrt.qrc
+}

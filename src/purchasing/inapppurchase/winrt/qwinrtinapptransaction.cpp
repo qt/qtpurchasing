@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the Purchasing module of the Qt Toolkit.
@@ -26,31 +26,34 @@
 **
 ****************************************************************************/
 
-#include "qinapppurchasebackendfactory_p.h"
+#include "qwinrtinapptransaction_p.h"
+#include "qwinrtinapppurchasebackend_p.h"
+#include "qinappproduct.h"
 
-#if defined(Q_OS_ANDROID)
-#  include "qandroidinapppurchasebackend_p.h"
-#elif defined(Q_OS_MAC)
-#  include "qmacinapppurchasebackend_p.h"
-#elif defined(Q_OS_WINRT)
-#  include "qwinrtinapppurchasebackend_p.h"
-#else
-#  include "qinapppurchasebackend_p.h"
-#endif
+#include <QLoggingCategory>
 
 QT_BEGIN_NAMESPACE
 
-QInAppPurchaseBackend *QInAppPurchaseBackendFactory::create()
+Q_LOGGING_CATEGORY(lcPurchasingTransaction, "qt.purchasing.transaction")
+
+QWinRTInAppTransaction::QWinRTInAppTransaction(TransactionStatus status,
+                           QInAppProduct *product, FailureReason reason,
+                           QObject *parent)
+    : QInAppTransaction(status, product, parent)
+    , m_failureReason(reason)
 {
-#if defined(Q_OS_ANDROID)
-    return new QAndroidInAppPurchaseBackend;
-#elif defined (Q_OS_MAC)
-    return new QMacInAppPurchaseBackend;
-#elif defined (Q_OS_WINRT)
-    return new QWinRTInAppPurchaseBackend;
-#else
-    return new QInAppPurchaseBackend;
-#endif
+    qCDebug(lcPurchasingTransaction) << __FUNCTION__;
+    m_backend = qobject_cast<QWinRTInAppPurchaseBackend *>(parent);
+}
+
+void QWinRTInAppTransaction::finalize()
+{
+    qCDebug(lcPurchasingTransaction) << __FUNCTION__;
+    if (product()->productType() == QInAppProduct::Consumable &&
+            status() == QInAppTransaction::PurchaseApproved) {
+        m_backend->fulfillConsumable(this);
+    }
+    deleteLater();
 }
 
 QT_END_NAMESPACE

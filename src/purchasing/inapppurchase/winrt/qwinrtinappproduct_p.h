@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
+** Copyright (C) 2016 The Qt Company Ltd.
 ** Contact: http://www.qt.io/licensing/
 **
 ** This file is part of the Purchasing module of the Qt Toolkit.
@@ -26,31 +26,44 @@
 **
 ****************************************************************************/
 
-#include "qinapppurchasebackendfactory_p.h"
+#ifndef QWINRTINAPPPRODUCT_P_H
+#define QWINRTINAPPPRODUCT_P_H
 
-#if defined(Q_OS_ANDROID)
-#  include "qandroidinapppurchasebackend_p.h"
-#elif defined(Q_OS_MAC)
-#  include "qmacinapppurchasebackend_p.h"
-#elif defined(Q_OS_WINRT)
-#  include "qwinrtinapppurchasebackend_p.h"
-#else
-#  include "qinapppurchasebackend_p.h"
-#endif
+//
+//  W A R N I N G
+//  -------------
+//
+// This file is not part of the Qt API.  It exists purely as an
+// implementation detail.  This header file may change from version to
+// version without notice, or even be removed.
+//
+// We mean it.
+//
+
+#include "qinappproduct.h"
 
 QT_BEGIN_NAMESPACE
 
-QInAppPurchaseBackend *QInAppPurchaseBackendFactory::create()
+class QWinRTInAppPurchaseBackend;
+class QWinRTInAppProduct : public QInAppProduct
 {
-#if defined(Q_OS_ANDROID)
-    return new QAndroidInAppPurchaseBackend;
-#elif defined (Q_OS_MAC)
-    return new QMacInAppPurchaseBackend;
-#elif defined (Q_OS_WINRT)
-    return new QWinRTInAppPurchaseBackend;
-#else
-    return new QInAppPurchaseBackend;
-#endif
-}
+    Q_OBJECT
+public:
+    explicit QWinRTInAppProduct(QWinRTInAppPurchaseBackend *backend,
+                                const QString &price,
+                                const QString &title,
+                                const QString &description,
+                                ProductType productType,
+                                const QString &identifier,
+                                QObject *parent = 0);
+
+
+    void purchase() override;
+
+private:
+    QWinRTInAppPurchaseBackend *m_backend;
+};
 
 QT_END_NAMESPACE
+
+#endif // QWINRTINAPPPRODUCT_P_H
