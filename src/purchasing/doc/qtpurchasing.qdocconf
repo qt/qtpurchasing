@@ -32,7 +32,7 @@ qhp.QtPurchasing.subprojects.examples.indexTitle   = Qt Purchasing Examples
 qhp.QtPurchasing.subprojects.examples.selectors    = fake:example
 qhp.QtPurchasing.subprojects.examples.sortPages    = true
 
-depends     += qtcore qtqml qtquick qtdoc qtquickcontrols
+depends     += qtcore qtqml qtquick qtdoc qtquickcontrols qmake
 
 headerdirs  += \
                .. \
