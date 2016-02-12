@@ -9,8 +9,6 @@ SOURCES += \
     $$PWD/qinappproductqmltype.cpp \
     $$PWD/qinappstoreqmltype.cpp
 
-load(qml_plugin)
-
 win32 {
     CONFIG += skip_target_version_ext
     VERSION = $$MODULE_VERSION
@@ -23,3 +21,5 @@ HEADERS += \
     $$PWD/qinappstoreqmltype_p.h
 
 OTHER_FILES += qmldir
+
+load(qml_plugin)
