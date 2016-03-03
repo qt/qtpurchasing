@@ -79,7 +79,7 @@ public:
 protected:
     explicit QInAppTransaction(TransactionStatus status,
                                QInAppProduct *product,
-                               QObject *parent = 0);
+                               QObject *parent = Q_NULLPTR);
 
 private:
     Q_DISABLE_COPY(QInAppTransaction)
