@@ -123,11 +123,16 @@ public class QtInAppPurchase
     {
 
         Intent serviceIntent = new Intent("com.android.vending.billing.InAppBillingService.BIND");
-        serviceIntent.setPackage("com.android.vending.billing");
-        if (!m_context.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
-            m_context.bindService(serviceIntent, m_serviceConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            Log.e(TAG, "No in-app billing service available.");
+        serviceIntent.setPackage("com.android.vending");
+        try {
+            if (!m_context.getPackageManager().queryIntentServices(serviceIntent, 0).isEmpty()) {
+                m_context.bindService(serviceIntent, m_serviceConnection, Context.BIND_AUTO_CREATE);
+            } else {
+                Log.e(TAG, "No in-app billing service available.");
+                purchasedProductsQueried(m_nativePointer);
+            }
+        } catch (Exception e) {
+            Log.e(TAG, "Could not query InAppBillingService intent.");
             purchasedProductsQueried(m_nativePointer);
         }
     }
