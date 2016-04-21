@@ -12,6 +12,9 @@ RESOURCES += \
 
 QT += purchasing
 
+target.path = $$[QT_INSTALL_EXAMPLES]/purchasing/qthangman
+INSTALLS += target
+
 OTHER_FILES += \
     qml/qthangman/GameView.qml \
     qml/qthangman/GuessWordView.qml \
