@@ -1,4 +1,6 @@
 CONFIG += java
+load(sdk)
+
 DESTDIR = $$[QT_INSTALL_PREFIX/get]/jar
 
 PATHPREFIX = $$PWD/src/org/qtproject/qt5/android/purchasing/
@@ -17,10 +19,6 @@ PATHPREFIX = $$PWD/src/org/qtproject/qt5/android/purchasing/
             }
         }
     }
-
-    API_VERSION_TO_USE = $$(ANDROID_API_VERSION)
-    isEmpty(API_VERSION_TO_USE): API_VERSION_TO_USE = $$API_VERSION
-    isEmpty(API_VERSION_TO_USE): API_VERSION_TO_USE = android-10
 
     FRAMEWORK_AIDL_FILE = $$SDK_ROOT/platforms/$$API_VERSION_TO_USE/framework.aidl
     !exists($$FRAMEWORK_AIDL_FILE) {
