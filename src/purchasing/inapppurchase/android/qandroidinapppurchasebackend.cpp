@@ -41,7 +41,7 @@
 
 QT_BEGIN_NAMESPACE
 
-#define QANDROIDINAPPPURCHASEBACKEND_DEBUG
+// #define QANDROIDINAPPPURCHASEBACKEND_DEBUG
 
 QAndroidInAppPurchaseBackend::QAndroidInAppPurchaseBackend(QObject *parent)
     : QInAppPurchaseBackend(parent)
