@@ -47,7 +47,7 @@ exampledirs += \
 
 imagedirs   += images
 
-examplesinstallpath = qtpurchasing/purchasing
+examplesinstallpath = purchasing
 
 Cpp.ignoretokens         += Q_PURCHASING_EXPORT
 
