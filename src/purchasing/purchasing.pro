@@ -1,8 +1,6 @@
 TARGET = QtPurchasing
 QT = core
 
-load(qt_module)
-
 QMAKE_TARGET_PRODUCT = "Qt Purchasing (Qt $$QT_VERSION)"
 QMAKE_TARGET_DESCRIPTION = "Purchasing component for Qt."
 
@@ -17,3 +15,5 @@ HEADERS += \
     $$PWD/qtpurchasingglobal.h
 
 include(inapppurchase/inapppurchase.pri)
+
+load(qt_module)

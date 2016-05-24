@@ -41,7 +41,7 @@
 
 QT_BEGIN_NAMESPACE
 
-#define QANDROIDINAPPPURCHASEBACKEND_DEBUG
+// #define QANDROIDINAPPPURCHASEBACKEND_DEBUG
 
 QAndroidInAppPurchaseBackend::QAndroidInAppPurchaseBackend(QObject *parent)
     : QInAppPurchaseBackend(parent)
@@ -118,10 +118,7 @@ void QAndroidInAppPurchaseBackend::queryProducts(const QList<Product> &products)
     QMutexLocker locker(&m_mutex);
     QAndroidJniEnvironment environment;
 
-    jclass cls = environment->FindClass("java/lang/String");
-    jobjectArray productIds = environment->NewObjectArray(products.size(), cls, 0);
-    environment->DeleteLocalRef(cls);
-
+    QStringList newProducts;
     for (int i = 0; i < products.size(); ++i) {
         const Product &product = products.at(i);
         if (m_productTypeForPendingId.contains(product.identifier)) {
@@ -130,8 +127,18 @@ void QAndroidInAppPurchaseBackend::queryProducts(const QList<Product> &products)
         }
 
         m_productTypeForPendingId[product.identifier] = product.productType;
+        newProducts.append(product.identifier);
+    }
 
-        QAndroidJniObject identifier = QAndroidJniObject::fromString(product.identifier);
+    if (newProducts.isEmpty())
+        return;
+
+    jclass cls = environment->FindClass("java/lang/String");
+    jobjectArray productIds = environment->NewObjectArray(newProducts.size(), cls, 0);
+    environment->DeleteLocalRef(cls);
+
+    for (int i = 0; i < newProducts.size(); ++i) {
+        QAndroidJniObject identifier = QAndroidJniObject::fromString(newProducts.at(i));
         environment->SetObjectArrayElement(productIds, i, identifier.object());
     }
 

@@ -64,7 +64,7 @@ QMacInAppPurchaseTransaction::QMacInAppPurchaseTransaction(SKPaymentTransaction 
 #endif
         case SKErrorUnknown:
         default:
-            m_errorString = QStringLiteral("Unknown");
+            m_errorString = QString::fromNSString([m_nativeTransaction.error localizedDescription]);
         }
     }
 }
