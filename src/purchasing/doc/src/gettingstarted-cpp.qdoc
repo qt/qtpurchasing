@@ -33,8 +33,9 @@
 
   This guide assumes that you have registered the in-app products for your
   application in the external store. For more information about registering
-  products, see \l{Registering Products in Google Play} and
-  \l{Registering Products in App Store}
+  products, see \l{Registering Products in Google Play},
+  \l{Registering Products in App Store}, and
+  \l{Registering Products in Windows Store}.
 
   \section1 Preparing the Application
 
