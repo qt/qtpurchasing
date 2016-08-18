@@ -23,7 +23,7 @@ android {
     include ($$PWD/android/android.pri)
 }
 
-mac {
+darwin:!watchos {
     include ($$PWD/mac/mac.pri)
 }
 

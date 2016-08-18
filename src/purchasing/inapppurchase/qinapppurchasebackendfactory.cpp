@@ -30,7 +30,7 @@
 
 #if defined(Q_OS_ANDROID)
 #  include "qandroidinapppurchasebackend_p.h"
-#elif defined(Q_OS_MAC)
+#elif defined(Q_OS_DARWIN) && !defined(Q_OS_WATCHOS)
 #  include "qmacinapppurchasebackend_p.h"
 #elif defined(Q_OS_WINRT)
 #  include "qwinrtinapppurchasebackend_p.h"
@@ -44,7 +44,7 @@ QInAppPurchaseBackend *QInAppPurchaseBackendFactory::create()
 {
 #if defined(Q_OS_ANDROID)
     return new QAndroidInAppPurchaseBackend;
-#elif defined (Q_OS_MAC)
+#elif defined(Q_OS_DARWIN) && !defined(Q_OS_WATCHOS)
     return new QMacInAppPurchaseBackend;
 #elif defined (Q_OS_WINRT)
     return new QWinRTInAppPurchaseBackend;
