@@ -103,9 +103,9 @@ bool QAndroidInAppPurchaseBackend::isReady() const
 
 void QAndroidInAppPurchaseBackend::restorePurchases()
 {
-    QSet<QString> previouslyFinalizedUnlockables = m_finalizedUnlockableProducts;
+    const QSet<QString> previouslyFinalizedUnlockables = std::move(m_finalizedUnlockableProducts);
     m_finalizedUnlockableProducts.clear();
-    foreach (QString previouslyFinalizedUnlockable, previouslyFinalizedUnlockables) {
+    for (const QString &previouslyFinalizedUnlockable : previouslyFinalizedUnlockables) {
         QInAppProduct *product = store()->registeredProduct(previouslyFinalizedUnlockable);
         Q_ASSERT(product != 0);
 
@@ -214,7 +214,7 @@ void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &id
     }
 
     QDataStream stream(&file);
-    foreach (QString finalizedUnlockableProduct, m_finalizedUnlockableProducts)
+    for (const QString &finalizedUnlockableProduct : qAsConst(m_finalizedUnlockableProducts))
         stream << finalizedUnlockableProduct;
 }
 

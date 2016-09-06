@@ -116,7 +116,7 @@ QString HangmanGame::consonants() const
 int HangmanGame::errorCount() const
 {
     int count = 0;
-    foreach (QChar c, m_lettersOwned) {
+    for (QChar c : m_lettersOwned) {
         if (!m_word.contains(c))
             ++count;
     }
