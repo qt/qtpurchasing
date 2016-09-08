@@ -203,8 +203,8 @@ public class QtInAppPurchase
                             String productId = jo.getString("productId");
                             int purchaseState = jo.getInt("purchaseState");
                             String purchaseToken = jo.getString("purchaseToken");
-                            String orderId = jo.getString("orderId");
-                            long timestamp = jo.getLong("purchaseTime");
+                            String orderId = jo.has("orderId") ? jo.getString("orderId") : "";
+                            long timestamp = jo.has("purchaseTime") ? jo.getLong("purchaseTime") : 0;
 
                             if (purchaseState == 0)
                                 registerPurchased(m_nativePointer, productId, signature, data, purchaseToken, orderId, timestamp);
@@ -356,8 +356,10 @@ public class QtInAppPurchase
             }
 
             purchaseToken = jo.getString("purchaseToken");
-            orderId = jo.getString("orderId");
-            timestamp = jo.getLong("purchaseTime");
+            if (jo.has("orderId"))
+                orderId = jo.getString("orderId");
+            if (jo.has("purchaseTime"))
+                timestamp = jo.getLong("purchaseTime");
 
         } catch (Exception e) {
             e.printStackTrace();
