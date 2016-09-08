@@ -30,8 +30,9 @@
 
 QT_BEGIN_NAMESPACE
 
-struct QInAppProductPrivate
+class QInAppProductPrivate
 {
+public:
     QInAppProductPrivate(const QString &price, const QString &title, const QString &description, QInAppProduct::ProductType type, const QString &id)
         : localPrice(price)
         , localTitle(title)
