@@ -30,8 +30,9 @@
 
 QT_BEGIN_NAMESPACE
 
-struct QInAppTransactionPrivate
+class QInAppTransactionPrivate
 {
+public:
     QInAppTransactionPrivate(QInAppTransaction::TransactionStatus s,
                              QInAppProduct *p)
         : status(s)
