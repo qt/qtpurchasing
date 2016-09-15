@@ -418,6 +418,11 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         qCDebug(lcPurchasingBackend) << "Restoring app product";
 
         QInAppProduct *product = store()->registeredProduct(qt_win_app_identifier);
+        // App is special and needs explicit registration
+        if (!product) {
+            queryProduct(QInAppProduct::Unlockable, qt_win_app_identifier);
+            product = store()->registeredProduct(qt_win_app_identifier);
+        }
 
         auto transaction = new QWinRTInAppTransaction(QInAppTransaction::PurchaseRestored,
                                                       product,
