@@ -61,6 +61,13 @@ Q_LOGGING_CATEGORY(lcPurchasingBackend, "qt.purchasing.backend")
 
 const QString qt_win_app_identifier = QLatin1String("app");
 
+inline QString hStringToQString(const HString &h)
+{
+    unsigned int length;
+    const wchar_t* raw = h.GetRawBuffer(&length);
+    return QString::fromWCharArray(raw, length);
+}
+
 class QWinRTAppBridge {
 public:
     HRESULT activate();
@@ -255,7 +262,8 @@ inline bool compareProductTypes(QInAppProduct::ProductType qtType, ProductType n
 
 QWinRTInAppTransaction* createTransaction(AsyncStatus status,
                                           QWinRTInAppProduct *product,
-                                          QWinRTInAppPurchaseBackend *backend)
+                                          QWinRTInAppPurchaseBackend *backend,
+                                          QString receipt = QString())
 {
     QInAppTransaction::TransactionStatus qStatus = (status == AsyncStatus::Completed) ?
                                                     QInAppTransaction::PurchaseApproved : QInAppTransaction::PurchaseFailed;
@@ -274,7 +282,7 @@ QWinRTInAppTransaction* createTransaction(AsyncStatus status,
         break;
     }
 
-    auto transaction = new QWinRTInAppTransaction(qStatus, product, reason, backend);
+    auto transaction = new QWinRTInAppTransaction(qStatus, product, reason, receipt, backend);
     return transaction;
 }
 
@@ -341,6 +349,16 @@ bool QWinRTInAppPurchaseBackend::isReady() const
     return !d->m_waitingForList && !d->nativeProducts.isEmpty();
 }
 
+inline QString createStringForSubReceipt(const QXmlStreamReader &reader)
+{
+    QString result;
+    QXmlStreamWriter writer(&result);
+    writer.writeStartDocument();
+    writer.writeCurrentToken(reader);
+    writer.writeEndDocument();
+    return result;
+}
+
 void QWinRTInAppPurchaseBackend::restorePurchases()
 {
     qCDebug(lcPurchasingBackend) << __FUNCTION__;
@@ -363,8 +381,7 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         return;
     }
 
-    quint32 length;
-    QString parse = QString::fromWCharArray(receipt.GetRawBuffer(&length));
+    const QString parse = hStringToQString(receipt);
 
     QXmlStreamReader reader(parse);
     while (reader.readNextStartElement()) {
@@ -382,6 +399,8 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         return;
     }
 
+    const QString appReceipt = createStringForSubReceipt(reader);
+
     while (!reader.atEnd()) {
         reader.readNext();
         if (reader.attributes().hasAttribute(QLatin1String("ProductId"))) {
@@ -395,9 +414,13 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
                     continue;
                 }
 
+
+                const QString receipt = createStringForSubReceipt(reader);
+
                 auto transaction = new QWinRTInAppTransaction(QInAppTransaction::PurchaseRestored,
                                                               product,
                                                               QInAppTransaction::NoFailure,
+                                                              receipt,
                                                               this);
 
                 emit transactionReady(transaction);
@@ -427,6 +450,7 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         auto transaction = new QWinRTInAppTransaction(QInAppTransaction::PurchaseRestored,
                                                       product,
                                                       QInAppTransaction::NoFailure,
+                                                      appReceipt,
                                                       this);
         emit transactionReady(transaction);
     }
@@ -460,7 +484,7 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         }
 
         quint32 length;
-        QString receipt = QString::fromWCharArray(receiptString.GetRawBuffer(&length));
+        const QString receipt = hStringToQString(receiptString);
         qDebug() << "Received receipt:" << receipt;
 
         // Create new transaction with status == Restored and emit
@@ -501,10 +525,9 @@ void QWinRTInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType product
         return;
     }
 
-    quint32 length;
     NativeProductInfo *cachedInfo = d->nativeProducts.value(identifier);
-    QString price = QString::fromWCharArray(cachedInfo->formatPrice.GetRawBuffer(&length));
-    QString name = QString::fromWCharArray(cachedInfo->productName.GetRawBuffer(&length));
+    const QString price = hStringToQString(cachedInfo->formatPrice);
+    const QString name = hStringToQString(cachedInfo->productName);
     QWinRTInAppProduct *appProduct = new QWinRTInAppProduct(this,
                                                             price,
                                                             name,
@@ -532,11 +555,20 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
         hr = QEventDispatcherWinRT::runOnXamlThread([d, product, this]() {
             HRESULT hr;
             ComPtr<IAsyncOperation<HSTRING>> appOp;
-            hr = d->m_bridge.RequestAppPurchaseAsync(false, appOp);
+            hr = d->m_bridge.RequestAppPurchaseAsync(true, appOp);
             Q_ASSERT_SUCCEEDED(hr);
-            auto purchaseCallback = Callback<IAsyncOperationCompletedHandler<HSTRING>>([d, product, this](IAsyncOperation<HSTRING> *, AsyncStatus status)
+            auto purchaseCallback = Callback<IAsyncOperationCompletedHandler<HSTRING>>([d, product, this](IAsyncOperation<HSTRING> *op, AsyncStatus status)
             {
-                auto transaction = createTransaction(status, product, this);
+                HString receiptH;
+                QString receiptQ;
+                HRESULT hr;
+                hr = op->GetResults(receiptH.GetAddressOf());
+                if (SUCCEEDED(hr))
+                    receiptQ = hStringToQString(receiptH);
+                else
+                    qWarning("Could not receive transaction receipt.");
+
+                auto transaction = createTransaction(status, product, this, receiptQ);
                 emit transactionReady(transaction);
                 return S_OK;
             });
@@ -548,11 +580,20 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
         hr = QEventDispatcherWinRT::runOnXamlThread([d, product, &productId, this]() {
             ComPtr<IAsyncOperation<HSTRING>> purchaseOp;
             HRESULT hr;
-            hr = d->m_bridge.RequestProductPurchaseAsync(productId.Get(), false, purchaseOp);
+            hr = d->m_bridge.RequestProductPurchaseAsync(productId.Get(), true, purchaseOp);
             Q_ASSERT_SUCCEEDED(hr);
-            auto purchaseCallback = Callback<IAsyncOperationCompletedHandler<HSTRING>>([d, product, this](IAsyncOperation<HSTRING> *, AsyncStatus status)
+            auto purchaseCallback = Callback<IAsyncOperationCompletedHandler<HSTRING>>([d, product, this](IAsyncOperation<HSTRING> *op, AsyncStatus status)
             {
-                auto transaction = createTransaction(status, product, this);
+                HString receiptH;
+                QString receiptQ;
+                HRESULT hr;
+                hr = op->GetResults(receiptH.GetAddressOf());
+                if (SUCCEEDED(hr))
+                    receiptQ = hStringToQString(receiptH);
+                else
+                    qWarning("Could not receive transaction receipt.");
+
+                auto transaction = createTransaction(status, product, this, receiptQ);
                 emit transactionReady(transaction);
                 return S_OK;
             });
@@ -570,13 +611,20 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
 
             auto purchaseCallback = Callback<IAsyncOperationCompletedHandler<PurchaseResults*>>([d, product, this](IAsyncOperation<PurchaseResults*> *op, AsyncStatus status)
             {
-                auto transaction = createTransaction(status, product, this);
+                ComPtr<IPurchaseResults> purchaseResults;
+                QString receiptQ;
 
                 if (status == AsyncStatus::Completed) {
                     HRESULT hr;
-                    hr = op->GetResults(&transaction->m_purchaseResults);
+                    hr = op->GetResults(&purchaseResults);
                     Q_ASSERT_SUCCEEDED(hr);
+                    HString receiptH;
+                    hr = purchaseResults->get_ReceiptXml(receiptH.GetAddressOf());
+                    Q_ASSERT_SUCCEEDED(hr);
+                    receiptQ = hStringToQString(receiptH);
                 }
+                auto transaction = createTransaction(status, product, this, receiptQ);
+                transaction->m_purchaseResults = purchaseResults;
                 emit transactionReady(transaction);
                 return S_OK;
             });
@@ -666,7 +714,7 @@ HRESULT QWinRTInAppPurchaseBackendPrivate::onListingInformation(IAsyncOperation<
         ComPtr<IProductListing> value;
         hr = currentItem->get_Key(nativeKey.GetAddressOf());
         Q_ASSERT_SUCCEEDED(hr);
-        productKey = QString::fromWCharArray(nativeKey.GetRawBuffer(nullptr));
+        productKey = hStringToQString(nativeKey);
         qCDebug(lcPurchasingBackend) << "ProductKey:" << productKey;
         hr = currentItem->get_Value(&value);
         Q_ASSERT_SUCCEEDED(hr);
