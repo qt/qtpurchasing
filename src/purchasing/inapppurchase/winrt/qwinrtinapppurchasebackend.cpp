@@ -260,16 +260,13 @@ inline bool compareProductTypes(QInAppProduct::ProductType qtType, ProductType n
         return false;
 }
 
-QWinRTInAppTransaction* createTransaction(AsyncStatus status,
-                                          QWinRTInAppProduct *product,
-                                          QWinRTInAppPurchaseBackend *backend,
-                                          QString receipt = QString())
+void QWinRTInAppPurchaseBackend::createTransactionDelayed(qt_WinRTTransactionData data)
 {
-    QInAppTransaction::TransactionStatus qStatus = (status == AsyncStatus::Completed) ?
+    QInAppTransaction::TransactionStatus qStatus = (data.status == AsyncStatus::Completed) ?
                                                     QInAppTransaction::PurchaseApproved : QInAppTransaction::PurchaseFailed;
 
     QInAppTransaction::FailureReason reason;
-    switch (status) {
+    switch (data.status) {
     case AsyncStatus::Completed:
         reason = QInAppTransaction::NoFailure;
         break;
@@ -282,8 +279,11 @@ QWinRTInAppTransaction* createTransaction(AsyncStatus status,
         break;
     }
 
-    auto transaction = new QWinRTInAppTransaction(qStatus, product, reason, receipt, backend);
-    return transaction;
+    auto transaction = new QWinRTInAppTransaction(qStatus, data.product, reason, data.receipt, this);
+    transaction->m_purchaseResults = data.purchaseResults;
+    emit transactionReady(transaction);
+
+    return;
 }
 
 class QWinRTInAppPurchaseBackendPrivate
@@ -310,6 +310,9 @@ QWinRTInAppPurchaseBackend::QWinRTInAppPurchaseBackend(QObject *parent)
     : QInAppPurchaseBackend(parent)
 {
     d_ptr.reset(new QWinRTInAppPurchaseBackendPrivate(this));
+
+    qRegisterMetaType<qt_WinRTTransactionData>("TransactionData");
+
     qCDebug(lcPurchasingBackend) << __FUNCTION__;
 }
 
@@ -568,8 +571,10 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
                 else
                     qWarning("Could not receive transaction receipt.");
 
-                auto transaction = createTransaction(status, product, this, receiptQ);
-                emit transactionReady(transaction);
+                qt_WinRTTransactionData tData(status, product, receiptQ);
+                QMetaObject::invokeMethod(this, "createTransactionDelayed", Qt::QueuedConnection,
+                                          Q_ARG(qt_WinRTTransactionData, tData));
+
                 return S_OK;
             });
             hr = appOp->put_Completed(purchaseCallback.Get());
@@ -593,8 +598,10 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
                 else
                     qWarning("Could not receive transaction receipt.");
 
-                auto transaction = createTransaction(status, product, this, receiptQ);
-                emit transactionReady(transaction);
+                qt_WinRTTransactionData tData(status, product, receiptQ);
+                QMetaObject::invokeMethod(this, "createTransactionDelayed", Qt::QueuedConnection,
+                                          Q_ARG(qt_WinRTTransactionData, tData));
+
                 return S_OK;
             });
             hr = purchaseOp->put_Completed(purchaseCallback.Get());
@@ -623,9 +630,11 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
                     Q_ASSERT_SUCCEEDED(hr);
                     receiptQ = hStringToQString(receiptH);
                 }
-                auto transaction = createTransaction(status, product, this, receiptQ);
-                transaction->m_purchaseResults = purchaseResults;
-                emit transactionReady(transaction);
+
+                qt_WinRTTransactionData tData(status, product, receiptQ, purchaseResults);
+                QMetaObject::invokeMethod(this, "createTransactionDelayed", Qt::QueuedConnection,
+                                          Q_ARG(qt_WinRTTransactionData, tData));
+
                 return S_OK;
             });
 
