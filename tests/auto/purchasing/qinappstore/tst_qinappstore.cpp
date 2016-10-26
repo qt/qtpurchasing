@@ -74,7 +74,7 @@ void tst_QInAppStore::registerUnknownProduct()
     store.registerProduct(QInAppProduct::Unlockable, QStringLiteral("unknownUnlockable"));
 
 //The backend is implemented on iOS, macOS, WinRT and Android, for others we expect failure.
-#if !defined(Q_OS_DARWIN) && !defined(Q_OS_ANDROID) && !defined(Q_OS_WINRT)
+#if !(defined(Q_OS_DARWIN) && !defined(Q_OS_WATCHOS)) && !defined(Q_OS_ANDROID) && !defined(Q_OS_WINRT)
     QEXPECT_FAIL("", "Qt Purchasing not implemented on this platform.", Abort);
 #endif
 
