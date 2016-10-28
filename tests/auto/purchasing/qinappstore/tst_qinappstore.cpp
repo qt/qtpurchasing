@@ -63,6 +63,10 @@ public slots:
 
 void tst_QInAppStore::registerUnknownProduct()
 {
+#ifdef Q_OS_DARWIN
+    QSKIP("This test crashes on macOS. See QTBUG-56786.");
+#endif
+
     QInAppStore store(this);
     SignalReceiver receiver;
 
