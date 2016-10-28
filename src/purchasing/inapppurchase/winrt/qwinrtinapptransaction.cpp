@@ -38,8 +38,9 @@ Q_LOGGING_CATEGORY(lcPurchasingTransaction, "qt.purchasing.transaction")
 
 QWinRTInAppTransaction::QWinRTInAppTransaction(TransactionStatus status,
                            QInAppProduct *product, FailureReason reason,
-                           QObject *parent)
+                           const QString &receipt, QObject *parent)
     : QInAppTransaction(status, product, parent)
+    , m_receipt(receipt)
     , m_failureReason(reason)
 {
     qCDebug(lcPurchasingTransaction) << __FUNCTION__;
@@ -54,6 +55,15 @@ void QWinRTInAppTransaction::finalize()
         m_backend->fulfillConsumable(this);
     }
     deleteLater();
+}
+
+QString QWinRTInAppTransaction::platformProperty(const QString &propertyName) const
+{
+    qCDebug(lcPurchasingTransaction) << __FUNCTION__ << propertyName;
+
+    if (propertyName == QLatin1String("receipt"))
+        return m_receipt;
+    return QString();
 }
 
 QT_END_NAMESPACE

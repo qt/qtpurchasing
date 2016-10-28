@@ -58,13 +58,16 @@ public:
     explicit QWinRTInAppTransaction(TransactionStatus status,
                                     QInAppProduct *product,
                                     FailureReason reason,
+                                    const QString &receipt,
                                     QObject *parent = Q_NULLPTR);
 
     FailureReason failureReason() const override { return m_failureReason; }
 
     void finalize() override;
+    QString platformProperty(const QString &propertyName) const override;
 
     Microsoft::WRL::ComPtr<ABI::Windows::ApplicationModel::Store::IPurchaseResults> m_purchaseResults;
+    QString m_receipt;
 private:
     QWinRTInAppPurchaseBackend *m_backend;
     FailureReason m_failureReason;

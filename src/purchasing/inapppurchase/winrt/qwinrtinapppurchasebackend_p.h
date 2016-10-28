@@ -44,11 +44,41 @@
 #include "qinappproduct.h"
 #include "qinapptransaction.h"
 
+#include <Windows.ApplicationModel.store.h>
+#include <wrl.h>
+
+namespace ABI {
+    namespace Windows {
+        namespace Foundation {
+            enum class AsyncStatus;
+        }
+    }
+}
+
 QT_BEGIN_NAMESPACE
 
 class QWinRTInAppProduct;
 class QWinRTInAppPurchaseBackendPrivate;
 class QWinRTInAppTransaction;
+class QWinRTInAppPurchaseBackend;
+
+struct qt_WinRTTransactionData
+{
+    qt_WinRTTransactionData() { }
+    explicit qt_WinRTTransactionData(ABI::Windows::Foundation::AsyncStatus s,
+                             QWinRTInAppProduct *p,
+                             const QString &r,
+                             Microsoft::WRL::ComPtr<ABI::Windows::ApplicationModel::Store::IPurchaseResults> pRes = Microsoft::WRL::ComPtr<ABI::Windows::ApplicationModel::Store::IPurchaseResults>())
+        : status(s)
+        , product(p)
+        , receipt(r)
+        , purchaseResults(pRes)
+    { }
+    ABI::Windows::Foundation::AsyncStatus status;
+    QWinRTInAppProduct *product;
+    QString receipt;
+    Microsoft::WRL::ComPtr<ABI::Windows::ApplicationModel::Store::IPurchaseResults> purchaseResults;
+};
 
 class QWinRTInAppPurchaseBackend : public QInAppPurchaseBackend
 {
@@ -68,6 +98,8 @@ public:
     void purchaseProduct(QWinRTInAppProduct *product);
 
     void fulfillConsumable(QWinRTInAppTransaction *transaction);
+public slots:
+    void createTransactionDelayed(qt_WinRTTransactionData data);
 private:
     QScopedPointer<QWinRTInAppPurchaseBackendPrivate> d_ptr;
     Q_DECLARE_PRIVATE(QWinRTInAppPurchaseBackend)

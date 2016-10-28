@@ -73,11 +73,14 @@ void tst_QInAppStore::registerUnknownProduct()
     store.registerProduct(QInAppProduct::Consumable, QStringLiteral("unknownConsumable"));
     store.registerProduct(QInAppProduct::Unlockable, QStringLiteral("unknownUnlockable"));
 
-#if !defined(Q_OS_MAC) && !defined(Q_OS_ANDROID)
+//The backend is implemented on iOS, macOS, WinRT and Android, for others we expect failure.
+#if !(defined(Q_OS_DARWIN) && !defined(Q_OS_WATCHOS)) && !defined(Q_OS_ANDROID) && !defined(Q_OS_WINRT)
     QEXPECT_FAIL("", "Qt Purchasing not implemented on this platform.", Abort);
 #endif
 
-    QTRY_COMPARE(receiver.unknownProducts.size(), 2);
+    //Due to network overload or connectivity issues QTRY_COMPARE sometimes fails with timeout,
+    //that's why we need to increase the value, since it's better to wait than to fail.
+    QTRY_COMPARE_WITH_TIMEOUT(receiver.unknownProducts.size(), 2, 10000);
     QCOMPARE(receiver.registeredProducts.size(), 0);
     QCOMPARE(receiver.readyTransactions.size(), 0);
 
