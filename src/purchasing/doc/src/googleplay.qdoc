@@ -140,7 +140,7 @@
   Fill out the following information about your product:
   \list
    \li \uicontrol{Product ID} - an identifier that is used to access the
-   product from your code. It's also
+   product from your code.
    \li \uicontrol{Product Type} - Choose \uicontrol{Managed product} as this is
    the only type supported by the Qt Purchasing API.
    \li Price for the product in all the different geographical areas where it is
