@@ -311,7 +311,7 @@ QWinRTInAppPurchaseBackend::QWinRTInAppPurchaseBackend(QObject *parent)
 {
     d_ptr.reset(new QWinRTInAppPurchaseBackendPrivate(this));
 
-    qRegisterMetaType<qt_WinRTTransactionData>("TransactionData");
+    qRegisterMetaType<qt_WinRTTransactionData>("qt_WinRTTransactionData");
 
     qCDebug(lcPurchasingBackend) << __FUNCTION__;
 }
