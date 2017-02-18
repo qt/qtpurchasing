@@ -37,7 +37,7 @@
 @interface QT_MANGLE_NAMESPACE(InAppPurchaseManager) : NSObject <SKProductsRequestDelegate, SKPaymentTransactionObserver>
 {
     QMacInAppPurchaseBackend *backend;
-    NSMutableArray *pendingTransactions;
+    NSMutableArray<SKPaymentTransaction *> *pendingTransactions;
 }
 
 -(void)requestProductData:(NSString *)identifier;
@@ -50,7 +50,7 @@
 -(id)initWithBackend:(QMacInAppPurchaseBackend *)iapBackend {
     if (self = [super init]) {
         backend = iapBackend;
-        pendingTransactions = [[NSMutableArray alloc] init];
+        pendingTransactions = [[NSMutableArray<SKPaymentTransaction *> alloc] init];
         [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
         qRegisterMetaType<QMacInAppPurchaseProduct*>("QMacInAppPurchaseProduct*");
         qRegisterMetaType<QMacInAppPurchaseTransaction*>("QMacInAppPurchaseTransaction*");
@@ -67,7 +67,7 @@
 
 -(void)requestProductData:(NSString *)identifier
 {
-    NSSet *productId = [NSSet setWithObject:identifier];
+    NSSet<NSString *> *productId = [NSSet<NSString *> setWithObject:identifier];
     SKProductsRequest *productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:productId];
     productsRequest.delegate = self;
     [productsRequest start];
@@ -75,7 +75,7 @@
 
 -(void)processPendingTransactions
 {
-    NSMutableArray *registeredTransactions = [NSMutableArray array];
+    NSMutableArray<SKPaymentTransaction *> *registeredTransactions = [NSMutableArray<SKPaymentTransaction *> array];
 
     for (SKPaymentTransaction *transaction in pendingTransactions) {
         QInAppTransaction::TransactionStatus status = [QT_MANGLE_NAMESPACE(InAppPurchaseManager) statusFromTransaction:transaction];
@@ -102,7 +102,7 @@
 //SKProductsRequestDelegate
 -(void)productsRequest:(SKProductsRequest *)request didReceiveResponse:(SKProductsResponse *)response
 {
-    NSArray *products = response.products;
+    NSArray<SKProduct *> *products = response.products;
     SKProduct *product = [products count] == 1 ? [[products firstObject] retain] : nil;
 
     if (product == nil) {
@@ -151,7 +151,7 @@
 }
 
 //SKPaymentTransactionObserver
-- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray *)transactions
+- (void)paymentQueue:(SKPaymentQueue *)queue updatedTransactions:(NSArray<SKPaymentTransaction *> *)transactions
 {
     Q_UNUSED(queue);
     for (SKPaymentTransaction *transaction in transactions) {
