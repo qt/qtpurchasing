@@ -28,6 +28,7 @@
 
 #include <QtTest/QtTest>
 #include <QtPurchasing/QInAppStore>
+#include <QtPurchasing/QInAppTransaction>
 
 class tst_QInAppStore: public QObject
 {
@@ -70,9 +71,9 @@ void tst_QInAppStore::registerUnknownProduct()
     QInAppStore store(this);
     SignalReceiver receiver;
 
-    connect(&store, SIGNAL(productRegistered(QInAppProduct*)), &receiver, SLOT(productRegistered(QInAppProduct*)));
-    connect(&store, SIGNAL(productUnknown(QInAppProduct::ProductType,QString)), &receiver, SLOT(productUnknown(QInAppProduct::ProductType,QString)));
-    connect(&store, SIGNAL(transactionReady(QInAppTransaction*)), &receiver, SLOT(transactionReady(QInAppTransaction*)));
+    connect(&store, &QInAppStore::productRegistered, &receiver, &SignalReceiver::productRegistered);
+    connect(&store, &QInAppStore::productUnknown, &receiver, &SignalReceiver::productUnknown);
+    connect(&store, &QInAppStore::transactionReady, &receiver, &SignalReceiver::transactionReady);
 
     store.registerProduct(QInAppProduct::Consumable, QStringLiteral("unknownConsumable"));
     store.registerProduct(QInAppProduct::Unlockable, QStringLiteral("unknownUnlockable"));

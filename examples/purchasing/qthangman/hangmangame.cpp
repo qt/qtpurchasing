@@ -39,7 +39,7 @@ HangmanGame::HangmanGame(QObject *parent)
     , m_vowelsUnlocked(false)
 {
     qsrand(::time(0));
-    connect(this, SIGNAL(vowelBought(QChar)), this, SLOT(registerLetterBought(QChar)));
+    connect(this, &HangmanGame::vowelBought, this, &HangmanGame::registerLetterBought);
 
     QtConcurrent::run(this, &HangmanGame::initWordList);
 

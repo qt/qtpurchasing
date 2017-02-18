@@ -30,6 +30,7 @@
 #include "qinappstore_p.h"
 #include "qinapppurchasebackend_p.h"
 #include "qinapppurchasebackendfactory_p.h"
+#include "qinapptransaction.h"
 
 namespace
 {
@@ -166,14 +167,14 @@ void QInAppStore::setupBackend()
     d->backend = QInAppPurchaseBackendFactory::create();
     d->backend->setStore(this);
 
-    connect(d->backend, SIGNAL(ready()),
-            this, SLOT(registerPendingProducts()));
-    connect(d->backend, SIGNAL(transactionReady(QInAppTransaction *)),
-            this, SIGNAL(transactionReady(QInAppTransaction *)));
-    connect(d->backend, SIGNAL(productQueryFailed(QInAppProduct::ProductType,QString)),
-            this, SIGNAL(productUnknown(QInAppProduct::ProductType,QString)));
-    connect(d->backend, SIGNAL(productQueryDone(QInAppProduct *)),
-            this, SLOT(registerProduct(QInAppProduct*)));
+    connect(d->backend, &QInAppPurchaseBackend::ready,
+            this, &QInAppStore::registerPendingProducts);
+    connect(d->backend, &QInAppPurchaseBackend::transactionReady,
+            this, &QInAppStore::transactionReady);
+    connect(d->backend, &QInAppPurchaseBackend::productQueryFailed,
+            this, &QInAppStore::productUnknown);
+    connect(d->backend, &QInAppPurchaseBackend::productQueryDone,
+            this, static_cast<void (QInAppStore::*)(QInAppProduct *)>(&QInAppStore::registerProduct));
 }
 
 /*!
