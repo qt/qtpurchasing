@@ -739,9 +739,13 @@ HRESULT QWinRTInAppPurchaseBackendPrivate::onListingInformation(IAsyncOperation<
 
         ComPtr<IProductListingWithConsumables> converted;
         hr = value.As(&converted);
-        Q_ASSERT_SUCCEEDED(hr);
-        hr = converted->get_ProductType(&nativeInfo->type);
-        Q_ASSERT_SUCCEEDED(hr);
+        if (SUCCEEDED(hr)) {
+            hr = converted->get_ProductType(&nativeInfo->type);
+            Q_ASSERT_SUCCEEDED(hr);
+        } else {
+            qWarning("Could not acquire product type. Assuming Unlockable");
+            nativeInfo->type = ProductType_Durable;
+        }
 
         qCDebug(lcPurchasingBackend) << "Detailed info:"
                                  << " ID:" << QString::fromWCharArray(nativeInfo->productID.GetRawBuffer(nullptr))
