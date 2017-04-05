@@ -27,6 +27,7 @@
 ****************************************************************************/
 
 import QtQuick 2.2
+import "."
 
 Item {
     id: button
@@ -60,7 +61,7 @@ Item {
             verticalAlignment: Text.AlignVCenter
             minimumPointSize: 8
             font.pointSize: 64
-            font.family: "Helvetica Neue"
+            font.family: Settings.fontFamily
             font.weight: Font.Light
         }
     }

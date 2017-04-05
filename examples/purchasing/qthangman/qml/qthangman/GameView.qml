@@ -28,6 +28,7 @@
 
 import QtQuick 2.2
 import QtQuick.Controls 1.1
+import "."
 
 Item {
     id: gameView
@@ -190,7 +191,7 @@ Item {
         minimumPointSize: 8
         font.pointSize: 64
         color: "white"
-        font.family: "Helvetica Neue"
+        font.family: Settings.fontFamily
         font.weight: Font.Light
     }
 
@@ -205,7 +206,7 @@ Item {
         minimumPointSize: 8
         font.pointSize: 64
         color: "white"
-        font.family: "Helvetica Neue"
+        font.family: Settings.fontFamily
         font.weight: Font.Light
     }
 }

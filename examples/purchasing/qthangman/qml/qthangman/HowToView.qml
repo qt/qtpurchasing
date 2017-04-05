@@ -60,7 +60,7 @@ Item {
                     height: contentHeight
                     width: parent.width
                     wrapMode: Text.Wrap
-                    font.family: ".Helvetica Neue Interface -M3"
+                    font.family: Settings.helpFontFamily
                     color: "white"
                     font.pixelSize: helpFlickable.height * 0.04
                     text: "\
@@ -79,7 +79,7 @@ before you make too many mistakes and the hangman gets hung.\n"
                     height: contentHeight
                     width: parent.width
                     wrapMode: Text.Wrap
-                    font.family: ".Helvetica Neue Interface -M3"
+                    font.family: Settings.helpFontFamily
                     color: "white"
                     font.pixelSize: helpFlickable.height * 0.04
                     text: "\
@@ -99,7 +99,7 @@ step closer to death. \n"
                     height: contentHeight
                     width: parent.width
                     wrapMode: Text.Wrap
-                    font.family: ".Helvetica Neue Interface -M3"
+                    font.family: Settings.helpFontFamily
                     color: "white"
                     font.pixelSize: helpFlickable.height * 0.04
                     text: "\
@@ -116,7 +116,7 @@ any vowels that have not been guess already will be added to your vowel pool."
                     height: contentHeight
                     width: parent.width
                     wrapMode: Text.Wrap
-                    font.family: ".Helvetica Neue Interface -M3"
+                    font.family: Settings.helpFontFamily
                     color: "white"
                     font.pixelSize: helpFlickable.height * 0.04
                     text: "\
