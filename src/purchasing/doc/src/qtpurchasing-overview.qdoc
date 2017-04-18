@@ -41,7 +41,7 @@
   content to virtual items. The Qt Purchasing API is built on the system APIs
   for in-app purchases, which means the purchase process is more familiar to
   the user, and the information already stored by the platform (such as credit
-  card information) can be employed to simplify the purchase process.
+  card information) can be used to simplify the purchase process.
 
   \section1 Getting Started
 
@@ -52,9 +52,9 @@
   \section2 The Store
 
   The in-app products must be registered in the target stores, before they
-  could be queried or purchased in an application. Using same identifiers for
-  the products in each of the stores is recommended, as it makes the code to
-  query and purchase the products simpler.
+  can be queried or purchased in an application. We recommend using the same
+  identifiers for the products in each store, as it simplifies the code to
+  query and purchase the products.
 
   \list
   \li \l{Registering Products in Google Play}
@@ -65,9 +65,9 @@
   \section2 Writing the Code
 
   Depending on what fits best with the application, you can choose to use either C++ or
-  QML to support in-app purchasing. If the majority of the user interface is written
-  in QML, it is recommended that you use the QML types, which provide a simple and
-  declarative point of access for the products in the store.
+  QML to support in-app purchasing. If most of the user interface is written in QML,
+  we recommend that you use the QML types, which provide a simple and declarative
+  point of access for the products in the store.
 
   \list
   \li \l{Getting Started with Qt Purchasing in QML}
