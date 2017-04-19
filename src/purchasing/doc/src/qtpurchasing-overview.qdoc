@@ -79,6 +79,17 @@
   Take a look at the \l{Qt Purchasing Examples} for a demonstration on
   how the APIs can be used in applications.
 
+  \section1 Licenses and Attributions
+
+  Qt Purchasing is available under commercial licenses from \l{The Qt Company}.
+  In addition, it is available under the \l{GNU Lesser General Public License, version 3}.
+  See \l{Qt Licensing} for further details.
+
+  Furthermore Qt Purchasing on Android contains third party modules under the following
+  permissive licenses:
+
+  \generatelist{groupsbymodule attributions-qtpurchasing}
+
   \section1 API Reference
 
   \list
