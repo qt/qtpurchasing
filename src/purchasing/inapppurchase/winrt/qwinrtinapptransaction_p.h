@@ -45,6 +45,7 @@
 
 #include <QtCore/qobject.h>
 #include <QtCore/qdatetime.h>
+#include <QtCore/QUuid>
 
 #include <Windows.ApplicationModel.store.h>
 #include <wrl.h>
@@ -68,6 +69,7 @@ public:
 
     Microsoft::WRL::ComPtr<ABI::Windows::ApplicationModel::Store::IPurchaseResults> m_purchaseResults;
     QString m_receipt;
+    QUuid m_uuid;
 private:
     QWinRTInAppPurchaseBackend *m_backend;
     FailureReason m_failureReason;

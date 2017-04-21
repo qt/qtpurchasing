@@ -50,4 +50,8 @@ JAVASOURCES += \
 target.path = $$[QT_INSTALL_PREFIX]/jar
 INSTALLS += target
 
-OTHER_FILES += $$JAVASOURCES
+OTHER_FILES += \
+    $$JAVASOURCES \
+    $$PWD/src/com/android/vending/billing/qt_attribution.json \
+    $$PWD/src/org/qtproject/qt5/android/purchasing/qt_attribution.json \
+    $$PWD/src/LICENSE-APACHE-2.0.txt

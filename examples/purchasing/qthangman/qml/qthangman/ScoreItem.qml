@@ -28,6 +28,7 @@
 
 import QtQuick 2.2
 import QtQuick.Controls 1.1
+import "."
 
 Rectangle {
     id: borderRect
@@ -45,7 +46,7 @@ Rectangle {
         horizontalAlignment: Text.AlignRight
         verticalAlignment: Text.AlignVCenter
         font.pixelSize: parent.height
-        font.family: "Helvetica Neue"
+        font.family: Settings.fontFamily
         font.weight: Font.Light
         text: applicationData.score
         color: "white"

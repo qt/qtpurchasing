@@ -73,6 +73,7 @@ public:
     HRESULT activate();
     HRESULT LoadListingInformationAsync(ComPtr<IAsyncOperation<ListingInformation *>> &op);
     HRESULT GetAppReceiptAsync(ComPtr<IAsyncOperation<HSTRING>> &op);
+    HRESULT GetProductReceiptAsync(HSTRING product, ComPtr<IAsyncOperation<HSTRING>> &op);
     HRESULT RequestAppPurchaseAsync(bool receipt, ComPtr<IAsyncOperation<HSTRING>> &op);
     HRESULT RequestProductPurchaseAsync(HSTRING productId, bool receipt, ComPtr<IAsyncOperation<HSTRING>> &op);
     HRESULT RequestProductPurchaseWithResultsAsync(HSTRING productId, ComPtr<IAsyncOperation<PurchaseResults *>> &purchaseOp);
@@ -142,6 +143,16 @@ HRESULT QWinRTAppBridge::GetAppReceiptAsync(ComPtr<IAsyncOperation<HSTRING> > &o
         hr = m_simulator->GetAppReceiptAsync(&op);
     else
         hr = m_app->GetAppReceiptAsync(&op);
+    return hr;
+}
+
+HRESULT QWinRTAppBridge::GetProductReceiptAsync(HSTRING product, ComPtr<IAsyncOperation<HSTRING> > &op)
+{
+    HRESULT hr;
+    if (m_simulate)
+        hr = m_simulator->GetProductReceiptAsync(product, &op);
+    else
+        hr = m_app->GetProductReceiptAsync(product, &op);
     return hr;
 }
 
@@ -236,7 +247,7 @@ HRESULT QWinRTAppBridge::qt_winrt_load_simulator_config(const QString &fileName,
     hr = simulator->ReloadSimulatorAsync(storeFile.Get(), &reloadAction);
     Q_ASSERT_SUCCEEDED(hr);
 
-    hr = QWinRTFunctions::await(reloadAction);
+    hr = QWinRTFunctions::await(reloadAction, QWinRTFunctions::YieldThread);
     RETURN_HR_IF_FAILED("Failed to load purchasing description.");
 
     return hr;
@@ -267,9 +278,32 @@ void QWinRTInAppPurchaseBackend::createTransactionDelayed(qt_WinRTTransactionDat
 
     QInAppTransaction::FailureReason reason;
     switch (data.status) {
-    case AsyncStatus::Completed:
+    case AsyncStatus::Completed: {
         reason = QInAppTransaction::NoFailure;
+        ProductPurchaseStatus purchaseStatus;
+        HRESULT hr = data.purchaseResults->get_Status(&purchaseStatus);
+        if (FAILED(hr)) {
+            qWarning("Could not query purchase status for transaction.");
+            break;
+        }
+        switch (purchaseStatus) {
+        case ProductPurchaseStatus_Succeeded:
+            reason = QInAppTransaction::NoFailure;
+            break;
+        case ProductPurchaseStatus_NotFulfilled:
+        case ProductPurchaseStatus_NotPurchased:
+            reason = QInAppTransaction::CanceledByUser;
+            qStatus = QInAppTransaction::PurchaseFailed;
+            break;
+        case ProductPurchaseStatus_AlreadyPurchased:
+        default:
+            reason = QInAppTransaction::ErrorOccurred;
+            qStatus = QInAppTransaction::PurchaseFailed;
+            break;
+        }
+
         break;
+    }
     case AsyncStatus::Canceled:
         reason = QInAppTransaction::CanceledByUser;
         break;
@@ -281,6 +315,8 @@ void QWinRTInAppPurchaseBackend::createTransactionDelayed(qt_WinRTTransactionDat
 
     auto transaction = new QWinRTInAppTransaction(qStatus, data.product, reason, data.receipt, this);
     transaction->m_purchaseResults = data.purchaseResults;
+    qCDebug(lcPurchasingBackend) << "Emitting Transaction:" << qStatus << "/"
+                                 << reason << " Receipt:" << data.receipt;
     emit transactionReady(transaction);
 
     return;
@@ -329,7 +365,7 @@ void QWinRTInAppPurchaseBackend::initialize()
 
         // ### Keep for later usage.
         // ComPtr<ILicenseInformation> licenseInfo;
-        // hr = d->m_app->get_LicenseInformation(&licenseInfo);
+        // hr = d->m_bridge.get_LicenseInformation(licenseInfo);
         // RETURN_HR_IF_FAILED("Could not acquire license information.");
 
         ComPtr<IAsyncOperation<ListingInformation*>> op;
@@ -380,11 +416,13 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
     hr = QWinRTFunctions::await(op, receipt.GetAddressOf());
 
     if (FAILED(hr)) {
-        qCDebug(lcPurchasingBackend) << "Could not wait for receipt";
+        qCDebug(lcPurchasingBackend) << "Could not wait for app receipt query";
         return;
     }
 
     const QString parse = hStringToQString(receipt);
+
+    qCDebug(lcPurchasingBackend) << "Receipt:" << parse;
 
     QXmlStreamReader reader(parse);
     while (reader.readNextStartElement()) {
@@ -408,9 +446,16 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         reader.readNext();
         if (reader.attributes().hasAttribute(QLatin1String("ProductId"))) {
             const QString id = reader.attributes().value(QLatin1String("ProductId")).toString();
+            qCDebug(lcPurchasingBackend) << "  Found Product " << id << "to restore";
             if (d->nativeProducts.contains(id)) {
                 qCDebug(lcPurchasingBackend) << "Restoring:" << id;
 
+                QUuid uuid(reader.attributes().value(QLatin1String("Id")).toString());
+                if (uuid.isNull()) {
+                    qCDebug(lcPurchasingBackend) << "Product " << id << " restoration failed due to "
+                                                 << "no transaction id";
+                    continue;
+                }
                 QInAppProduct *product = store()->registeredProduct(id);
                 if (!product) {
                     qCDebug(lcPurchasingBackend) << "Product " << id << "has been bought, but is unknown";
@@ -425,7 +470,7 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
                                                               QInAppTransaction::NoFailure,
                                                               receipt,
                                                               this);
-
+                transaction->m_uuid = uuid;
                 emit transactionReady(transaction);
             }
         }
@@ -463,6 +508,7 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
     // However, this returns E_NOTIMPL when using the ICurrentAppSimulator,
     // so it could not be used during development phase.
 #if 0
+    qCDebug(lcPurchasingBackend) << "Experimenting with Product Receipts";
     const QStringList keys = d->nativeProducts.keys();
     for (auto item : keys) {
         HRESULT hr;
@@ -471,7 +517,7 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
         hr = productId.Set(reinterpret_cast<LPCWSTR>(item.utf16()), item.size());
 
         ComPtr<IAsyncOperation<HSTRING>> op;
-        hr = d->m_app->GetProductReceiptAsync(productId.Get(), &op);
+        hr = d->m_bridge.GetProductReceiptAsync(productId.Get(), op);
 
         if (FAILED(hr)) {
             qCDebug(lcPurchasingBackend) << "No receipt available for:" << item;
@@ -486,9 +532,8 @@ void QWinRTInAppPurchaseBackend::restorePurchases()
             continue;
         }
 
-        quint32 length;
         const QString receipt = hStringToQString(receiptString);
-        qDebug() << "Received receipt:" << receipt;
+        qDebug() << "Received receipt for " << item << ":" << receipt;
 
         // Create new transaction with status == Restored and emit
         //emit transactionReady();
@@ -521,12 +566,14 @@ void QWinRTInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType product
         return;
     }
 
-    ComPtr<IProductLicense> productLicense = d->findProductLicense(identifier);
-    if (!productLicense && identifier != qt_win_app_identifier) {
-        qCDebug(lcPurchasingBackend) << "Could not find product license even though available in listing:" << identifier;
-        emit productQueryFailed(productType, identifier);
-        return;
-    }
+    // With the latest Windows Store Updates, product licenses seem to be not working
+    // anymore. Hence, we have to rely on the listing being correct.
+    //    ComPtr<IProductLicense> productLicense = d->findProductLicense(identifier);
+    //    if (!productLicense && identifier != qt_win_app_identifier) {
+    //        qCDebug(lcPurchasingBackend) << "Could not find product license even though available in listing:" << identifier;
+    //        emit productQueryFailed(productType, identifier);
+    //        return;
+    //    }
 
     NativeProductInfo *cachedInfo = d->nativeProducts.value(identifier);
     const QString price = hStringToQString(cachedInfo->formatPrice);
@@ -652,8 +699,11 @@ void QWinRTInAppPurchaseBackend::fulfillConsumable(QWinRTInAppTransaction *trans
     HRESULT hr;
 
     GUID transactionId;
-    hr = transaction->m_purchaseResults->get_TransactionId(&transactionId);
-    Q_ASSERT_SUCCEEDED(hr);
+    if (transaction->m_uuid.isNull()) {
+        hr = transaction->m_purchaseResults->get_TransactionId(&transactionId);
+        Q_ASSERT_SUCCEEDED(hr);
+    } else
+        transactionId = transaction->m_uuid;
 
     HString productId;
     const QString identifier = transaction->product()->identifier();
@@ -690,6 +740,10 @@ HRESULT QWinRTInAppPurchaseBackendPrivate::onListingInformation(IAsyncOperation<
         qCDebug(lcPurchasingBackend) << "Could not get IMapView";
         return S_OK;
     }
+
+    unsigned int amount = 0;
+    productListings->get_Size(&amount);
+    qCDebug(lcPurchasingBackend) << " Found " << amount << " products registered in the store.";
 
     typedef Collections::IKeyValuePair<HSTRING, ProductListing *> ValueItem;
     typedef Collections::IIterable<ValueItem *> ValueIterable;
@@ -739,9 +793,13 @@ HRESULT QWinRTInAppPurchaseBackendPrivate::onListingInformation(IAsyncOperation<
 
         ComPtr<IProductListingWithConsumables> converted;
         hr = value.As(&converted);
-        Q_ASSERT_SUCCEEDED(hr);
-        hr = converted->get_ProductType(&nativeInfo->type);
-        Q_ASSERT_SUCCEEDED(hr);
+        if (SUCCEEDED(hr)) {
+            hr = converted->get_ProductType(&nativeInfo->type);
+            Q_ASSERT_SUCCEEDED(hr);
+        } else {
+            qWarning("Could not acquire product type. Assuming Unlockable");
+            nativeInfo->type = ProductType_Durable;
+        }
 
         qCDebug(lcPurchasingBackend) << "Detailed info:"
                                  << " ID:" << QString::fromWCharArray(nativeInfo->productID.GetRawBuffer(nullptr))
@@ -764,6 +822,8 @@ HRESULT QWinRTInAppPurchaseBackendPrivate::onListingInformation(IAsyncOperation<
     boolean trial;
     hr = appLicense->get_IsTrial(&trial);
     Q_ASSERT_SUCCEEDED(hr);
+
+    qCDebug(lcPurchasingBackend) << "App registration: Is Active: " << active << " Is Trial: " << trial;
     if (active) {
         auto appInfo = new NativeProductInfo;
         hr = appInfo->productID.Set(reinterpret_cast<LPCWSTR>(qt_win_app_identifier.utf16()), qt_win_app_identifier.size());

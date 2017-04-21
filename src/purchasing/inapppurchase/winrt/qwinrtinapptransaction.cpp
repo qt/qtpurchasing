@@ -51,7 +51,8 @@ void QWinRTInAppTransaction::finalize()
 {
     qCDebug(lcPurchasingTransaction) << __FUNCTION__;
     if (product()->productType() == QInAppProduct::Consumable &&
-            status() == QInAppTransaction::PurchaseApproved) {
+            (status() == QInAppTransaction::PurchaseApproved ||
+             status() == QInAppTransaction::PurchaseRestored)) {
         m_backend->fulfillConsumable(this);
     }
     deleteLater();

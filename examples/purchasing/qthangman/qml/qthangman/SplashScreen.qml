@@ -58,7 +58,7 @@ Rectangle {
         anchors.top: logo.bottom
         anchors.topMargin: 10
         text: "Qt Hangman"
-        font.family: ".Helvetica Neue Interface -M3"
+        font.family: Settings.helpFontFamily
         color: "white"
         font.pointSize: 24
     }

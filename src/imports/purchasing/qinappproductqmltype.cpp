@@ -125,12 +125,12 @@ void QInAppProductQmlType::setStore(QInAppStoreQmlType *store)
         m_store->store()->disconnect(this);
 
     m_store = store;
-    connect(m_store->store(), SIGNAL(productRegistered(QInAppProduct*)),
-            this, SLOT(handleProductRegistered(QInAppProduct *)));
-    connect(m_store->store(), SIGNAL(productUnknown(QInAppProduct::ProductType,QString)),
-            this, SLOT(handleProductUnknown(QInAppProduct::ProductType,QString)));
-    connect(m_store->store(), SIGNAL(transactionReady(QInAppTransaction*)),
-            this, SLOT(handleTransaction(QInAppTransaction*)));
+    connect(m_store->store(), &QInAppStore::productRegistered,
+            this, &QInAppProductQmlType::handleProductRegistered);
+    connect(m_store->store(), &QInAppStore::productUnknown,
+            this, &QInAppProductQmlType::handleProductUnknown);
+    connect(m_store->store(), &QInAppStore::transactionReady,
+            this, &QInAppProductQmlType::handleTransaction);
 
     updateProduct();
 

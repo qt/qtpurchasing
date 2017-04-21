@@ -57,10 +57,23 @@ QMacInAppPurchaseTransaction::QMacInAppPurchaseTransaction(SKPaymentTransaction 
         case SKErrorPaymentNotAllowed:
             m_errorString = QStringLiteral("Payment Not Allowed");
             break;
-#ifdef Q_OS_IOS
+#if defined(Q_OS_IOS) || defined(Q_OS_TVOS)
         case SKErrorStoreProductNotAvailable:
             m_errorString = QStringLiteral("Store Product Not Available");
             break;
+#if QT_IOS_PLATFORM_SDK_EQUAL_OR_ABOVE(90300) || QT_TVOS_PLATFORM_SDK_EQUAL_OR_ABOVE(90200)
+        case SKErrorCloudServicePermissionDenied:
+            m_errorString = QStringLiteral("Cloud Service Permission Denied");
+            break;
+        case SKErrorCloudServiceNetworkConnectionFailed:
+            m_errorString = QStringLiteral("Cloud Service Network Connection Failed");
+            break;
+#endif
+#if QT_IOS_PLATFORM_SDK_EQUAL_OR_ABOVE(100300) || QT_TVOS_PLATFORM_SDK_EQUAL_OR_ABOVE(100200)
+        case SKErrorCloudServiceRevoked:
+            m_errorString = QStringLiteral("Cloud Service Revoked");
+            break;
+#endif
 #endif
         case SKErrorUnknown:
         default:

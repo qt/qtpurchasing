@@ -1,7 +1,7 @@
 /****************************************************************************
 **
-** Copyright (C) 2015 The Qt Company Ltd.
-** Contact: http://www.qt.io/licensing/
+** Copyright (C) 2017 The Qt Company Ltd.
+** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the documentation of the Qt Toolkit.
 **
@@ -11,8 +11,8 @@
 ** accordance with the commercial license agreement provided with the
 ** Software or, alternatively, in accordance with the terms contained in
 ** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see http://www.qt.io/terms-conditions. For further
-** information use the contact form at http://www.qt.io/contact-us.
+** and conditions see https://www.qt.io/terms-conditions. For further
+** information use the contact form at https://www.qt.io/contact-us.
 **
 ** GNU Free Documentation License Usage
 ** Alternatively, this file may be used under the terms of the GNU Free
@@ -20,7 +20,7 @@
 ** Foundation and appearing in the file included in the packaging of
 ** this file. Please review the following information to ensure
 ** the GNU Free Documentation License version 1.3 requirements
-** will be met: http://www.gnu.org/copyleft/fdl.html.
+** will be met: https://www.gnu.org/licenses/fdl-1.3.html.
 ** $QT_END_LICENSE$
 **
 ****************************************************************************/
@@ -56,7 +56,7 @@
   \uicontrol{Build Android APK} to see it.
 
   Once the manifest is added to your project, you can modify it. The most
-  important part is the application name and package name. The
+  important parts are the application name and the package name. The
   package name must be unique, and it is recommended to follow the
   com.mycompany.myappname naming convention. The "com.mycompany"
   namespace is based on the Internet domain ownership to avoid naming
@@ -65,7 +65,7 @@
   Other important parts of the manifest include the \c versionCode, which must
   be incremented every time you upload a new version of the application. Other
   properties will decide how your application package
-  is presented in the store listing, such as the application name and version
+  is presented in the store listing, such as the application name and the version
   name.
 
   Finally, the application needs the billing permission. If you disabled
@@ -123,12 +123,12 @@
   \uicontrol{Beta testing} or \uicontrol{Alpha testing} tab, and mark the
   application as \uicontrol{published}.
 
-  When the selected test users you add to your alpha or beta program purchase
-  in-app products in your application, they will make actual purchases and will
-  be charged for them. For testing purchases, you can register the e-mail
+  When the selected test users that you have added to your alpha or beta program
+  purchase in-app products in your application, they will make actual purchases
+  and will be charged for them. For testing purchases, you can register the e-mail
   addresses that should have testing access, under \uicontrol{Settings}
   in the developer console. The users with these e-mail addresses can purchase
-  your in-app products as without being charged for the purchase, and the
+  your in-app products without being charged for the purchase, and the
   transaction is canceled automatically at a later stage.
 
   \section2 Adding In-App Products

@@ -60,7 +60,7 @@ Item {
         anchors.right: parent.right
         anchors.bottom: parent.bottom
         anchors.margins: topLevel.globalMargin
-        font.family: ".Helvetica Neue Interface -M3"
+        font.family: Settings.helpFontFamily
         color: "white"
         font.pointSize: 64
         fontSizeMode: Text.Fit

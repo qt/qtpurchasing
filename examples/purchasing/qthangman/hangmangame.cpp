@@ -39,7 +39,7 @@ HangmanGame::HangmanGame(QObject *parent)
     , m_vowelsUnlocked(false)
 {
     qsrand(::time(0));
-    connect(this, SIGNAL(vowelBought(QChar)), this, SLOT(registerLetterBought(QChar)));
+    connect(this, &HangmanGame::vowelBought, this, &HangmanGame::registerLetterBought);
 
     QtConcurrent::run(this, &HangmanGame::initWordList);
 
@@ -116,7 +116,7 @@ QString HangmanGame::consonants() const
 int HangmanGame::errorCount() const
 {
     int count = 0;
-    foreach (QChar c, m_lettersOwned) {
+    for (QChar c : m_lettersOwned) {
         if (!m_word.contains(c))
             ++count;
     }
