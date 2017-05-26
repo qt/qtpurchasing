@@ -33,7 +33,7 @@ PATHPREFIX = $$PWD/src/org/qtproject/qt5/android/purchasing/
     }
     !exists($$AIDL_CMD): error("The path $$AIDL_CMD does not exist. Please set the environment variable ANDROID_BUILD_TOOLS_REVISION to the revision of the build tools installed in your Android SDK.")
 
-    system($$AIDL_CMD -I$$PWD/src -p$$FRAMEWORK_AIDL_FILE $$PWD/src/com/android/vending/billing/IInAppBillingService.aidl $$PWD/src/com/android/vending/billing/IInAppBillingService.java)
+    system($$AIDL_CMD -I$$PWD/src -p$$FRAMEWORK_AIDL_FILE $$PWD/src/com/android/vending/billing/IInAppBillingService.aidl $$OUT_PWD/src/com/android/vending/billing/IInAppBillingService.java)
 }
 
 JAVACLASSPATH += $$PWD/src/
@@ -42,7 +42,7 @@ JAVASOURCES += \
     $$PATHPREFIX/Security.java \
     $$PATHPREFIX/Base64.java \
     $$PATHPREFIX/Base64DecoderException.java \
-    $$PWD/src/com/android/vending/billing/IInAppBillingService.java
+    $$OUT_PWD/src/com/android/vending/billing/IInAppBillingService.java
 
 
 
