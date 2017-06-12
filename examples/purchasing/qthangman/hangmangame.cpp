@@ -51,8 +51,8 @@
 #include "hangmangame.h"
 #include <QFile>
 #include <QDebug>
-#include <time.h>
 #include <QBuffer>
+#include <QRandomGenerator>
 #include <QtConcurrent/QtConcurrentRun>
 
 HangmanGame::HangmanGame(QObject *parent)
@@ -60,7 +60,6 @@ HangmanGame::HangmanGame(QObject *parent)
     , m_lock(QMutex::Recursive)
     , m_vowelsUnlocked(false)
 {
-    qsrand(::time(0));
     connect(this, &HangmanGame::vowelBought, this, &HangmanGame::registerLetterBought);
 
     QtConcurrent::run(this, &HangmanGame::initWordList);
@@ -233,14 +232,13 @@ void HangmanGame::chooseRandomWord()
     if (m_wordList.isEmpty())
         return;
 
-    m_word = m_wordList.at(qrand() % m_wordList.size());
+    m_word = m_wordList.at(QRandomGenerator::bounded(m_wordList.size()));
     emit wordChanged();
 }
 
 void HangmanGame::initWordList()
 {
     QMutexLocker locker(&m_lock);
-    qsrand(::time(0) + 1000);
     QFile file(":/enable2.txt");
     if (file.open(QIODevice::ReadOnly)) {
         QByteArray allData = file.readAll();
