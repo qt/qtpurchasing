@@ -280,6 +280,8 @@ void QWinRTInAppPurchaseBackend::createTransactionDelayed(qt_WinRTTransactionDat
     switch (data.status) {
     case AsyncStatus::Completed: {
         reason = QInAppTransaction::NoFailure;
+        if (!data.purchaseResults)
+            break;
         ProductPurchaseStatus purchaseStatus;
         HRESULT hr = data.purchaseResults->get_Status(&purchaseStatus);
         if (FAILED(hr)) {
@@ -625,33 +627,6 @@ void QWinRTInAppPurchaseBackend::purchaseProduct(QWinRTInAppProduct *product)
                 return S_OK;
             });
             hr = appOp->put_Completed(purchaseCallback.Get());
-            Q_ASSERT_SUCCEEDED(hr);
-            return S_OK;
-        });
-    } else if (product->productType() == QInAppProduct::Unlockable) {
-        hr = QEventDispatcherWinRT::runOnXamlThread([d, product, &productId, this]() {
-            ComPtr<IAsyncOperation<HSTRING>> purchaseOp;
-            HRESULT hr;
-            hr = d->m_bridge.RequestProductPurchaseAsync(productId.Get(), true, purchaseOp);
-            Q_ASSERT_SUCCEEDED(hr);
-            auto purchaseCallback = Callback<IAsyncOperationCompletedHandler<HSTRING>>([d, product, this](IAsyncOperation<HSTRING> *op, AsyncStatus status)
-            {
-                HString receiptH;
-                QString receiptQ;
-                HRESULT hr;
-                hr = op->GetResults(receiptH.GetAddressOf());
-                if (SUCCEEDED(hr))
-                    receiptQ = hStringToQString(receiptH);
-                else
-                    qWarning("Could not receive transaction receipt.");
-
-                qt_WinRTTransactionData tData(status, product, receiptQ);
-                QMetaObject::invokeMethod(this, "createTransactionDelayed", Qt::QueuedConnection,
-                                          Q_ARG(qt_WinRTTransactionData, tData));
-
-                return S_OK;
-            });
-            hr = purchaseOp->put_Completed(purchaseCallback.Get());
             Q_ASSERT_SUCCEEDED(hr);
             return S_OK;
         });
