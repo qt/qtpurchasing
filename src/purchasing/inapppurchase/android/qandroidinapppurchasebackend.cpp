@@ -334,14 +334,6 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
         return;
     }
 
-    QAndroidJniObject intentSender = m_javaObject.callObjectMethod("createBuyIntentSender",
-                                                                   "(Ljava/lang/String;)Landroid/content/IntentSender;",
-                                                                   QAndroidJniObject::fromString(product->identifier()).object<jstring>());
-    if (!intentSender.isValid()) {
-        purchaseFailed(product, QInAppTransaction::ErrorOccurred, QStringLiteral("Unable to get intent sender from service"));
-        return;
-    }
-
     int requestCode = 0;
     while (m_activePurchaseRequests.contains(requestCode)) {
         requestCode++;
@@ -352,6 +344,16 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
     }
 
     m_activePurchaseRequests[requestCode] = product;
+
+    QAndroidJniObject intentSender = m_javaObject.callObjectMethod("createBuyIntentSender",
+                                                                   "(Ljava/lang/String;I)Landroid/content/IntentSender;",
+                                                                   QAndroidJniObject::fromString(product->identifier()).object<jstring>(), requestCode);
+
+    if (!intentSender.isValid()) {
+        m_activePurchaseRequests.remove(requestCode);
+        return;
+    }
+
     QtAndroid::startIntentSender(intentSender, requestCode, this);
 }
 
