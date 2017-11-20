@@ -374,7 +374,7 @@ public class QtInAppPurchase
         m_publicKey = publicKey;
     }
 
-    public IntentSender createBuyIntentSender(String identifier)
+    public IntentSender createBuyIntentSender(String identifier, int requestCode)
     {
         if (m_service == null) {
             Log.e(TAG, "Unable to create buy intent. No IAP service connection.");
@@ -388,9 +388,21 @@ public class QtInAppPurchase
                                                            TYPE_INAPP,
                                                            identifier);
              int response = bundleResponseCode(purchaseBundle);
+
              if (response != RESULT_OK) {
-                 Log.e(TAG, "Unable to create buy intent. Response code: " + response);
-                 return null;
+                Log.e(TAG, "Unable to create buy intent. Response code: " + response);
+                String errorString;
+                switch (response) {
+                    case RESULT_BILLING_UNAVAILABLE: errorString = "Billing unavailable"; break;
+                    case RESULT_ITEM_UNAVAILABLE: errorString = "Item unavailable"; break;
+                    case RESULT_DEVELOPER_ERROR: errorString = "Developer error"; break;
+                    case RESULT_ERROR: errorString = "Fatal error occurred"; break;
+                    case RESULT_ITEM_ALREADY_OWNED: errorString = "Item already owned"; break;
+                    default: errorString = "Unknown billing error " + response; break;
+                };
+
+                purchaseFailed(requestCode, FAILUREREASON_ERROR, errorString);
+                return null;
              }
 
              PendingIntent pendingIntent = purchaseBundle.getParcelable("BUY_INTENT");

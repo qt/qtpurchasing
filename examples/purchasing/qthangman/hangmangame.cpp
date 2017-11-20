@@ -232,7 +232,7 @@ void HangmanGame::chooseRandomWord()
     if (m_wordList.isEmpty())
         return;
 
-    m_word = m_wordList.at(QRandomGenerator::bounded(m_wordList.size()));
+    m_word = m_wordList.at(QRandomGenerator::global()->bounded(m_wordList.size()));
     emit wordChanged();
 }
 
