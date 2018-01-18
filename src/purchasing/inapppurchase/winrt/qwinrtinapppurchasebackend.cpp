@@ -699,10 +699,14 @@ void QWinRTInAppPurchaseBackend::fulfillConsumable(QWinRTInAppTransaction *trans
 HRESULT QWinRTInAppPurchaseBackendPrivate::onListingInformation(IAsyncOperation<ListingInformation *> *args,
                                                          AsyncStatus status)
 {
-    Q_UNUSED(status);
     Q_Q(QWinRTInAppPurchaseBackend);
 
     qCDebug(lcPurchasingBackend) << __FUNCTION__;
+
+    if (status != AsyncStatus::Completed) {
+        qCDebug(lcPurchasingBackend) << "Loading of listing information failed.";
+        return S_OK;
+    }
 
     ComPtr<IListingInformation> info;
     HRESULT hr = args->GetResults(&info);

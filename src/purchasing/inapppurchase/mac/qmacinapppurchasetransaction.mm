@@ -69,7 +69,8 @@ QMacInAppPurchaseTransaction::QMacInAppPurchaseTransaction(SKPaymentTransaction 
             m_errorString = QStringLiteral("Cloud Service Network Connection Failed");
             break;
 #endif
-#if QT_IOS_PLATFORM_SDK_EQUAL_OR_ABOVE(100300) || QT_TVOS_PLATFORM_SDK_EQUAL_OR_ABOVE(100200)
+                                               // rdar://35589806
+#if QT_IOS_PLATFORM_SDK_EQUAL_OR_ABOVE(100300) // || QT_TVOS_PLATFORM_SDK_EQUAL_OR_ABOVE(100200)
         case SKErrorCloudServiceRevoked:
             m_errorString = QStringLiteral("Cloud Service Revoked");
             break;
