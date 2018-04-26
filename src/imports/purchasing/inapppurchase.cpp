@@ -34,13 +34,6 @@
 #include <QtPurchasing/qinappproduct.h>
 #include <QtPurchasing/qinapptransaction.h>
 
-static void initResources()
-{
-#ifdef QT_STATIC
-    Q_INIT_RESOURCE(qmake_QtPurchasing);
-#endif
-}
-
 QT_BEGIN_NAMESPACE
 
 class QInAppPurchaseModule : public QQmlExtensionPlugin
@@ -48,7 +41,7 @@ class QInAppPurchaseModule : public QQmlExtensionPlugin
     Q_OBJECT
     Q_PLUGIN_METADATA(IID QQmlExtensionInterface_iid)
 public:
-    QInAppPurchaseModule(QObject *parent = 0) : QQmlExtensionPlugin(parent) { initResources(); }
+    QInAppPurchaseModule(QObject *parent = 0) : QQmlExtensionPlugin(parent) { }
     void registerTypes(const char *uri)
     {
         Q_ASSERT(QLatin1String(uri) == QLatin1String("QtPurchasing"));
