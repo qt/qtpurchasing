@@ -63,7 +63,7 @@ HangmanGame::HangmanGame(QObject *parent)
 {
     connect(this, &HangmanGame::vowelBought, this, &HangmanGame::registerLetterBought);
 
-    QtConcurrent::run(this, &HangmanGame::initWordList);
+    QtConcurrent::run(&HangmanGame::initWordList, this);
 
     m_vowelsUnlocked = m_persistentSettings.value("Hangman/vowelsUnlocked", false).toBool();
     m_vowelsAvailable = m_persistentSettings.value("Hangman/vowelsAvailable", 0).toInt();

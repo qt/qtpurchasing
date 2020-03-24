@@ -44,6 +44,8 @@
 #include <QtQml/qqmlparserstatus.h>
 #include <QtCore/qobject.h>
 
+Q_MOC_INCLUDE("qinappstoreqmltype_p.h")
+
 QT_BEGIN_NAMESPACE
 
 class QInAppTransaction;

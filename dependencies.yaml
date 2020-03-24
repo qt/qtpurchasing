@@ -1,10 +1,10 @@
 dependencies:
   ../qtandroidextras:
-    ref: 806e8d2f0f58ecd42bfd57c471fd38d84f0083c5
+    ref: 9af1f49884a523cedb5641081e07adef01259080
     required: false
   ../qtbase:
-    ref: 089d54f06ff327f5212cb08fdbcb540066357dd5
+    ref: c0538d5ff39b086d40fed943729b26aa3d17b602
     required: true
   ../qtdeclarative:
-    ref: 406f15ce0e2707452462ff73b2d660ece960623f
+    ref: 620d5d27721f3139537c7f49d1946b9721e25d14
     required: false

@@ -34,6 +34,8 @@
 #include <QtCore/qdatetime.h>
 #include <QtPurchasing/qtpurchasingglobal.h>
 
+Q_MOC_INCLUDE("QtPurchasing/qinappproduct.h")
+
 QT_BEGIN_NAMESPACE
 
 class QInAppProduct;
