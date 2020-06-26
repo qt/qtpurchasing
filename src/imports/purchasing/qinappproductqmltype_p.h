@@ -108,8 +108,8 @@ Q_SIGNALS:
     void typeChanged();
 
 protected:
-    void componentComplete();
-    void classBegin() {}
+    void componentComplete() override;
+    void classBegin() override {}
 
 private Q_SLOTS:
     void handleTransaction(QInAppTransaction *transaction);
