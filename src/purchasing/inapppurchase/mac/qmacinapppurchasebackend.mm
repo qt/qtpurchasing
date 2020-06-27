@@ -209,7 +209,7 @@ bool QMacInAppPurchaseBackend::isReady() const
 
 void QMacInAppPurchaseBackend::queryProduct(QInAppProduct::ProductType productType, const QString &identifier)
 {
-    Q_UNUSED(productType)
+    Q_UNUSED(productType);
 
     if (m_productTypeForPendingId.contains(identifier)) {
         qWarning("Product query already pending for %s", qPrintable(identifier));
