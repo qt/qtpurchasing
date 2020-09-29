@@ -1,11 +1,11 @@
-TARGET = QtPurchasing
+TARGET = Qt$${QT_MAJOR_VERSION}AndroidPurchasing
 
 CONFIG += java
 load(sdk)
 
 DESTDIR = $$[QT_INSTALL_PREFIX/get]/jar
 
-PATHPREFIX = $$PWD/src/org/qtproject/qt5/android/purchasing/
+PATHPREFIX = $$PWD/src/org/qtproject/qt/android/purchasing/
 
 !build_pass {
     isEmpty(SDK_ROOT): SDK_ROOT = $$(ANDROID_SDK_ROOT)
@@ -56,5 +56,5 @@ INSTALLS += target
 OTHER_FILES += \
     $$JAVASOURCES \
     $$PWD/src/com/android/vending/billing/qt_attribution.json \
-    $$PWD/src/org/qtproject/qt5/android/purchasing/qt_attribution.json \
+    $$PWD/src/org/qtproject/qt/android/purchasing/qt_attribution.json \
     $$PWD/src/LICENSE-APACHE-2.0.txt

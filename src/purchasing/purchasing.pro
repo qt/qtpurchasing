@@ -7,7 +7,7 @@ QMAKE_TARGET_DESCRIPTION = "Purchasing component for Qt."
 QMAKE_DOCS = $$PWD/doc/qtpurchasing.qdocconf
 
 ANDROID_BUNDLED_JAR_DEPENDENCIES = \
-    jar/QtPurchasing.jar
+    jar/Qt$${QT_MAJOR_VERSION}AndroidPurchasing.jar
 
 HEADERS += \
     $$PWD/qtpurchasingglobal.h

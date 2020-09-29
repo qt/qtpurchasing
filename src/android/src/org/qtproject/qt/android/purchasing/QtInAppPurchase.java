@@ -26,7 +26,7 @@
 **
 ****************************************************************************/
 
-package org.qtproject.qt5.android.purchasing;
+package org.qtproject.qt.android.purchasing;
 
 import java.util.ArrayList;
 import java.util.HashSet;

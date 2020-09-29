@@ -130,7 +130,7 @@ JNIEXPORT jint JNICALL JNI_OnLoad(JavaVM *vm, void *)
     if (vm->GetEnv(reinterpret_cast<void **>(&env), JNI_VERSION_1_6) != JNI_OK)
         return JNI_ERR;
 
-    jclass clazz = env->FindClass("org/qtproject/qt5/android/purchasing/QtInAppPurchase");
+    jclass clazz = env->FindClass("org/qtproject/qt/android/purchasing/QtInAppPurchase");
     if (!clazz)
         return JNI_ERR;
 
