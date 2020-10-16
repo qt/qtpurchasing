@@ -63,7 +63,7 @@ QAndroidInAppPurchaseBackend::QAndroidInAppPurchaseBackend(QObject *parent)
 
 QString QAndroidInAppPurchaseBackend::finalizedUnlockableFileName() const
 {
-    QString path = QStandardPaths::writableLocation(QStandardPaths::DataLocation);
+    QString path = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     return path + QStringLiteral("/.qt-purchasing-data/iap_finalization.data");
 }
 

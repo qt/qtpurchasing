@@ -90,7 +90,7 @@ HRESULT QWinRTAppBridge::activate()
 {
     HRESULT hr;
     const QString storeFilename = QLatin1String("QtStoreSimulation.xml");
-    const QString dataPath = QStandardPaths::writableLocation(QStandardPaths::DataLocation) + QLatin1Char('/');
+    const QString dataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) + QLatin1Char('/');
     const QString storeSourceName = QLatin1String(":/") + storeFilename;
     const QString storeTargetName = dataPath + storeFilename;
     if (QFileInfo::exists(storeSourceName)) {

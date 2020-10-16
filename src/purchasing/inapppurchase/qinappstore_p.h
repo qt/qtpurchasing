@@ -42,6 +42,8 @@
 
 #include "qinappproduct.h"
 #include "qinapppurchasebackend_p.h"
+
+#include <QtCore/qhash.h>
 #include <QtCore/qmutex.h>
 
 QT_BEGIN_NAMESPACE
