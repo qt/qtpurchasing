@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2021 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Purchasing module of the Qt Toolkit.
@@ -63,13 +63,18 @@ HangmanGame::HangmanGame(QObject *parent)
 {
     connect(this, &HangmanGame::vowelBought, this, &HangmanGame::registerLetterBought);
 
-    QtConcurrent::run(this, &HangmanGame::initWordList);
+    m_initWordListfuture = QtConcurrent::run(this, &HangmanGame::initWordList);
 
     m_vowelsUnlocked = m_persistentSettings.value("Hangman/vowelsUnlocked", false).toBool();
     m_vowelsAvailable = m_persistentSettings.value("Hangman/vowelsAvailable", 0).toInt();
     m_wordsGiven = m_persistentSettings.value("Hangman/wordsGiven", 0).toInt();
     m_wordsGuessedCorrectly = m_persistentSettings.value("Hangman/wordsGuessedCorrectly", 0).toInt();
     m_score = m_persistentSettings.value("Hangman/score", 0).toInt();
+}
+
+HangmanGame::~HangmanGame(){
+    m_initWordListfuture.cancel();
+    m_initWordListfuture.waitForFinished();
 }
 
 void HangmanGame::reset()

@@ -91,7 +91,7 @@ void QAndroidInAppTransaction::finalize()
         if (product()->productType() == QInAppProduct::Consumable)
             backend->consumeTransaction(m_purchaseToken);
         else
-            backend->registerFinalizedUnlockable(product()->identifier());
+            backend->registerFinalizedUnlockable(product()->identifier(), m_purchaseToken);
     }
 
     deleteLater();

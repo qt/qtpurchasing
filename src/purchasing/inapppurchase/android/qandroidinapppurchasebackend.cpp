@@ -194,7 +194,9 @@ void QAndroidInAppPurchaseBackend::consumeTransaction(const QString &purchaseTok
                                   QAndroidJniObject::fromString(purchaseToken).object<jstring>());
 }
 
-void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &identifier)
+void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(
+        const QString &identifier,
+        const QString &purchaseToken)
 {
 #if defined(QANDROIDINAPPPURCHASEBACKEND_DEBUG)
     qDebug("Finalizing unlockable %s", qPrintable(identifier));
@@ -215,6 +217,10 @@ void QAndroidInAppPurchaseBackend::registerFinalizedUnlockable(const QString &id
     QDataStream stream(&file);
     for (const QString &finalizedUnlockableProduct : qAsConst(m_finalizedUnlockableProducts))
         stream << finalizedUnlockableProduct;
+
+    m_javaObject.callMethod<void>("acknowledgePurchase",
+                                  "(Ljava/lang/String;)V",
+                                  QAndroidJniObject::fromString(purchaseToken).object<jstring>());
 }
 
 bool QAndroidInAppPurchaseBackend::transactionFinalizedForProduct(QInAppProduct *product)
@@ -306,21 +312,6 @@ void QAndroidInAppPurchaseBackend::registerReady()
     emit ready();
 }
 
-void QAndroidInAppPurchaseBackend::handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data)
-{
-    QInAppProduct *product = m_activePurchaseRequests.value(requestCode);
-    if (product == 0) {
-        qWarning("No product registered for requestCode %d", requestCode);
-        return;
-    }
-
-    m_javaObject.callMethod<void>("handleActivityResult", "(IILandroid/content/Intent;Ljava/lang/String;)V",
-                                  requestCode,
-                                  resultCode,
-                                  data.object<jobject>(),
-                                  QAndroidJniObject::fromString(product->identifier()).object<jstring>());
-}
-
 void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product)
 {
 #if defined(QANDROIDINAPPPURCHASEBACKEND_DEBUG)
@@ -344,16 +335,9 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
 
     m_activePurchaseRequests[requestCode] = product;
 
-    QAndroidJniObject intentSender = m_javaObject.callObjectMethod("createBuyIntentSender",
-                                                                   "(Ljava/lang/String;I)Landroid/content/IntentSender;",
-                                                                   QAndroidJniObject::fromString(product->identifier()).object<jstring>(), requestCode);
-
-    if (!intentSender.isValid()) {
-        m_activePurchaseRequests.remove(requestCode);
-        return;
-    }
-
-    QtAndroid::startIntentSender(intentSender, requestCode, this);
+    m_javaObject.callObjectMethod("launchBillingFlow",
+                                  "(Ljava/lang/String;I)Landroid/content/IntentSender;",
+                                  QAndroidJniObject::fromString(product->identifier()).object<jstring>(), requestCode);
 }
 
 void QAndroidInAppPurchaseBackend::purchaseFailed(int requestCode, int failureReason, const QString &errorString)
