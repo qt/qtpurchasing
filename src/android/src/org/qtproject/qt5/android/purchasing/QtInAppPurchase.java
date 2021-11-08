@@ -153,7 +153,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
         for (Purchase purchase : list) {
             try {
                 if (m_publicKey != null && !Security.verifyPurchase(m_publicKey,
-                        TYPE_INAPP,
+                        purchase.getOriginalJson(),
                         purchase.getSignature())) {
 
                     purchaseFailed(requestCode,
@@ -174,7 +174,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
             }
             purchaseSucceeded(requestCode,
                     purchase.getSignature(),
-                    TYPE_INAPP,
+                    purchase.getOriginalJson(),
                     purchase.getPurchaseToken(),
                     purchase.getOrderId(),
                     purchase.getPurchaseTime());
@@ -213,7 +213,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
                     registerPurchased(m_nativePointer,
                             purchase.getSkus().get(0),
                             signature,
-                            TYPE_INAPP,
+                            purchase.getOriginalJson(),
                             purchase.getPurchaseToken(),
                             purchase.getOrderId(),
                             purchase.getPurchaseTime());
@@ -236,7 +236,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
             index += productIdList.size();
 
             SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-            params.setSkusList(productIdList).setType(BillingClient.SkuType.INAPP);
+            params.setSkusList(productIdList).setType(TYPE_INAPP);
             billingClient.querySkuDetailsAsync(params.build(),
                     new SkuDetailsResponseListener() {
                         @Override
