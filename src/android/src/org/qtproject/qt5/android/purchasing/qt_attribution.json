@@ -9,7 +9,7 @@
         "Description": "Converts between binary and base64.",
         "License": "Apache License 2.0",
         "LicenseId": "Apache-2.0",
-        "LicenseFile": "../../../../../LICENSE-APACHE-2.0.txt",
+        "LicenseFile": "LICENSE-APACHE-2.0.txt",
         "Copyright": "Copyright 2002, Google, Inc."
     },
 
@@ -23,7 +23,7 @@
         "Description": "Verifies a given signature on data.",
         "License": "Apache License 2.0",
         "LicenseId": "Apache-2.0",
-        "LicenseFile": "../../../../../LICENSE-APACHE-2.0.txt",
+        "LicenseFile": "LICENSE-APACHE-2.0.txt",
         "Copyright": "Copyright (c) 2012 Google Inc."
     }
 ]

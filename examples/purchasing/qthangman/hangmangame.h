@@ -1,6 +1,6 @@
 /****************************************************************************
 **
-** Copyright (C) 2017 The Qt Company Ltd.
+** Copyright (C) 2021 The Qt Company Ltd.
 ** Contact: https://www.qt.io/licensing/
 **
 ** This file is part of the Purchasing module of the Qt Toolkit.
@@ -56,6 +56,7 @@
 #include <QMutex>
 #include <QtPurchasing>
 #include <QSettings>
+#include <QFuture>
 
 class HangmanGame : public QObject
 {
@@ -73,6 +74,7 @@ class HangmanGame : public QObject
 
 public:
     explicit HangmanGame(QObject *parent = 0);
+    ~HangmanGame();
     Q_INVOKABLE void reset();
     Q_INVOKABLE void reveal();
     Q_INVOKABLE void gameOverReveal();
@@ -117,6 +119,7 @@ private:
     int calculateEarnedVowels();
     int calculateEarnedPoints();
 
+    QFuture<void> m_initWordListfuture;
     QString m_word;
     QString m_lettersOwned;
     QStringList m_wordList;

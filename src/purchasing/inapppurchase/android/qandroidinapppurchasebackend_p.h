@@ -48,12 +48,11 @@
 #include <QtCore/qset.h>
 #include <QtCore/qdatetime.h>
 #include <QtAndroidExtras/qandroidjniobject.h>
-#include <QtAndroidExtras/qandroidactivityresultreceiver.h>
 
 QT_BEGIN_NAMESPACE
 
 class QAndroidInAppProduct;
-class QAndroidInAppPurchaseBackend : public QInAppPurchaseBackend, public QAndroidActivityResultReceiver
+class QAndroidInAppPurchaseBackend : public QInAppPurchaseBackend
 {
     Q_OBJECT
 public:
@@ -71,7 +70,7 @@ public:
     void purchaseProduct(QAndroidInAppProduct *product);
 
     void consumeTransaction(const QString &purchaseToken);
-    void registerFinalizedUnlockable(const QString &identifier);
+    void registerFinalizedUnlockable(const QString &identifier, const QString &purchaseToken);
 
     // Callbacks from Java
     Q_INVOKABLE void registerQueryFailure(const QString &productId);
@@ -95,8 +94,6 @@ public:
                                     int failureReason,
                                     const QString &errorString);
     Q_INVOKABLE void registerReady();
-
-    void handleActivityResult(int requestCode, int resultCode, const QAndroidJniObject &data);
 
     QString finalizedUnlockableFileName() const;
 

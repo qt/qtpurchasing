@@ -34,6 +34,12 @@ OTHER_FILES += \
     qml/qthangman/Word.qml \
     enable2.txt
 
+android {
+    ANDROID_PACKAGE_SOURCE_DIR = $$PWD/android
+    OTHER_FILES += \
+        android/build.gradle
+}
+
 mac {
     #Change the following lines to match your unique App ID
     #to enable in-app purchases on OS X and iOS
