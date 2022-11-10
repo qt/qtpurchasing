@@ -153,7 +153,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
         for (Purchase purchase : list) {
             try {
                 if (m_publicKey != null && !Security.verifyPurchase(m_publicKey,
-                        TYPE_INAPP,
+                        purchase.getOriginalJson(),
                         purchase.getSignature())) {
 
                     purchaseFailed(requestCode,
@@ -162,7 +162,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
                     return;
                 }
                 int purchaseState = purchase.getPurchaseState();
-                if (purchaseState != PurchaseState.UNSPECIFIED_STATE) {
+                if (purchaseState != PurchaseState.PURCHASED) {
                     purchaseFailed(requestCode,
                             FAILUREREASON_ERROR,
                             "Unexpected purchase state in result");
@@ -174,7 +174,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
             }
             purchaseSucceeded(requestCode,
                     purchase.getSignature(),
-                    TYPE_INAPP,
+                    purchase.getOriginalJson(),
                     purchase.getPurchaseToken(),
                     purchase.getOrderId(),
                     purchase.getPurchaseTime());
@@ -213,7 +213,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
                     registerPurchased(m_nativePointer,
                             purchase.getSkus().get(0),
                             signature,
-                            TYPE_INAPP,
+                            purchase.getOriginalJson(),
                             purchase.getPurchaseToken(),
                             purchase.getOrderId(),
                             purchase.getPurchaseTime());
@@ -236,7 +236,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
             index += productIdList.size();
 
             SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
-            params.setSkusList(productIdList).setType(BillingClient.SkuType.INAPP);
+            params.setSkusList(productIdList).setType(TYPE_INAPP);
             billingClient.querySkuDetailsAsync(params.build(),
                     new SkuDetailsResponseListener() {
                         @Override
@@ -275,6 +275,10 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
                                                 queriedTitle,
                                                 queriedDescription);
                                     }
+                                    if (skuDetailsList.size() == skuDetailsList.indexOf(skuDetails) + 1){
+                                        for (String failedProduct : failedProducts)
+                                            queryFailed(m_nativePointer, failedProduct);
+                                    }
 
                                 } catch (Exception e) {
                                     e.printStackTrace();
@@ -283,8 +287,6 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
                         }
                     });
         }
-        for (String failedProduct : failedProducts)
-            queryFailed(m_nativePointer, failedProduct);
     }
 
     public void setPublicKey(String publicKey)
@@ -296,6 +298,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
     {
         requestCode = rqCode;
         List<String> skuList = new ArrayList<>();
+        skuList.add(identifier);
         SkuDetailsParams.Builder params = SkuDetailsParams.newBuilder();
         params.setSkusList(skuList).setType(TYPE_INAPP);
 
@@ -308,7 +311,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
 
                         int response = billingResult.getResponseCode();
                         if (response != RESULT_OK) {
-                            Log.e(TAG, "Unable to create buy intent. Response code: " + response);
+                            Log.e(TAG, "Unable to launch the purchase flow. Response code: " + response);
                             String errorString;
                             switch (response) {
                                 case RESULT_BILLING_UNAVAILABLE: errorString = "Billing unavailable"; break;

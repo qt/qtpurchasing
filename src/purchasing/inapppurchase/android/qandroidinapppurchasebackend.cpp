@@ -335,8 +335,8 @@ void QAndroidInAppPurchaseBackend::purchaseProduct(QAndroidInAppProduct *product
 
     m_activePurchaseRequests[requestCode] = product;
 
-    m_javaObject.callObjectMethod("launchBillingFlow",
-                                  "(Ljava/lang/String;I)Landroid/content/IntentSender;",
+    m_javaObject.callMethod<void>("launchBillingFlow",
+                                  "(Ljava/lang/String;I)V",
                                   QAndroidJniObject::fromString(product->identifier()).object<jstring>(), requestCode);
 }
 
