@@ -108,7 +108,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
             @Override
             public void onBillingSetupFinished(BillingResult billingResult) {
                 if (billingResult.getResponseCode() == RESULT_OK) {
-                    purchasedProductsQueried(m_nativePointer);
+                    queryPurchasedProducts();
                 }
             }
 
@@ -218,6 +218,7 @@ public class QtInAppPurchase implements PurchasesUpdatedListener
                             purchase.getOrderId(),
                             purchase.getPurchaseTime());
                 }
+                purchasedProductsQueried(m_nativePointer);
             }
         });
     }
