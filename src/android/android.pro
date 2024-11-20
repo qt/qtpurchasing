@@ -8,7 +8,7 @@ DESTDIR = $$[QT_INSTALL_PREFIX/get]/jar
 PATHPREFIX = $$PWD/src/org/qtproject/qt5/android/purchasing/
 
 JAVACLASSPATH += \
-    $$PWD/jars/billing_api_4.0.0.jar \
+    $$PWD/jars/billing_api_6.0.1.jar \
     $$PWD/jars/annotation-1.2.0.jar \
     $$PWD/src/
 
